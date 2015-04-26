@@ -238,6 +238,23 @@ class User extends ActiveRecord implements IdentityInterface
 	}
 
 	/**
+	 * Check whether ID (probably team ID) is current user
+	 * @param integer $id The ID to be checked 
+	 * @return boolean
+	 */
+	public static function isCurrentUser($id)
+	{
+		if ((!Yii::$app->user->isGuest) && (Yii::$app->user->identity->id == $id))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	/**
 	 * Get all robots belonging to user (team)
 	 * @return \yii\db\ActiveQuery
 	 */

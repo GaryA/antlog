@@ -23,15 +23,25 @@ class UserController extends Controller
 			'access' =>
 			[
 				'class' => AccessControl::className(),
-				'only' => ['delete'],
+				'only' => ['delete', 'update'],
 				'rules' =>
 				[
 					[
+						'actions' => ['delete', 'update'],
 						'allow' => true,
 						'roles' => ['@'],
 						'matchCallback' => function($rule, $action)
 						{
 							return User::isUserAdmin();
+						}
+					],
+					[
+						'actions' => ['update'],
+						'allow' => true,
+						'roles' => ['@'],
+						'matchCallback' => function($rule, $action)
+						{
+							return User::isCurrentUser(Yii::$app->request->get('id'));
 						}
 					],
 				],
