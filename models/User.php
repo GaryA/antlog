@@ -6,7 +6,7 @@ use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
-use app\models\Team;
+use app\models\Robot;
 
 /**
  * User model
@@ -21,6 +21,7 @@ use app\models\Team;
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $password write-only password
+ * @property integer $user_group
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -62,7 +63,30 @@ class User extends ActiveRecord implements IdentityInterface
 			['user_group', 'in', 'range' => [self::ROLE_ADMIN, self::ROLE_TEAM]], 
         ];
     }
-
+    
+    /**
+     * Return an array of user IDs and names to populate a dropdown box
+     * Only returns users that are teams (not administrators)
+     * @param string $id
+     * @return array
+     */
+    public static function teamDropdown($id = NULL)
+    {
+    	if ($id != NULL)
+    	{
+    		$models = static::find()->where(['id' => $id])->all();
+    	}
+    	else
+    	{
+    		$models = static::find()->where(['user_group' => self::ROLE_TEAM])->all();
+    	}
+    	foreach ($models as $model)
+    	{
+    		$dropdown[$model->id] = $model->username;
+    	}
+    	return $dropdown;
+    }
+    
     /**
      * @inheritdoc
      */
@@ -199,6 +223,7 @@ class User extends ActiveRecord implements IdentityInterface
 	
 	/**
 	 * Check whether current user belongs to admin group
+	 * @return boolean
 	 */
 	public static function isUserAdmin()
 	{
@@ -213,17 +238,22 @@ class User extends ActiveRecord implements IdentityInterface
 	}
 
 	/**
-	 * Check whether user is current team
+	 * Get all robots belonging to user (team)
+	 * @return \yii\db\ActiveQuery
 	 */
-	public static function isUserTeam($username, $teamId)
+	public function getRobots()
 	{
-		if (Team::findOne(['id' => $teamId])->name == $username)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return $this->hasMany(Robot::className(), ['teamId' => 'id']);
 	}
+	
+	/**
+	 * Return true if user's team contains no robots (so may be deleted)
+	 * @param integer $id
+	 * @return boolean
+	 */
+	public function isTeamEmpty($id)
+	{
+		return Robot::find()->where(['teamId' => $id])->count() > 0 ? false : true;
+	}
+	
 }

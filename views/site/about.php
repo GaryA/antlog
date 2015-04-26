@@ -22,6 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		<li class="text-muted">Teams can only be renamed by the team owner or administrator</li>
 		<li class="text-muted">Teams cannot be deleted if they contain any robots</li>
 		<li class="text-muted">Teams can only be deleted by the administrator</li>
+		<li>Teams table to be completely replaced by user table</li>
 	</ul>
 	</p>
 	<p>
@@ -52,12 +53,14 @@ $this->params['breadcrumbs'][] = $this->title;
 		<li class="text-muted">Entrants may only be added or deleted to events in Registration state</li>
 		<li class="text-muted">Entrant event may not be changed</li>
 		<li>Robots should be chosen only from weight class matching event - needs Javascript???</li>
+		<li>Entrants views need to refer to user table instead of team table</li>
 	</ul>
 	</p>
 	<p>
 	Fights
 	<ul>
 		<li>Fights view should show completed fights/results for running/complete events</li>
+		<li>Fights may need to refer to user table instead of team table?</li>
 	</ul>
 	</p>
 </div>

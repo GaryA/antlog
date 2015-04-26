@@ -9,7 +9,7 @@ use app\models\Robot;
 /* @var $this yii\web\View */
 /* @var $model app\models\Team */
 
-$this->title = $model->name;
+$this->title = $model->username;
 $this->params['breadcrumbs'][] = ['label' => 'Team', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -21,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             //'id',
-            'name',
+            'username',
         ],
     ]) ?>
 

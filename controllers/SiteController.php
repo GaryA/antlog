@@ -6,6 +6,7 @@ use Yii;
 use app\models\LoginForm;
 use app\models\PasswordResetRequestForm;
 use app\models\ResetPasswordForm;
+use app\models\SignupForm;
 use yii\base\InvalidParamException;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
@@ -24,10 +25,15 @@ class SiteController extends Controller
             'access' =>
 			[
                 'class' => AccessControl::className(),
-                'only' => ['logout'],
+                'only' => ['logout', 'signup'],
                 'rules' =>
 				[
                     [
+                        'actions' => ['signup'],
+                        'allow' => true,
+                        'roles' => ['?'],
+                    ],
+					[
                         'actions' => ['logout'],
                         'allow' => true,
                         'roles' => ['@'],
@@ -70,6 +76,28 @@ class SiteController extends Controller
         return $this->render('index');
     }
 
+    /**
+     * Handle the signup action
+     * @return \yii\web\Response
+     */
+    public function actionSignup()
+    {
+    	$model = new SignupForm();
+    	if ($model->load(Yii::$app->request->post()))
+    	{
+    		if ($user = $model->signup())
+    		{
+    			if (Yii::$app->getUser()->login($user))
+    			{
+    				return $this->goHome();
+    			}
+    		}
+    	}
+        return $this->render('signup',
+        		[
+            		'model' => $model,
+        		]);
+    }
     /**
      * Handle the login action
      * @return \yii\web\Response|mixed
@@ -140,8 +168,14 @@ class SiteController extends Controller
 		{
             if ($model->sendEmail())
 			{
-                Yii::$app->getSession()->setFlash('success', 'Check your email for further instructions.');
-
+				if (Yii::$app->mailer->useFileTransport == false)
+				{
+                	Yii::$app->getSession()->setFlash('success', 'Check your email for further instructions.');
+				}
+                else
+                {
+                	Yii::$app->getSession()->setFlash('success', "Check email file in server's runtime/mail folder.");
+                }
                 return $this->goHome();
             }
 			else

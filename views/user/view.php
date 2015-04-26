@@ -5,9 +5,9 @@ use yii\widgets\DetailView;
 use app\models\User;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\Team */
+/* @var $model app\models\User */
 
-$this->title = $model->name;
+$this->title = $model->username;
 $this->params['breadcrumbs'][] = ['label' => 'Teams', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -17,11 +17,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?php
-		if ($model->isUser($model) || User::isUserAdmin())
+		if ((Yii::$app->user->identity->id == $model->id) || User::isUserAdmin())
 		{
 			echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
 		}
-		if ($model->isEmpty($model->id))
+		if ($model->isTeamEmpty($model->id))
 		{
 			echo Html::a('Delete', ['delete', 'id' => $model->id],
 			[
@@ -40,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'id',
-            'name',
+            'username',
         ],
     ]) ?>
 

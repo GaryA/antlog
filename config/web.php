@@ -35,6 +35,7 @@ $config = [
             // 'useFileTransport' to false and configure a transport
             // for the mailer to send real emails.
             'useFileTransport' => true,
+			'viewPath' => '@app/mail',
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,

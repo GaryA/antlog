@@ -31,6 +31,12 @@ class Robot extends \yii\db\ActiveRecord
 		return $dropdown;
 	}
 
+	/**
+	 * Return checked if robot is entrant to any event which is not complete
+	 * Return value is checked attribute of checkbox 
+	 * @param integer $target
+	 * @return string
+	 */
 	public static function isSignedUp($target)
 	{
 		if ($event = Event::find()->andWhere(['not',['state' => 'Complete']])->one())
@@ -64,7 +70,7 @@ class Robot extends \yii\db\ActiveRecord
 	{
 		if (!Yii::$app->user->isGuest)
 		{
-			return (Yii::$app->user->identity->id == $model->team->userId) ? true : false;
+			return (Yii::$app->user->identity->id == $model->teamId) ? true : false;
 		}
 		else
 		{

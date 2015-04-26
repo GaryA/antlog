@@ -10,6 +10,7 @@ use yii\base\Model;
 class PasswordResetRequestForm extends Model
 {
     public $email;
+    public $username;
 
     /**
      * @inheritdoc
@@ -35,40 +36,38 @@ class PasswordResetRequestForm extends Model
     public function sendEmail()
     {
         /* @var $user User */
-        $user = User::findOne([
+        $user = User::findOne(
+        [
             'status' => User::STATUS_ACTIVE,
             'username' => $this->username,
         ]);
 
-        if ($user) {
-            if (!User::isPasswordResetTokenValid($user->password_reset_token)) {
+        if ($user)
+        {
+            if (!User::isPasswordResetTokenValid($user->password_reset_token))
+            {
                 $user->generatePasswordResetToken();
             }
 
-            if ($user->save()) {
- /*               return \Yii::$app->mailer->compose(['html' => 'passwordResetToken-html', 'text' => 'passwordResetToken-text'], ['user' => $user])
+            if ($user->save())
+            {
+               return \Yii::$app->mailer->compose(['html' => 'passwordResetToken-html', 'text' => 'passwordResetToken-text'], ['user' => $user])
                     ->setFrom([\Yii::$app->params['supportEmail'] => \Yii::$app->name . ' robot'])
                     ->setTo($this->email)
                     ->setSubject('Password reset for ' . \Yii::$app->name)
                     ->send();
- */
-				$myFile = fopen("../../../password-reset.txt", "w");
+
+/*				$myFile = fopen(\Yii::getAlias('@app') . "/password-reset.txt", "w");
 				if ($myFile !== false)
 				{
-					$filePath = \Yii::getAlias('@app');
-					fwrite($myFile, "@app: $filePath\n");
-					$filePath = \Yii::getAlias('@web');
-					fwrite($myFile, "@web: $filePath\n");
-					$filePath = \Yii::getAlias('@webroot');
-					fwrite($myFile, "@webroot: $filePath\n");
-					fwrite($myFile, $user->password_reset_token);
+					fwrite($myFile, 'User: ' . $user->username . "\r\n");
+					fwrite($myFile, 'Token: ' . $user->password_reset_token . "\r\n");
 					fclose($myFile);
 					return true;
 				}
-				return false;
+*/
            }
         }
-
         return false;
     }
 }

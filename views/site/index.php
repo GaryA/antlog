@@ -26,7 +26,7 @@ $this->title = 'AntLog 3.0';
 
                 <p>Use this link to view and administer teams</p>
 
-                <p><a class="btn btn-default" href="index.php?r=team">Teams</a></p>
+                <p><a class="btn btn-default" href="index.php?r=user">Teams</a></p>
             </div>
             <div class="col-lg-4">
                 <h2>Events</h2>

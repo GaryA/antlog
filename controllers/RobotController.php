@@ -30,7 +30,7 @@ class RobotController extends Controller
 						'matchCallback' => function($rule, $action)
 						{
 							return (!Yii::$app->user->isGuest);
-							// return User::isUserAdmin(Yii::$app->user->identity->username);
+							// return User::isUserAdmin();
 						}
 					],
 				],

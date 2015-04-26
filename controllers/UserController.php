@@ -3,39 +3,58 @@
 namespace app\controllers;
 
 use Yii;
-use app\models\Team;
 use app\models\SignupForm;
 use app\models\User;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
 /**
- * TeamController implements the CRUD actions for Team model.
+ * UserController implements the CRUD actions for User model.
  */
-class TeamController extends Controller
+class UserController extends Controller
 {
     public function behaviors()
     {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['post'],
-                ],
-            ],
+        return
+        [
+			'access' =>
+			[
+				'class' => AccessControl::className(),
+				'only' => ['delete'],
+				'rules' =>
+				[
+					[
+						'allow' => true,
+						'roles' => ['@'],
+						'matchCallback' => function($rule, $action)
+						{
+							return User::isUserAdmin();
+						}
+					],
+				],
+			],
+        	'verbs' =>
+        	[
+               	'class' => VerbFilter::className(),
+               	'actions' =>
+        		[
+                   	'delete' => ['post'],
+               	],
+           	],
         ];
     }
 
     /**
-     * Lists all Team models.
+     * Lists all User team models.
      * @return mixed
      */
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Team::find(),
+            'query' => User::find()->where(['user_group' => User::ROLE_TEAM]),
         ]);
 
         return $this->render('index', [
@@ -44,7 +63,7 @@ class TeamController extends Controller
     }
 
     /**
-     * Displays a single Team model.
+     * Displays a single User team model.
      * @param string $id
      * @return mixed
      */
@@ -56,46 +75,7 @@ class TeamController extends Controller
     }
 
     /**
-     * Creates a new Team model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $teamModel = new Team();
-        $signupModel = new SignupForm();
-
-        if ($teamModel->load(Yii::$app->request->post()) && $teamModel->save())
-		{
-			if ($signupModel->load(['username' => $teamModel->name, 'password' => 'password'], ''))
-			{
-				if ($user = $signupModel->signup())
-				{
-					if (Yii::$app->getUser()->login($user))
-					{
-						//return $this->goHome();
-						return $this->redirect(['view', 'id' => $teamModel->id]);
-					}
-					$message = 'Login failed';
-					return $this->actionDebug($teamModel->id, 'Message', $message);
-				}
-				$message = 'Signup failed';
-				return $this->actionDebug($teamModel->id, 'Message', $message);
-			}
-			$message = 'Loading model failed';
-			return $this->actionDebug($teamModel->id, 'Message', $message);
-        }
-		else
-		{
-            return $this->render('create', [
-                'model' => $teamModel,
-            ]);
-        }
-    }
-
-    /**
-     * Updates an existing Team model.
-	 * Renames the associated user too.
+     * Updates an existing User team model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param string $id
      * @return mixed
@@ -103,13 +83,14 @@ class TeamController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-		$userModel = User::findByUsername($model->name);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save())
-		{
-			$userModel->username = (Yii::$app->request->post('Team')['name']);
-			$userModel->save();
-			return $this->redirect(['view', 'id' => $model->id]);
+        if (Yii::$app->request->isPost)
+        {
+        	$model->username = Yii::$app->request->post('User')['username'];
+        
+        	if ($model->save())
+			{
+				return $this->redirect(['view', 'id' => $model->id]);
+        	}
         }
 		else
 		{
@@ -121,17 +102,14 @@ class TeamController extends Controller
     }
 
     /**
-     * Deletes an existing Team model.
+     * Deletes an existing User team model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param string $id
      * @return mixed
      */
     public function actionDelete($id)
     {
-		$userModel = User::findByUsername($model->name);
-
         $this->findModel($id)->delete();
-		$userModel->delete();
 		
         return $this->redirect(['index']);
     }
@@ -163,7 +141,7 @@ class TeamController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Team::findOne($id)) !== null) {
+        if (($model = User::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

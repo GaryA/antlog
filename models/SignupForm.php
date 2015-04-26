@@ -21,7 +21,7 @@ class SignupForm extends Model
         return [
             ['username', 'filter', 'filter' => 'trim'],
             ['username', 'required'],
-            ['username', 'unique', 'targetClass' => '\app\models\User', 'message' => 'This username has already been taken.'],
+            ['username', 'unique', 'targetClass' => '\app\models\User', 'message' => 'Team name "{value}" has already been taken.'],
             ['username', 'string', 'min' => 2, 'max' => 255],
 
             ['password', 'required'],
@@ -29,6 +29,15 @@ class SignupForm extends Model
         ];
     }
 
+    public function attributeLabels()
+    {
+    	return
+    	[
+    			'id' => 'ID',
+    			'username' => 'Team Name',
+    	];
+    }
+    
     /**
      * Signs user up.
      *

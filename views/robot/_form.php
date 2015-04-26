@@ -3,7 +3,6 @@
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use yii\widgets\ActiveForm;
-use app\models\Team;
 use app\models\RobotClass;
 use app\models\User;
 
@@ -21,11 +20,11 @@ use app\models\User;
     <?php
 	if (User::isUserAdmin())
 	{
-		echo $form->field($model, 'teamId')->dropDownList(ArrayHelper::map(Team::find()->all(), 'id', 'name'));
+		echo $form->field($model, 'teamId')->dropDownList(User::teamDropdown());
 	}
 	else
 	{
-		echo $form->field($model, 'teamId')->dropDownList(ArrayHelper::map(Team::find()->where(['userId' => Yii::$app->user->identity->id])->all(), 'id', 'name')); 
+		echo $form->field($model, 'teamId')->dropDownList(User::teamDropdown(Yii::$app->user->identity->id)); 
 	}
 	?>
 
