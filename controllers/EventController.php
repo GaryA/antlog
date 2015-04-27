@@ -25,34 +25,15 @@ class EventController extends Controller
 			'access' =>
 			[
 				'class' => AccessControl::className(),
-				'only' => ['draw', 'run', 'create'],
+				'only' => ['draw', 'run', 'create', 'update', 'delete'],
 				'rules' =>
 				[
 					[
-						'actions' => ['create'], /* actions not needed if same rule applies to all listed in 'only'*/
 						'allow' => true,
 						'roles' => ['@'],
 						'matchCallback' => function($rule, $action)
 						{
-							return User::isUserAdmin(Yii::$app->user->identity->username);
-						}
-					],
-					[
-						'actions' => ['draw'], /* multiple rules can be specified, one per action (?) */
-						'allow' => true,
-						'roles' => ['@'],
-						'matchCallback' => function($rule, $action)
-						{
-							return User::isUserAdmin(Yii::$app->user->identity->username);
-						}
-					],
-					[
-						'actions' => ['run'],
-						'allow' => true,
-						'roles' => ['@'],
-						'matchCallback' => function($rule, $action)
-						{
-							return User::isUserAdmin(Yii::$app->user->identity->username);
+							return User::isUserAdmin();
 						}
 					],
 				],

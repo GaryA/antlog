@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use app\models\User;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Entrant */
@@ -16,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
 	<?php
-        if ($model->event->state == 'Registration')
+        if (($model->event->state == 'Registration') && User::isUserAdmin())
 		{
 			echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
 			echo Html::a('Delete', ['delete', 'id' => $model->id],
@@ -46,7 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
 			],
 			[
 				'label' => 'Team',
-				'value' => $model->robot->team->name,
+				'value' => $model->robot->team->username,
 			],
             'status',
         ],

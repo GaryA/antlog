@@ -16,7 +16,7 @@ use app\models\Entrant;
  *
  * @property DoubleElim[] $doubleElims
  * @property Entrant[] $entrants
- * @property Team $team
+ * @property User $team
  * @property RobotClass $class
  */
 class Robot extends \yii\db\ActiveRecord
@@ -61,6 +61,24 @@ class Robot extends \yii\db\ActiveRecord
 		return Entrant::find()->where(['robotId' => $id])->count() > 0 ? false : true;
 	}
 
+	/**
+	 * Return true if robot is not in any complete event (so may be edited)
+	 * @param integer $id
+	 * @return boolean
+	 */
+	public function isOKToEdit($id)
+	{
+		$entrants = Entrant::find()->where(['robotId' => $id])->all();
+		foreach ($entrants as $entrant)
+		{
+			if (Event::find()->where(['id' => $entrant->eventId])->andWhere(['not', ['state' => 'Registration']])->count() > 0)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	/**
 	 * Return true if robot belongs to logged-in user
 	 * @param model $model
@@ -135,7 +153,7 @@ class Robot extends \yii\db\ActiveRecord
      */
     public function getTeam()
     {
-        return $this->hasOne(Team::className(), ['id' => 'teamId']);
+        return $this->hasOne(User::className(), ['id' => 'teamId']);
     }
 
     /**

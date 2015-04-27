@@ -17,21 +17,22 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?php
-		if ((Yii::$app->user->identity->id == $model->id) || User::isUserAdmin())
+		if ((User::isCurrentUser($model->id)) || User::isUserAdmin())
 		{
 			echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
-		}
-		if ($model->isTeamEmpty($model->id))
-		{
-			echo Html::a('Delete', ['delete', 'id' => $model->id],
-			[
-				'class' => 'btn btn-danger',
-				'data' =>
+			
+			if ($model->isTeamEmpty($model->id))
+			{
+				echo Html::a('Delete', ['delete', 'id' => $model->id],
 				[
-					'confirm' => 'Are you sure you want to delete this item?',
-					'method' => 'post',
-				],
-			]);
+					'class' => 'btn btn-danger',
+					'data' =>
+					[
+						'confirm' => 'Are you sure you want to delete this item?',
+						'method' => 'post',
+					],
+				]);
+			}
 		}
 		?>
     </p>

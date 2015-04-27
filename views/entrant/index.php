@@ -4,7 +4,6 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use app\models\Robot;
 use app\models\Event;
-use app\models\Team;
 use app\models\EntrantSearch;
 use app\models\User;
 
@@ -50,11 +49,11 @@ $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 				},
 			],
 			[
-				'attribute' => 'robot.team.name',
+				'attribute' => 'robot.team.username',
 				'label' => 'Team',
-				'filter' => Team::dropdown(),
+				'filter' => User::teamDropdown(),
 				'value' => function($model, $index, $dataColumn) {
-					$teamDropdown = Team::dropdown();
+					$teamDropdown = User::teamDropdown();
 					return $teamDropdown[$model->robot->teamId];
 				},
 			],

@@ -41,7 +41,7 @@ echo GridView::widget([
 		'columns' =>
 		[
 			'robot.name',
-			'robot.team.name',
+			'robot.team.username',
 			[
 				'attribute' => 'finalFightId',
 				'label' => 'Position',

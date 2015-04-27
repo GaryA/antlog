@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\grid\GridView;
-use app\models\Team;
+use app\models\User;
 use app\models\Entrant;
 
 /* @var $this yii\web\View */
@@ -18,24 +18,30 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-        <?php
-		if ($model->state == 'Registration')
-		{
-			echo Html::a('Do Draw', ['draw', 'id' => $model->id], ['class' => 'btn btn-primary']);
-		}
-		else if ($model->state == 'Running')
-		{
-			echo Html::a('Run Fights', ['run', 'id' => $model->id], ['class' => 'btn btn-primary']);
-		}
-		else if ($model->state == 'Complete')
+        <?php 
+        if ( User::isUserAdmin())
+        {
+        	echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+        	echo Html::a('Delete', ['delete', 'id' => $model->id],
+        	[
+        	    'class' => 'btn btn-danger',
+        	    'data' =>
+        		[
+        	        'confirm' => 'Are you sure you want to delete this item?',
+        	        'method' => 'post',
+        	    ],
+        	]);
+
+			if ($model->state == 'Registration')
+			{
+				echo Html::a('Do Draw', ['draw', 'id' => $model->id], ['class' => 'btn btn-primary']);
+			}
+			else if ($model->state == 'Running')
+			{
+				echo Html::a('Run Fights', ['run', 'id' => $model->id], ['class' => 'btn btn-primary']);
+			}
+        }
+		if ($model->state == 'Complete')
 		{
 			echo Html::a('Results', ['result', 'id' => $model->id], ['class' => 'btn btn-primary']);
 		}
@@ -66,7 +72,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
 foreach($teams as $team => $robots)
 {
-	echo '<tr><td>' . Team::findOne($team)->name . '</td><td>';
+	echo '<tr><td>' . User::findOne($team)->username . '</td><td>';
 	foreach($robots as $robot)
 	{
 		echo Entrant::findOne($robot)->robot->name . '<br>';

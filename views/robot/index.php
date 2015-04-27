@@ -69,7 +69,7 @@ $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 					},
 					'update' => function ($url, $model, $key)
 					{
-						return ($model->isUser($model) || User::isUserAdmin()) ? Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, ['title' => 'Update']) : '';
+						return (($model->isUser($model) || User::isUserAdmin()) && $model->isOKToEdit($model->id)) ? Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, ['title' => 'Update']) : '';
 					},
 				],
 			],
