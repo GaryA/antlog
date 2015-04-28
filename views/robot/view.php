@@ -30,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'id',
             'name',
-            'team.name',
+            'team.username',
             'class.name',
         ],
     ]) ?>

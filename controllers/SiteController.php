@@ -7,6 +7,11 @@ use app\models\LoginForm;
 use app\models\PasswordResetRequestForm;
 use app\models\ResetPasswordForm;
 use app\models\SignupForm;
+use app\models\Robot;
+use app\models\Event;
+use app\models\User;
+
+use yii\data\ActiveDataProvider;
 use yii\base\InvalidParamException;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
@@ -73,7 +78,27 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $teamData = new ActiveDataProvider(
+		[
+            'query' => User::find()->where(['user_group' => User::ROLE_TEAM]),
+        ]);
+    	
+    	$eventData = new ActiveDataProvider(
+		[
+            'query' => Event::find(),
+        ]);
+    	
+    	$robotData = new ActiveDataProvider(
+		[
+            'query' => Robot::find(),
+        ]);
+
+        return $this->render('index',
+		[
+            'robotData' => $robotData,
+			'eventData' => $eventData,
+			'teamData' => $teamData,
+        ]);
     }
 
     /**
