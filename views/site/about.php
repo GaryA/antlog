@@ -13,6 +13,8 @@ $this->params['breadcrumbs'][] = $this->title;
 		LAMP/WAMP/MAMP (Linux/Windows/Mac - Apache - MySQL - PHP) server and can be accessed via any
 		web browser.
     </p>
+    <p><b>Fails on actionUpdate() in UserController when $model->load() is called --- WHY ???</b>
+    </p>
 	<p>
 	Teams
 	<ul>

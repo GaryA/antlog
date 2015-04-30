@@ -6,11 +6,12 @@ use yii\base\Model;
 use Yii;
 
 /**
- * Signup form
+ * Update form
  */
-class SignupForm extends Model
+class UpdateForm extends Model
 {
-    public $username;
+    public $id;
+	public $username;
     public $email;
     public $password;
     public $team_name;
@@ -23,8 +24,6 @@ class SignupForm extends Model
         return [
             ['username', 'filter', 'filter' => 'trim'],
             ['username', 'required'],
-            ['username', 'unique', 'targetClass' => '\app\models\User', 'message' => 'Username "{value}" has already been taken.'],
-            ['username', 'string', 'min' => 2, 'max' => 255],
         	
         	['email', 'filter', 'filter' => 'trim'],
         	['email', 'required'],
@@ -34,8 +33,6 @@ class SignupForm extends Model
         	['team_name', 'required'],
         	['team_name', 'string', 'min' => 2, 'max' => 255],
         		
-            ['password', 'required'],
-            ['password', 'string', 'min' => 5],
         ];
     }
 
@@ -51,26 +48,20 @@ class SignupForm extends Model
     }
     
     /**
-     * Signs user up.
+     * Updates user profile.
      *
      * @return User|null the saved model or null if validation fails
      */
-    public function signup()
+    public function update($id)
     {
         if ($this->validate())
 		{
-            $user = new User();
+            $user = User::findIdentity($id);
             $user->username = $this->username;
             $user->email = $this->email;
             $user->team_name = $this->team_name;
             $user->setPassword($this->password);
-            $user->generateAuthKey();
             $user->save(false);
-
-			// Add teams to the 'team' role for authorisation
-			$auth = Yii::$app->authManager;
-			$authorRole = $auth->getRole('team');
-			$auth->assign($authorRole, $user->getId());
 
 			return $user;
         }

@@ -20,6 +20,31 @@ use app\models\Entrant;
  */
 class Event extends \yii\db\ActiveRecord
 { 
+	
+   /**
+     * @inheritdoc
+     */
+    public static function tableName()
+    {
+        return '{{%event}}';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return
+		[
+            [['name', 'classId'], 'required'],
+            [['classId'], 'integer'],
+            [['state'], 'string'],
+			['state', 'default', 'value' => 'Registration'],
+			['state', 'validateState'],
+            [['name'], 'string', 'max' => 20]
+        ];
+    }
+
 	/**
 	  * function to generate an array to populate a dropdown list of all the events in the table
 	  */
@@ -34,6 +59,60 @@ class Event extends \yii\db\ActiveRecord
 	}
 
 	/**
+	 * function to set up event and generate corresponding fights
+	 * @param array $teams
+	 * @param integer $numEntrants
+	 */
+	public function setupEvent($teams, $numEntrants)
+	{
+		/* calculate required size of each group */
+		$maxTeamSize = count(reset($teams));
+		if ($maxTeamSize <= 2 && $numEntrants < 32)
+		{
+			$numGroups = 2;
+		}
+		else if ($maxTeamSize <= 4 && $numEntrants < 64)
+		{
+			$numGroups = 4;
+		}
+		else
+		{
+			$numGroups = 8;
+		}
+		/* assign robots to groups */
+		$retVal = $this->assignGroups($teams, $numEntrants, $numGroups);
+		if ($retVal[0] == 1)
+		{
+			/* can't fit team in remaining groups */
+			Yii::$app->getSession()->setFlash('error', 'Team size is bigger than number of spaces available.');
+		}
+		else
+		{
+			$entrants = $retVal[1];
+	
+			/* create an array of robots per group */
+			$groupList = array();
+			foreach ($entrants as $robot => $group)
+			{
+				$groupList[$group][] = $robot;
+			}
+	
+			/* add a new set of fights to the fights table */
+			$fights->insertDoubleElimination($id);
+	
+			$fights->setupEvent($id, $groupList);
+	
+			/* ready to start! */
+			$setupOK = $this->stateRunning($id);
+			if ($setupOK == false)
+			{
+				Yii::$app->getSession()->setFlash('error', 'Failed to save Running state to event model.');
+			}
+		}
+		return;
+	}
+	
+	/**
 	 * function to assign robots to groups
 	 * return array mapping each robot to its group
 	 *
@@ -42,7 +121,7 @@ class Event extends \yii\db\ActiveRecord
 	 * @param integer $numEntrants
 	 * @return array $entrants
 	 */
-	public static function assignGroups($teams, $numEntrants, $numGroups)
+	private function assignGroups($teams, $numEntrants, $numGroups)
 	{
 		$groupSize = intval($numEntrants / $numGroups);
 		$remainder = $numEntrants % $numGroups;
@@ -91,7 +170,7 @@ class Event extends \yii\db\ActiveRecord
 	/**
 	 * function to set event state to "Setup"
 	 */
-	public static function stateSetup($id)
+	private function stateSetup($id)
 	{
 		$event = static::findOne($id);
 		$event->state = 'Setup';
@@ -101,7 +180,7 @@ class Event extends \yii\db\ActiveRecord
 	/**
 	 * function to set event state to "Running"
 	 */
-	public static function stateRunning($id)
+	private function stateRunning($id)
 	{
 		$event = static::findOne($id);
 		$event->state = 'Running';
@@ -133,30 +212,6 @@ class Event extends \yii\db\ActiveRecord
 	{
 		return Entrant::find()->where(['eventId' => $id])->count() > 0 ? false : true;
 	}
-	
-   /**
-     * @inheritdoc
-     */
-    public static function tableName()
-    {
-        return '{{%event}}';
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function rules()
-    {
-        return
-		[
-            [['name', 'classId'], 'required'],
-            [['classId'], 'integer'],
-            [['state'], 'string'],
-			['state', 'default', 'value' => 'Registration'],
-			['state', 'validateState'],
-            [['name'], 'string', 'max' => 20]
-        ];
-    }
 
 	/**
 	  * function to ensure only one event per weight class can be open at a time
@@ -166,6 +221,7 @@ class Event extends \yii\db\ActiveRecord
 		if (Event::find()
 			->andWhere(['classId' => $this->classId])
 			->andWhere(['not', ['state' => 'Complete']])
+			->andWhere(['not', ['id' => $this->id]])
 			->count() > 0)
 		{
 			$this->addError($attribute, 'There can be only one open event per weight class');

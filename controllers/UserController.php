@@ -3,7 +3,7 @@
 namespace app\controllers;
 
 use Yii;
-use app\models\SignupForm;
+use app\models\UpdateForm;
 use app\models\User;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
@@ -92,21 +92,35 @@ class UserController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
-        if (Yii::$app->request->isPost)
-        {
-        	$model->username = Yii::$app->request->post('User')['username'];
+        $updateModel = new UpdateForm();
+        $userModel = User::findIdentity($id);
+        $updateModel->setAttributes(
+        [
+        	'id' => $userModel->id,
+        	'username' => $userModel->username,
+        	'email' => $userModel->email,
+        	'team_name' => $userModel->team_name,
+        ], false);
         
-        	if ($model->save())
+        if ($updateModel->load(Yii::$app->request->post()))
+        {
+        	//$model->username = Yii::$app->request->post('User')['username'];
+        	if ($userModel =  $updateModel->update($id))
 			{
-				return $this->redirect(['view', 'id' => $model->id]);
+				Yii::$app->getSession()->setFlash('success', 'Updated user model.');
+				return $this->redirect(['view', 'id' => $userModel->id]);
         	}
+			else
+			{
+				Yii::$app->getSession()->setFlash('error', 'Failed to update user model.');
+				return $this->render('update', ['model' => $updateModel]);
+			}
         }
 		else
 		{
-            return $this->render('update',
+			return $this->render('update',
 			[
-                'model' => $model,
+                'model' => $updateModel,
             ]);
         }
     }
@@ -143,10 +157,10 @@ class UserController extends Controller
     }
 
     /**
-     * Finds the Team model based on its primary key value.
+     * Finds the User team model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param string $id
-     * @return Team the loaded model
+     * @return User the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)

@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="event-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
-
+    
     <p>
         <?php 
         if ( User::isUserAdmin())
@@ -35,6 +35,10 @@ $this->params['breadcrumbs'][] = $this->title;
 			if ($model->state == 'Registration')
 			{
 				echo Html::a('Do Draw', ['draw', 'id' => $model->id], ['class' => 'btn btn-primary']);
+			}
+        	else if ($model->state == 'Setup')
+			{
+				echo Html::a('Re-Do Draw', ['setup', 'id' => $model->id], ['class' => 'btn btn-primary']);
 			}
 			else if ($model->state == 'Running')
 			{
@@ -72,7 +76,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
 foreach($teams as $team => $robots)
 {
-	echo '<tr><td>' . User::findOne($team)->username . '</td><td>';
+	echo '<tr><td>' . User::findOne($team)->team_name . '</td><td>';
 	foreach($robots as $robot)
 	{
 		echo Entrant::findOne($robot)->robot->name . '<br>';

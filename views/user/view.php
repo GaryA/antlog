@@ -7,7 +7,7 @@ use app\models\User;
 /* @var $this yii\web\View */
 /* @var $model app\models\User */
 
-$this->title = $model->username;
+$this->title = $model->team_name;
 $this->params['breadcrumbs'][] = ['label' => 'Teams', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -40,8 +40,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'id',
+            //'id',
             'username',
+        	'email',
+        	'team_name'
         ],
     ]) ?>
 

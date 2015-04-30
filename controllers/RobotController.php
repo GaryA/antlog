@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Robot;
+use app\models\User;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -21,16 +22,39 @@ class RobotController extends Controller
 			'access' =>
 			[
 				'class' => AccessControl::className(),
-				'only' => ['create'],
+				'only' => ['create', 'update', 'delete'],
 				'rules' =>
 				[
 					[
+						'actions' => ['create'],
 						'allow' => true,
 						'roles' => ['@'],
 						'matchCallback' => function($rule, $action)
 						{
 							return (!Yii::$app->user->isGuest);
 							// return User::isUserAdmin();
+						}
+					],
+					[
+						'actions' => ['update'],
+						'allow' => true,
+						'roles' => ['@'],
+						'matchCallback' => function($rule, $action)
+						{
+							$id = Yii::$app->request->get('id');
+							$model = $this->findModel($id);
+							return ((User::isUserAdmin() || $model->isUser($model)) && $model->isOKToEdit($id));
+						}
+					],
+					[
+						'actions' => ['delete'],
+						'allow' => true,
+						'roles' => ['@'],
+						'matchCallback' => function($rule, $action)
+						{
+							$id = Yii::$app->request->get('id');
+							$model = $this->findModel($id);
+							return ((User::isUserAdmin() || $model->isUser($model)) && $model->isOKToDelete($id));
 						}
 					],
 				],

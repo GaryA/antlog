@@ -25,15 +25,38 @@ class EventController extends Controller
 			'access' =>
 			[
 				'class' => AccessControl::className(),
-				'only' => ['draw', 'run', 'create', 'update', 'delete'],
+				'only' => ['draw', 'setup', 'run', 'create', 'update', 'delete'],
 				'rules' =>
 				[
 					[
+						'actions' => ['draw', 'setup', 'run', 'create'],
 						'allow' => true,
 						'roles' => ['@'],
 						'matchCallback' => function($rule, $action)
 						{
 							return User::isUserAdmin();
+						}
+					],
+					[
+						'actions' => ['delete'],
+						'allow' => true,
+						'roles' => ['@'],
+						'matchCallback' => function($rule, $action)
+						{
+							$id = Yii::$app->request->get('id');
+							$model = $this->findModel($id);
+							return (User::isUserAdmin() && $model->isOKToDelete($id));
+						}
+					],
+					[
+						'actions' => ['update'],
+						'allow' => true,
+						'roles' => ['@'],
+						'matchCallback' => function($rule, $action)
+						{
+							$id = Yii::$app->request->get('id');
+							$model = $this->findModel($id);
+							return (User::isUserAdmin() && $model->state == 'Registration');
 						}
 					],
 				],
@@ -91,12 +114,6 @@ class EventController extends Controller
 	public function actionDraw($id)
 	{
 		$fights = new Fights();
-		$setupOK = Event::stateSetup($id);
-		if ($setupOK == false)
-		{
-			$error = "Failed to save Setup state to event model";
-			return $this->actionDebug($id, 'Error', $error);
-		}
 
 		/* get the teams array */
 		$event = $this->findModel($id);
@@ -105,58 +122,39 @@ class EventController extends Controller
 		$numEntrants = $event->getEntrants()->count();
 		if ($numEntrants < 8 || $numEntrants > 128)
 		{
-			$error = "Number of entrants outside allowed range";
-			return $this->actionDebug($id, 'Error', $error);
-		}
-		/* calculate required size of each group */
-		$maxTeamSize = count(reset($teams));
-		if ($maxTeamSize <= 2 && $numEntrants < 32)
-		{
-			$numGroups = 2;
-		}
-		else if ($maxTeamSize <= 4 && $numEntrants < 64)
-		{
-			$numGroups = 4;
+			Yii::$app->getSession()->setFlash('error', 'Number of entrants outside allowed range.');
 		}
 		else
 		{
-			$numGroups = 8;
+			/* change state to setup */
+			$setupOK = $event->stateSetup($id);
+			if ($setupOK == false)
+			{
+				Yii::$app->getSession()->setFlash('error', 'Failed to save Setup state to event model.');
+			}
+			else
+			{
+				$event->setupEvent($teams, $numEntrants);
+			}
 		}
-		/* assign robots to groups */
-		$retVal = Event::assignGroups($teams, $numEntrants, $numGroups);
-		if ($retVal[0] == 1)
-		{
-			/* can't fit team in remaining groups */
-			$error = "Team size is bigger than number of spaces available";
-			return $this->actionDebug($id, 'Error', $error);
-		}
-		$entrants = $retVal[1];
-		
-		/* create an array of robots per group */
-		$groupList = array();
-		foreach ($entrants as $robot => $group)
-		{
-			$groupList[$group][] = $robot;
-		}
-		
-		/* add a new set of fights to the fights table */
-		$fights->insertDoubleElimination($id);
-		
-		$fights->setupEvent($id, $groupList);
-		
-		/* ready to start! */
-		$setupOK = Event::stateRunning($id);
-		if ($setupOK == false)
-		{
-			$error = "Failed to save Running state to event model";
-			return $this->actionDebug($id, 'Error', $error);
-		}
-		else
-		{
-			return $this->actionView($id);
-		}
+		return $this->actionView($id);
 	}
-
+	
+	/**
+	 * Set up an event (only needed if the first attempt at a draw fails)
+	 * @param integer $id
+	 * @return view
+	 */
+	public function actionSetup($id)
+	{
+		$event = $this->findModel($id);
+		$teams = $event->getTeams($id);
+		/* calculate number of entrants for this event */
+		$numEntrants = $event->getEntrants()->count();
+		$event->setupEvent($teams, $numEntrants);
+		return $this->actionView($id);
+	}
+	
 	/**
 	 * Render the debug view with a variable name and value
 	 * @param integer $id Event ID

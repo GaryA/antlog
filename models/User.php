@@ -22,6 +22,7 @@ use app\models\Robot;
  * @property integer $updated_at
  * @property string $password write-only password
  * @property integer $user_group
+ * @property string $team_name
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -82,7 +83,7 @@ class User extends ActiveRecord implements IdentityInterface
     	}
     	foreach ($models as $model)
     	{
-    		$dropdown[$model->id] = $model->username;
+    		$dropdown[$model->id] = $model->team_name;
     	}
     	return $dropdown;
     }

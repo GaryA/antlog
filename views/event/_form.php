@@ -26,7 +26,7 @@ use app\models\Entrant;
 	}
 	else
 	{
-		echo $form->field($model, 'classId')->textInput(['value' => $model->class->name, 'disabled' => 'true']);
+		echo $form->field($model, 'classId')->dropDownList(ArrayHelper::map(RobotClass::find()->where(['id' => $model->classId])->all(), 'id', 'name'));
 	}
 	?>
 

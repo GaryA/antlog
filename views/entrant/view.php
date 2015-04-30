@@ -47,7 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
 			],
 			[
 				'label' => 'Team',
-				'value' => $model->robot->team->username,
+				'value' => $model->robot->team->team_name,
 			],
             'status',
         ],

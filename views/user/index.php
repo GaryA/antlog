@@ -22,7 +22,11 @@ $this->params['breadcrumbs'][] = $this->title;
             //'id',
             [
 				'attribute' =>'username',
-				'label' => 'Team',
+				'label' => 'User Name',
+        	],
+        	[
+        		'attribute' => 'team_name',
+        		'label' => 'Team Name'		
         	],
             [
 				'class' => 'yii\grid\ActionColumn',

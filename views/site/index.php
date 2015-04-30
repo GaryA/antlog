@@ -90,7 +90,7 @@ echo GridView::widget (
 			} 
 		],
 		[ 
-			'attribute' => 'team.username',
+			'attribute' => 'team.team_name',
 			'label' => 'Team' 
 		],
 		[ 
@@ -117,10 +117,10 @@ echo GridView::widget (
 	'dataProvider' => $teamData,
 	'columns' =>
 	[ 
-		[ 
+		[
 			'attribute' => 'username',
-			'label' => 'Team',
-			'format' => 'raw',
+			'label' => 'Username',
+			'format' => 'raw',	
 			'value' => function ($model, $index, $dataColumn)
 			{
 				return Html::a ( $model->username,
@@ -129,6 +129,10 @@ echo GridView::widget (
 						'id' => $model->id 
 					] );
 			}
+		],
+		[ 
+			'attribute' => 'team_name',
+			'label' => 'Team',
 		]
 	]
 ] );

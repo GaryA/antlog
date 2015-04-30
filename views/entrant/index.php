@@ -49,7 +49,7 @@ $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 				},
 			],
 			[
-				'attribute' => 'robot.team.username',
+				'attribute' => 'robot.team.team_name',
 				'label' => 'Team',
 				'filter' => User::teamDropdown(),
 				'value' => function($model, $index, $dataColumn) {
