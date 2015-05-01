@@ -1,5 +1,4 @@
 <?php
-
 namespace app\models;
 
 use Yii;
@@ -12,6 +11,7 @@ use app\models\Fights;
  *
  * @property string $id
  * @property string $name
+ * @property integer $eventDate
  * @property string $state
  * @property integer $classId
  * @property integer $offset
@@ -20,35 +20,65 @@ use app\models\Fights;
  * @property RobotClass $class
  */
 class Event extends \yii\db\ActiveRecord
-{ 
-	
-   /**
-     * @inheritdoc
-     */
-    public static function tableName()
-    {
-        return '{{%event}}';
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function rules()
-    {
-        return
-		[
-            [['name', 'classId'], 'required'],
-            [['classId'], 'integer'],
-            [['state'], 'string'],
-			['state', 'default', 'value' => 'Registration'],
-			['state', 'validateState'],
-            [['name'], 'string', 'max' => 20]
-        ];
-    }
+{
 
 	/**
-	  * function to generate an array to populate a dropdown list of all the events in the table
-	  */
+	 * @inheritdoc
+	 */
+	public static function tableName()
+	{
+		return '{{%event}}';
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function rules()
+	{
+		return [
+			[
+				[
+					'name',
+					'classId',
+					'eventDate'
+				],
+				'required'
+			],
+			[
+				[
+					'classId',
+					'eventDate'
+				],
+				'integer'
+			],
+			[
+				[
+					'state'
+				],
+				'string'
+			],
+			[
+				'state',
+				'default',
+				'value' => 'Registration'
+			],
+			[
+				'state',
+				'validateState'
+			],
+			[
+				[
+					'name'
+				],
+				'string',
+				'max' => 20
+			]
+		];
+	}
+
+	/**
+	 * function to generate an array to populate a dropdown list of all the events in the table
+	 */
 	public static function dropdown()
 	{
 		$models = static::find()->all();
@@ -61,9 +91,10 @@ class Event extends \yii\db\ActiveRecord
 
 	/**
 	 * function to set up event and generate corresponding fights
-	 * @param integer $id
-	 * @param array $teams
-	 * @param integer $numEntrants
+	 * 
+	 * @param integer $id        	
+	 * @param array $teams        	
+	 * @param integer $numEntrants        	
 	 */
 	public function setupEvent($id, $teams, $numEntrants)
 	{
@@ -74,14 +105,15 @@ class Event extends \yii\db\ActiveRecord
 		{
 			$numGroups = 2;
 		}
-		else if ($maxTeamSize <= 4 && $numEntrants < 64)
-		{
-			$numGroups = 4;
-		}
-		else
-		{
-			$numGroups = 8;
-		}
+		else 
+			if ($maxTeamSize <= 4 && $numEntrants < 64)
+			{
+				$numGroups = 4;
+			}
+			else
+			{
+				$numGroups = 8;
+			}
 		/* assign robots to groups */
 		$retVal = $this->assignGroups($teams, $numEntrants, $numGroups);
 		if ($retVal[0] == 1)
@@ -92,19 +124,19 @@ class Event extends \yii\db\ActiveRecord
 		else
 		{
 			$entrants = $retVal[1];
-	
+			
 			/* create an array of robots per group */
 			$groupList = array();
 			foreach ($entrants as $robot => $group)
 			{
 				$groupList[$group][] = $robot;
 			}
-	
+			
 			/* add a new set of fights to the fights table */
 			$fights->insertDoubleElimination($id);
-	
+			
 			$fights->setupEvent($id, $groupList);
-	
+			
 			/* ready to start! */
 			$setupOK = $this->stateRunning($id);
 			if ($setupOK == false)
@@ -114,14 +146,14 @@ class Event extends \yii\db\ActiveRecord
 		}
 		return;
 	}
-	
+
 	/**
 	 * function to assign robots to groups
 	 * return array mapping each robot to its group
 	 *
-	 * @param array $teams
-	 * @param integer $numGroups
-	 * @param integer $numEntrants
+	 * @param array $teams        	
+	 * @param integer $numGroups        	
+	 * @param integer $numEntrants        	
 	 * @return array $entrants
 	 */
 	private function assignGroups($teams, $numEntrants, $numGroups)
@@ -129,11 +161,13 @@ class Event extends \yii\db\ActiveRecord
 		$groupSize = intval($numEntrants / $numGroups);
 		$remainder = $numEntrants % $numGroups;
 		/* create group arrays */
-		for ($i = 1; $i <= $numGroups; $i++)
+		for ($i = 1; $i <= $numGroups; $i ++)
 		{
-			$groupArray[$i - 1] = ['size' => $groupSize + (($i <= $remainder) ? 1 : 0),
-									'free' => $groupSize + (($i <= $remainder) ? 1 : 0),
-									'robots' => array()];
+			$groupArray[$i - 1] = [
+				'size' => $groupSize + (($i <= $remainder) ? 1 : 0),
+				'free' => $groupSize + (($i <= $remainder) ? 1 : 0),
+				'robots' => array()
+			];
 		}
 		/* assign robots to groups - this can fail to find a solution! */
 		$teamGroups = array();
@@ -143,7 +177,7 @@ class Event extends \yii\db\ActiveRecord
 		{
 			/* calculate array of groups with free slots */
 			unset($temp);
-			for ($i = 0; $i < $numGroups; $i++)
+			for ($i = 0; $i < $numGroups; $i ++)
 			{
 				if ($groupArray[$i]['free'] > 0)
 				{
@@ -155,7 +189,10 @@ class Event extends \yii\db\ActiveRecord
 			if (count($robots) > count($freeGroups))
 			{
 				/* can't fit team in remaining groups */
-				return [1, NULL];
+				return [
+					1,
+					NULL
+				];
 			}
 			$i = 0;
 			foreach ($robots as $robot)
@@ -164,10 +201,13 @@ class Event extends \yii\db\ActiveRecord
 				$groupNum = $freeGroups[$i];
 				$entrants[$robot] = $groupNum;
 				$groupArray[$groupNum]['free'] -= 1;
-				$i++;
+				$i ++;
 			}
 		}
-		return [0, $entrants];
+		return [
+			0,
+			$entrants
+		];
 	}
 
 	/**
@@ -177,9 +217,11 @@ class Event extends \yii\db\ActiveRecord
 	{
 		$event = static::findOne($id);
 		$event->state = 'Setup';
-		return($event->save(false, ['state']));
+		return ($event->save(false, [
+			'state'
+		]));
 	}
-	
+
 	/**
 	 * function to set event state to "Running"
 	 */
@@ -187,7 +229,9 @@ class Event extends \yii\db\ActiveRecord
 	{
 		$event = static::findOne($id);
 		$event->state = 'Running';
-		return($event->save(false, ['state']));
+		return ($event->save(false, [
+			'state'
+		]));
 	}
 
 	/**
@@ -197,70 +241,93 @@ class Event extends \yii\db\ActiveRecord
 	{
 		$teams = array();
 		$event = static::findOne($id);
-		$entrants = $event -> entrants;
-		foreach($entrants as $entrant)
+		$entrants = $event->entrants;
+		foreach ($entrants as $entrant)
 		{
 			$teams[$entrant->robot->teamId][] = $entrant->id;
 		}
-		uasort($teams, ['self', 'compareSize']);
+		uasort($teams, [
+			'self',
+			'compareSize'
+		]);
 		return $teams;
 	}
 
 	/**
 	 * Return true if event has no entrants (so may be deleted)
-	 * @param integer $id
+	 * 
+	 * @param integer $id        	
 	 * @return boolean
 	 */
 	public function isOKToDelete($id)
 	{
-		return Entrant::find()->where(['eventId' => $id])->count() > 0 ? false : true;
+		return Entrant::find()->where([
+			'eventId' => $id
+		])->count() > 0 ? false : true;
 	}
 
 	/**
-	  * function to ensure only one event per weight class can be open at a time
-	  */
+	 * function to ensure only one event per weight class can be open at a time
+	 */
 	public function validateState($attribute, $params)
 	{
-		if (Event::find()
-			->andWhere(['classId' => $this->classId])
-			->andWhere(['not', ['state' => 'Complete']])
-			->andWhere(['not', ['id' => $this->id]])
+		if (Event::find()->andWhere([
+			'classId' => $this->classId
+		])
+			->andWhere([
+			'not',
+			[
+				'state' => 'Complete'
+			]
+		])
+			->andWhere([
+			'not',
+			[
+				'id' => $this->id
+			]
+		])
 			->count() > 0)
 		{
 			$this->addError($attribute, 'There can be only one open event per weight class');
 		}
 	}
-	
-    /**
-     * @inheritdoc
-     */
-    public function attributeLabels()
-    {
-        return
-		[
-            'id' => 'ID',
-            'name' => 'Event',
-            'state' => 'State',
-            'classId' => 'Class ID',
-        ];
-    }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getEntrants()
-    {
-        return $this->hasMany(Entrant::className(), ['eventId' => 'id']);
-    }
+	/**
+	 * @inheritdoc
+	 */
+	public function attributeLabels()
+	{
+		return [
+			'id' => 'ID',
+			'name' => 'Event',
+			'eventDate' => 'Date',
+			'state' => 'State',
+			'classId' => 'Class ID'
+		];
+	}
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getClass()
-    {
-        return $this->hasOne(RobotClass::className(), ['id' => 'classId']);
-    }
-	
+	/**
+	 *
+	 * @return \yii\db\ActiveQuery
+	 */
+	public function getEntrants()
+	{
+		return $this->hasMany(Entrant::className(), [
+			'eventId' => 'id'
+		]);
+	}
+
+	/**
+	 *
+	 * @return \yii\db\ActiveQuery
+	 */
+	public function getClass()
+	{
+		return $this->hasOne(RobotClass::className(), [
+			'id' => 'classId'
+		]);
+	}
+
 	/**
 	 * function to sort size of arrays in descending order
 	 */
@@ -274,7 +341,7 @@ class Event extends \yii\db\ActiveRecord
 		}
 		else
 		{
-			return ($countA > $countB) ? -1 : 1; 
+			return ($countA > $countB) ? - 1 : 1;
 		}
 	}
 }

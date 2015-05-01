@@ -1,5 +1,4 @@
 <?php
-
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use yii\widgets\ActiveForm;
@@ -15,23 +14,28 @@ use app\models\Entrant;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'name')->textInput(['maxlength' => 20]) ?>
+    <?= $form->field($model, 'name')->textInput(['maxlength' => 20])?>
 
-	<?= $form->field($model, 'state')->textInput(['value' => $model->isNewRecord ? 'Registration' : $model->state, 'disabled' => 'true']) ?>
+    <?= $form->field($model, 'eventDate')->textInput(['maxlength' => 20])?>
+
+	<?= $form->field($model, 'state')->textInput(['value' => $model->isNewRecord ? 'Registration' : $model->state, 'disabled' => 'true'])?>
 
     <?php
-	if ($model->isOKToDelete($model->id))
-	{
-		echo $form->field($model, 'classId')->dropDownList(ArrayHelper::map(RobotClass::find()->all(), 'id', 'name'));
-	}
-	else
-	{
-		echo $form->field($model, 'classId')->dropDownList(ArrayHelper::map(RobotClass::find()->where(['id' => $model->classId])->all(), 'id', 'name'));
-	}
-	?>
+				if ($model->isOKToDelete($model->id))
+				{
+					echo $form->field($model, 'classId')->dropDownList(ArrayHelper::map(RobotClass::find()->all(), 'id', 'name'));
+				}
+				else
+				{
+					echo $form->field($model, 'classId')->dropDownList(ArrayHelper::map(RobotClass::find()->where([
+						'id' => $model->classId
+					])
+						->all(), 'id', 'name'));
+				}
+				?>
 
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary'])?>
     </div>
 
     <?php ActiveForm::end(); ?>
