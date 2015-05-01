@@ -34,11 +34,35 @@ $this->params['breadcrumbs'][] = $this->title;
 				[
 					'delete' => function ($url, $model, $key)
 					{
-						return ((User::isCurrentUser($model->id) || User::isUserAdmin()) && $model->isTeamEmpty($model->id)) ? Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, ['title' => 'Delete']) : '';
+						if ((User::isCurrentUser($model->id) || User::isUserAdmin()) && $model->isTeamEmpty($model->id))
+						{
+							return  Html::a('<span class="glyphicon glyphicon-trash"></span>', $url,
+							[
+                    			'title' => Yii::t('yii', 'Delete'),
+                    			'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                    			'data-method' => 'post',
+                    			'data-pjax' => '0',
+							]);
+						}
+						else
+						{
+							return '';
+						}
 					},
 					'update' => function ($url, $model, $key)
 					{
-						return (User::isCurrentUser($model->id) || User::isUserAdmin()) ? Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, ['title' => 'Update']) : '';
+						if (User::isCurrentUser($model->id) || User::isUserAdmin())
+						{
+							return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url,
+							[
+                				'title' => Yii::t('yii', 'Update'),
+                				'data-pjax' => '0',
+							]);
+						}
+						else
+						{
+							return '';
+						}
 					},
 				],
 			],

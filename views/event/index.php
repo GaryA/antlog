@@ -41,17 +41,41 @@ $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
             [
 				'class' => 'yii\grid\ActionColumn',
-				'buttons' =>
-				[
-					'delete' => function ($url, $model, $key)
-					{
-						return ((User::isUserAdmin()) && $model->isOKToDelete($model->id)) ? Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, ['title' => 'Delete']) : '';
-					},
-					'update' => function ($url, $model, $key)
-					{
-						return ((User::isUserAdmin()) && $model->state == 'Registration') ? Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, ['title' => 'Update']) : '';
-					},
-				],
+            	'buttons' =>
+            	[
+            		'delete' => function ($url, $model, $key)
+            		{
+                		if (User::isUserAdmin() && $model->isOKToDelete($model->id))
+                		{
+                			return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url,
+                			[
+                    			'title' => Yii::t('yii', 'Delete'),
+                    			'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                    			'data-method' => 'post',
+                    			'data-pjax' => '0',
+                			]);
+                		}
+                		else
+                		{
+                			return '';
+                		}
+                	},
+                	'update' => function ($url, $model, $key)
+                	{
+                		if ((User::isUserAdmin()) && $model->state == 'Registration')
+                		{
+                			return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url,
+                			[
+                				'title' => Yii::t('yii', 'Update'),
+                				'data-pjax' => '0',
+                			]);
+                		}
+                		else
+                		{
+                			return '';
+                		}
+                	}
+            	],
 			],
         ],
     ]); ?>

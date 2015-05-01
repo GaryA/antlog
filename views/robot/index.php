@@ -65,11 +65,35 @@ $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 				[
 					'delete' => function ($url, $model, $key)
 					{
-						return (($model->isUser($model) || User::isUserAdmin()) && $model->isOKToDelete($model->id)) ? Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, ['title' => 'Delete']) : '';
+						if (($model->isUser($model) || User::isUserAdmin()) && $model->isOKToDelete($model->id))
+						{
+							return  Html::a('<span class="glyphicon glyphicon-trash"></span>', $url,
+							[
+                    			'title' => Yii::t('yii', 'Delete'),
+                    			'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                    			'data-method' => 'post',
+                    			'data-pjax' => '0',
+							]);
+						}
+						else
+						{
+							return '';
+						}
 					},
 					'update' => function ($url, $model, $key)
 					{
-						return (($model->isUser($model) || User::isUserAdmin()) && $model->isOKToEdit($model->id)) ? Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, ['title' => 'Update']) : '';
+						if (($model->isUser($model) || User::isUserAdmin()) && $model->isOKToEdit($model->id))
+						{
+							return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url,
+							[
+                				'title' => Yii::t('yii', 'Update'),
+                				'data-pjax' => '0',
+							]);
+						}
+						else
+						{
+							return '';
+						}
 					},
 				],
 			],

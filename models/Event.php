@@ -5,6 +5,7 @@ namespace app\models;
 use Yii;
 use app\models\Robot;
 use app\models\Entrant;
+use app\models\Fights;
 
 /**
  * This is the model class for table "{{%event}}".
@@ -60,11 +61,13 @@ class Event extends \yii\db\ActiveRecord
 
 	/**
 	 * function to set up event and generate corresponding fights
+	 * @param integer $id
 	 * @param array $teams
 	 * @param integer $numEntrants
 	 */
-	public function setupEvent($teams, $numEntrants)
+	public function setupEvent($id, $teams, $numEntrants)
 	{
+		$fights = new Fights();
 		/* calculate required size of each group */
 		$maxTeamSize = count(reset($teams));
 		if ($maxTeamSize <= 2 && $numEntrants < 32)
@@ -170,7 +173,7 @@ class Event extends \yii\db\ActiveRecord
 	/**
 	 * function to set event state to "Setup"
 	 */
-	private function stateSetup($id)
+	public function stateSetup($id)
 	{
 		$event = static::findOne($id);
 		$event->state = 'Setup';

@@ -17,7 +17,7 @@ use app\models\Entrant;
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => 20]) ?>
 
-	<?= $form->field($model, 'state')->textInput(['value' => $model->state, 'disabled' => 'true']) ?>
+	<?= $form->field($model, 'state')->textInput(['value' => $model->isNewRecord ? 'Registration' : $model->state, 'disabled' => 'true']) ?>
 
     <?php
 	if ($model->isOKToDelete($model->id))

@@ -113,7 +113,6 @@ class EventController extends Controller
 	 */
 	public function actionDraw($id)
 	{
-		$fights = new Fights();
 
 		/* get the teams array */
 		$event = $this->findModel($id);
@@ -134,7 +133,7 @@ class EventController extends Controller
 			}
 			else
 			{
-				$event->setupEvent($teams, $numEntrants);
+				$event->setupEvent($id, $teams, $numEntrants);
 			}
 		}
 		return $this->actionView($id);
@@ -216,29 +215,14 @@ class EventController extends Controller
     {
         $model = new Event();
 
-        if ($model->load(Yii::$app->request->post()))
+        if ($model->load(Yii::$app->request->post()) && $model->save())
 		{
-			if ($model->save())
-			{
-				return $this->redirect(['view', 'id' => $model->id]);
-			}
-			else
-			{
-				return $this->render('debug',
-				[
-					'model' => $model,
-					'debugName' => '$model->save() failed. Post data:',
-					'debugValue' => Yii::$app->request->post(),
-				]);
-			}
+			return $this->redirect(['view', 'id' => $model->id]);
 		}
-		else
-		{
-			return $this->render('create',
-			[
-				'model' => $model,
-			]);
-		}
+		return $this->render('create',
+		[
+			'model' => $model,
+		]);
     }
 
     /**
