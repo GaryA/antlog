@@ -32,32 +32,54 @@ $this->title = 'AntLog 3.0';
 $eventData->pagination =
 [
 	'defaultPageSize' => 5,
-	'pageParam' => 'event-page' 
+	'pageParam' => 'event-page'
 ];
 echo GridView::widget (
 [
 	'summary' => '',
 	'dataProvider' => $eventData,
-	'columns' =>
+	'rowOptions' => function ($model, $index, $widget, $grid)
+	{
+		if ($model->state == 'Complete')
+		{
+			return
+			[
+				//'style'=>'color: #404040; background-color: #c0c0c0;'
+				'class' => 'info'
+			];
+		}
+		else
+		{
+			return [];
+		}
+	},
+    'columns' =>
 	[
-		[ 
+		[
 			'attribute' => 'name',
 			'format' => 'raw',
 			'value' => function ($model, $index, $dataColumn)
 			{
 				return Html::a ( $model->name,
-					[ 
+					[
 						'event/view',
-						'id' => $model->id 
+						'id' => $model->id
 					] );
-			} 
+			}
 		],
-		'state',
-		[ 
+		[
+			'attribute' => 'eventDate',
+    		'format' =>
+    		[
+    			'date',
+    			'php:j M Y'
+    		],
+		],
+		[
 			'attribute' => 'class.name',
-			'label' => 'Class' 
-		] 
-	] 
+			'label' => 'Class'
+		],
+	]
 ] );
 ?>
 			</div>
@@ -67,37 +89,37 @@ echo GridView::widget (
 				</h2>
 <?php
 $robotData->pagination =
-[ 
+[
 	'defaultPageSize' => 5,
-	'pageParam' => 'robot-page' 
+	'pageParam' => 'robot-page'
 ];
 echo GridView::widget (
 [
 	'summary' => '',
 	'dataProvider' => $robotData,
 	'columns' =>
-	[ 
-		[ 
+	[
+		[
 			'attribute' => 'name',
 			'format' => 'raw',
 			'value' => function ($model, $index, $dataColumn)
 			{
 				return Html::a ( $model->name,
-					[ 
+					[
 						'robot/view',
-						'id' => $model->id 
+						'id' => $model->id
 					] );
-			} 
+			}
 		],
-		[ 
+		[
 			'attribute' => 'team.team_name',
-			'label' => 'Team' 
+			'label' => 'Team'
 		],
-		[ 
+		[
 			'attribute' => 'class.name',
-			'label' => 'Class' 
-		] 
-	] 
+			'label' => 'Class'
+		]
+	]
 ] );
 ?>
             </div>
@@ -107,30 +129,30 @@ echo GridView::widget (
 				</h2>
 <?php
 $teamData->pagination =
-[ 
+[
 	'defaultPageSize' => 5,
-	'pageParam' => 'team-page' 
+	'pageParam' => 'team-page'
 ];
 echo GridView::widget (
-[ 
+[
 	'summary' => '',
 	'dataProvider' => $teamData,
 	'columns' =>
-	[ 
+	[
 		[
 			'attribute' => 'username',
 			'label' => 'Username',
-			'format' => 'raw',	
+			'format' => 'raw',
 			'value' => function ($model, $index, $dataColumn)
 			{
 				return Html::a ( $model->username,
-					[ 
+					[
 						'user/view',
-						'id' => $model->id 
+						'id' => $model->id
 					] );
 			}
 		],
-		[ 
+		[
 			'attribute' => 'team_name',
 			'label' => 'Team',
 		]

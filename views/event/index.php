@@ -27,6 +27,21 @@ $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
     [
     	'dataProvider' => $dataProvider,
     	'filterModel' => $searchModel,
+		'rowOptions' => function ($model, $index, $widget, $grid)
+		{
+			if ($model->state == 'Complete')
+			{
+				return
+				[
+					//'style'=>'color: #404040; background-color: #c0c0c0;'
+					'class' => 'info'
+				];
+			}
+			else
+			{
+				return [];
+			}
+		},
     	'columns' =>
     	[
     		'name',

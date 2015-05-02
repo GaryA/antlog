@@ -16,7 +16,7 @@ class EventSearch extends Event
 	{
 		return array_merge(parent::attributes(), ['class.name']);
 	}
-		
+
     /**
      * @inheritdoc
      */
@@ -24,7 +24,7 @@ class EventSearch extends Event
     {
         return [
             [['id', 'classId'], 'integer'],
-            [['name', 'class.name'], 'safe'],
+            [['name', 'class.name', 'eventDate'], 'safe'],
         ];
     }
 
@@ -47,9 +47,10 @@ class EventSearch extends Event
     public function search($params)
     {
         $query = Event::find();
-		
+
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+        	'sort'=> ['defaultOrder' => ['eventDate'=>SORT_DESC]]
         ]);
 
 		$dataProvider->sort->attributes['class.name'] = [

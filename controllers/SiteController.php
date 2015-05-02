@@ -22,7 +22,7 @@ use yii\filters\AccessControl;
 
 class SiteController extends Controller
 {
-	
+
 	public function behaviors()
     {
         return
@@ -82,12 +82,13 @@ class SiteController extends Controller
 		[
             'query' => User::find()->where(['user_group' => User::ROLE_TEAM]),
         ]);
-    	
+
     	$eventData = new ActiveDataProvider(
 		[
             'query' => Event::find(),
+			'sort'=> ['defaultOrder' => ['eventDate'=>SORT_DESC]]
         ]);
-    	
+
     	$robotData = new ActiveDataProvider(
 		[
             'query' => Robot::find(),

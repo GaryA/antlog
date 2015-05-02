@@ -80,14 +80,14 @@ class EventController extends Controller
 	public function actionResult($id)
 	{
         $model = $this->findModel($id);
-		
+
 		return $this->render('result',
 			[
 				'model' => $model,
 				'teams' => $model->getTeams($id),
 			]);
 	}
-	
+
 	/**
 	 * Start an event. Run the first fights and all the initial byes
 	 * @param integer $id the ID of the event
@@ -105,7 +105,7 @@ class EventController extends Controller
 		$message = "Ran $count byes";
 		return $this->actionDebug($id, 'Message', $message);
 	}
-	
+
 	/**
 	 * Start an event. Build the fights table and do the draw
 	 * @param integer $id the ID of the event
@@ -138,7 +138,7 @@ class EventController extends Controller
 		}
 		return $this->actionView($id);
 	}
-	
+
 	/**
 	 * Set up an event (only needed if the first attempt at a draw fails)
 	 * @param integer $id
@@ -153,7 +153,7 @@ class EventController extends Controller
 		$event->setupEvent($teams, $numEntrants);
 		return $this->actionView($id);
 	}
-	
+
 	/**
 	 * Render the debug view with a variable name and value
 	 * @param integer $id Event ID
@@ -164,7 +164,7 @@ class EventController extends Controller
     public function actionDebug($id, $debugName, $debugValue)
     {
         $model = $this->findModel($id);
-		
+
 		return $this->render('debug',
 		[
             'model' => $model,
@@ -172,7 +172,7 @@ class EventController extends Controller
 			'debugValue' => $debugValue,
         ]);
     }
-	
+
     /**
      * Lists all Event models.
      * @return mixed
@@ -182,6 +182,7 @@ class EventController extends Controller
         $dataProvider = new ActiveDataProvider(
 		[
             'query' => Event::find(),
+			'sort'=> ['defaultOrder' => ['eventDate'=>SORT_DESC]]
         ]);
 
         return $this->render('index',
@@ -198,7 +199,7 @@ class EventController extends Controller
     public function actionView($id)
     {
         $model = $this->findModel($id);
-		
+
 		return $this->render('view',
 		[
             'model' => $model,
