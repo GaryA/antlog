@@ -49,7 +49,7 @@ class FightsController extends Controller
     public function actionDebug($id, $debugName, $debugValue)
     {
         $model = $this->findModel($id);
-		
+
 		return $this->render('debug', [
             'model' => $model,
 			'debugName' => $debugName,
@@ -101,7 +101,7 @@ class FightsController extends Controller
             ]);
         }
     }
-	
+
     /**
      * Updates an existing Fights model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -131,9 +131,9 @@ class FightsController extends Controller
 		$model->winnerId = $winner;
 		$model->loserId = $loser;
 		$model->save(false, ['winnerId', 'loserId']);
-		
+
 		$finished = true;
-		if ($model->winnerNextFight > 0) 
+		if ($model->winnerNextFight > 0)
 		{
 			$finished = false;
 			$model->updateNext($model->id, $model->winnerNextFight, $model->winnerId);
@@ -148,9 +148,16 @@ class FightsController extends Controller
 		{
 			$entrant = Entrant::findOne($loser);
 			$entrant->status -= 1;
+			if ($entrant->status == 0)
+			{
+				$entrant->finalFightId = $model->id - Event::findOne($model->eventId)->offset;
+			}
 			$entrant->save();
 			if ($finished)
 			{
+				$entrant = Entrant::findOne($winner);
+				$entrant->finalFightId = 255;
+				$entrant->save();
 				/* update event state */
 				$event = Event::findOne($model->eventId);
 				$event->state = 'Complete';

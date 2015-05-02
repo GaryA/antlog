@@ -29,24 +29,24 @@ use Yii;
 class Fights extends \yii\db\ActiveRecord
 {
 	protected $_startMap = [
-		[1, 30, 59, 88, 117, 146, 175, 204, 'robot1Id'],
-		[2, 31, 60, 89, 118, 147, 176, 205, 'robot1Id'],
-		[3, 32, 61, 90, 119, 148, 177, 206, 'robot1Id'],
-		[4, 33, 62, 91, 120, 149, 178, 207, 'robot1Id'],
-		[5, 34, 63, 92, 121, 150, 179, 208, 'robot1Id'],
-		[6, 35, 64, 93, 122, 151, 180, 209, 'robot1Id'],
-		[7, 36, 65, 94, 123, 152, 181, 210, 'robot1Id'],
-		[8, 37, 66, 95, 124, 153, 182, 211, 'robot1Id'],
-		[1, 30, 59, 88, 117, 146, 175, 204, 'robot2Id'],
-		[2, 31, 60, 89, 118, 147, 176, 205, 'robot2Id'],
-		[3, 32, 61, 90, 119, 148, 177, 206, 'robot2Id'],
-		[4, 33, 62, 91, 120, 149, 178, 207, 'robot2Id'],
-		[5, 34, 63, 92, 121, 150, 179, 208, 'robot2Id'],
-		[6, 35, 64, 93, 122, 151, 180, 209, 'robot2Id'],
-		[7, 36, 65, 94, 123, 152, 181, 210, 'robot2Id'],
-		[8, 37, 66, 95, 124, 153, 182, 211, 'robot2Id'],		
+		[1, 9, 17, 25, 33, 41, 49, 57, 'robot1Id'],
+		[2, 10, 18, 26, 34, 42, 50, 58, 'robot1Id'],
+		[3, 11, 19, 27, 35, 43, 51, 59, 'robot1Id'],
+		[4, 12, 20, 28, 36, 44, 52, 60, 'robot1Id'],
+		[5, 13, 21, 29, 37, 45, 53, 61, 'robot1Id'],
+		[6, 14, 22, 30, 38, 46, 54, 62, 'robot1Id'],
+		[7, 15, 23, 31, 39, 47, 55, 63, 'robot1Id'],
+		[8, 16, 24, 32, 40, 48, 56, 64, 'robot1Id'],
+		[1, 9, 17, 25, 33, 41, 49, 57, 'robot2Id'],
+		[2, 10, 18, 26, 34, 42, 50, 58, 'robot2Id'],
+		[3, 11, 19, 27, 35, 43, 51, 59, 'robot2Id'],
+		[4, 12, 20, 28, 36, 44, 52, 60, 'robot2Id'],
+		[5, 13, 21, 29, 37, 45, 53, 61, 'robot2Id'],
+		[6, 14, 22, 30, 38, 46, 54, 62, 'robot2Id'],
+		[7, 15, 23, 31, 39, 47, 55, 63, 'robot2Id'],
+		[8, 16, 24, 32, 40, 48, 56, 64, 'robot2Id'],
 	];
-	
+
     /**
      * @inheritdoc
      */
@@ -88,7 +88,7 @@ class Fights extends \yii\db\ActiveRecord
             'sequence' => 'Sequence',
         ];
     }
-	
+
 	/**
 	 * function to run byes
 	 * @param integer $id
@@ -143,7 +143,7 @@ class Fights extends \yii\db\ActiveRecord
 		if ($nextFight != 0)
 		{
 			$nextRecord = $this->findOne($id + $nextFight);
-			
+
 			if ($nextRecord != NULL)
 			{
 				if ($nextRecord->robot1Id == -1)
@@ -167,11 +167,12 @@ class Fights extends \yii\db\ActiveRecord
 		}
 		return $status;
 	}
-	
+
 	/**
 	 * function to put robot ids into fights table at start of event
 	 * @param integer $id
 	 * @param array $groupList
+	 * @return integer $offset offset into fights table for start of current event
 	 */
 	public function setupEvent($id, $groupList)
 	{
@@ -190,11 +191,12 @@ class Fights extends \yii\db\ActiveRecord
 			{
 				$fightId = $this->_startMap[$index][$groupNum] + $offset;
 				$column = $this->_startMap[$index][8];
-				Yii::$app->db->createCommand("UPDATE {{%fights}} 
+				Yii::$app->db->createCommand("UPDATE {{%fights}}
 				   SET `$column` = $robot
 				   WHERE `id` = $fightId")
 				   ->execute();
 			}
+			return $offset;
 		}
 	}
 	/**
@@ -206,12 +208,12 @@ class Fights extends \yii\db\ActiveRecord
 		Yii::$app->db->createCommand('INSERT INTO {{%fights}} (`fightGroup`,`fightRound`,`fightBracket`,
 			`fightNo`,`robot1Id`,`robot2Id`,`winnerId`,`loserId`,`winnerNextFight`,`loserNextFight`)
 			SELECT `fightGroup`,`fightRound`,`fightBracket`,`fightNo`,`robot1Id`,`robot2Id`,`winnerId`,
-			`loserId`,`winnerNextFight`,`loserNextFight` 
-			FROM {{%double_elim}} 
+			`loserId`,`winnerNextFight`,`loserNextFight`
+			FROM {{%double_elim}}
 			WHERE `winnerId` = -1 ORDER BY `id`')
 			->execute();
-		Yii::$app->db->createCommand('UPDATE {{%fights}} 
-			SET `eventId` = ' . $eventId . 
+		Yii::$app->db->createCommand('UPDATE {{%fights}}
+			SET `eventId` = ' . $eventId .
 			' WHERE `winnerId` = -1')
 			->execute();
 	}

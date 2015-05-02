@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="event-view">
 
-	<h1><?= Html::encode($this->title) . ' (' . date('Y-m-d', $model->eventDate) . ') Results' ?></h1>
+	<h1><?= Html::encode($this->title) . ' (' . $model->eventDate . ') Results' ?></h1>
 
     <?php
     echo DetailView::widget(

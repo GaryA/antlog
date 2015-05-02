@@ -106,10 +106,10 @@ class Event extends \yii\db\ActiveRecord
 			/* add a new set of fights to the fights table */
 			$fights->insertDoubleElimination($id);
 
-			$fights->setupEvent($id, $groupList);
+			$offset = $fights->setupEvent($id, $groupList);
 
 			/* ready to start! */
-			$setupOK = $this->stateRunning($id);
+			$setupOK = $this->stateRunning($id, $offset);
 			if ($setupOK == false)
 			{
 				Yii::$app->getSession()->setFlash('error', 'Failed to save Running state to event model.');
@@ -196,12 +196,13 @@ class Event extends \yii\db\ActiveRecord
 	/**
 	 * function to set event state to "Running"
 	 */
-	private function stateRunning($id)
+	private function stateRunning($id, $offset)
 	{
 		$event = static::findOne($id);
 		$event->state = 'Running';
+		$event->offset = $offset;
 		return ($event->save(false, [
-			'state'
+			'state', 'offset'
 		]));
 	}
 

@@ -45,6 +45,7 @@ class FightsSearch extends Fights
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+        	'sort'=> ['defaultOrder' => ['fightRound'=>SORT_ASC]],
         ]);
 
         $this->load($params);
@@ -56,18 +57,19 @@ class FightsSearch extends Fights
         }
 
         $query->andFilterWhere([
-            'id' => $this->id,
-            'fightGroup' => $this->fightGroup,
-            'fightRound' => $this->fightRound,
-            'fightNo' => $this->fightNo,
+//            'id' => $this->id,
+//            'fightGroup' => $this->fightGroup,
+//            'fightRound' => $this->fightRound,
+//            'fightNo' => $this->fightNo,
             'robot1Id' => $this->robot1Id,
             'robot2Id' => $this->robot2Id,
             'winnerId' => -1,
             'loserId' => -1,
-            'sequence' => $this->sequence,
+//            'sequence' => $this->sequence,
         ]);
 
-        $query->andFilterWhere(['like', 'fightBracket', $this->fightBracket]);
+        $query->andFilterWhere(['eventId' => $this->eventId]);
+//        $query->andFilterWhere(['like', 'fightBracket', $this->fightBracket]);
         $query->andFilterWhere(['>', 'robot1Id', 0]);
         $query->andFilterWhere(['>', 'robot2Id', 0]);
 
