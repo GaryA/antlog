@@ -136,12 +136,12 @@ CREATE TABLE IF NOT EXISTS `aws_entrant` (
 CREATE TABLE IF NOT EXISTS `aws_event` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
-  `eventDate` int(11) NOT NULL,
+  `eventDate` date NOT NULL,
   `state` enum('Complete','Running','Setup','Registration') NOT NULL DEFAULT 'Registration',
   `classId` int(11) NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (classId) REFERENCES aws_robot_class(id)',
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
 
 -- --------------------------------------------------------
 

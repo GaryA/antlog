@@ -35,44 +35,15 @@ class Event extends \yii\db\ActiveRecord
 	 */
 	public function rules()
 	{
-		return [
-			[
-				[
-					'name',
-					'classId',
-					'eventDate'
-				],
-				'required'
-			],
-			[
-				[
-					'classId',
-					'eventDate'
-				],
-				'integer'
-			],
-			[
-				[
-					'state'
-				],
-				'string'
-			],
-			[
-				'state',
-				'default',
-				'value' => 'Registration'
-			],
-			[
-				'state',
-				'validateState'
-			],
-			[
-				[
-					'name'
-				],
-				'string',
-				'max' => 20
-			]
+		return
+		[
+			[['name', 'classId', 'eventDate'], 'required'],
+			[['classId'], 'integer'],
+			[['eventDate'], 'date', 'format' => 'yyyy-mm-dd'],
+			[['state'], 'string'],
+			['state', 'default', 'value' => 'Registration'],
+			['state', 'validateState'],
+			[['name'], 'string', 'max' => 20]
 		];
 	}
 
@@ -91,10 +62,10 @@ class Event extends \yii\db\ActiveRecord
 
 	/**
 	 * function to set up event and generate corresponding fights
-	 * 
-	 * @param integer $id        	
-	 * @param array $teams        	
-	 * @param integer $numEntrants        	
+	 *
+	 * @param integer $id
+	 * @param array $teams
+	 * @param integer $numEntrants
 	 */
 	public function setupEvent($id, $teams, $numEntrants)
 	{
@@ -105,7 +76,7 @@ class Event extends \yii\db\ActiveRecord
 		{
 			$numGroups = 2;
 		}
-		else 
+		else
 			if ($maxTeamSize <= 4 && $numEntrants < 64)
 			{
 				$numGroups = 4;
@@ -124,19 +95,19 @@ class Event extends \yii\db\ActiveRecord
 		else
 		{
 			$entrants = $retVal[1];
-			
+
 			/* create an array of robots per group */
 			$groupList = array();
 			foreach ($entrants as $robot => $group)
 			{
 				$groupList[$group][] = $robot;
 			}
-			
+
 			/* add a new set of fights to the fights table */
 			$fights->insertDoubleElimination($id);
-			
+
 			$fights->setupEvent($id, $groupList);
-			
+
 			/* ready to start! */
 			$setupOK = $this->stateRunning($id);
 			if ($setupOK == false)
@@ -151,9 +122,9 @@ class Event extends \yii\db\ActiveRecord
 	 * function to assign robots to groups
 	 * return array mapping each robot to its group
 	 *
-	 * @param array $teams        	
-	 * @param integer $numGroups        	
-	 * @param integer $numEntrants        	
+	 * @param array $teams
+	 * @param integer $numGroups
+	 * @param integer $numEntrants
 	 * @return array $entrants
 	 */
 	private function assignGroups($teams, $numEntrants, $numGroups)
@@ -172,7 +143,7 @@ class Event extends \yii\db\ActiveRecord
 		/* assign robots to groups - this can fail to find a solution! */
 		$teamGroups = array();
 		// return $this->actionDebug($id, '$groupArray', $groupArray);
-		
+
 		foreach ($teams as $team => $robots)
 		{
 			/* calculate array of groups with free slots */
@@ -255,8 +226,8 @@ class Event extends \yii\db\ActiveRecord
 
 	/**
 	 * Return true if event has no entrants (so may be deleted)
-	 * 
-	 * @param integer $id        	
+	 *
+	 * @param integer $id
 	 * @return boolean
 	 */
 	public function isOKToDelete($id)

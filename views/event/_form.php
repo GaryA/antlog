@@ -2,6 +2,7 @@
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use yii\widgets\ActiveForm;
+use kartik\widgets\DatePicker;
 use app\models\RobotClass;
 use app\models\Entrant;
 
@@ -16,7 +17,21 @@ use app\models\Entrant;
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => 20])?>
 
-    <?= $form->field($model, 'eventDate')->textInput(['maxlength' => 20])?>
+<?php
+echo $form->field($model, 'eventDate')->widget(DatePicker::classname(),
+	[
+		'options' =>
+		[
+			'placeholder' => 'Enter event date ...',
+			'value' => $model->eventDate,
+		],
+		'pluginOptions' =>
+		[
+			'autoclose'=>true,
+			'format' => 'yyyy-mm-dd',
+		]
+	]);
+?>
 
 	<?= $form->field($model, 'state')->textInput(['value' => $model->isNewRecord ? 'Registration' : $model->state, 'disabled' => 'true'])?>
 
