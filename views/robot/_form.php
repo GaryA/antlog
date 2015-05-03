@@ -24,11 +24,15 @@ use app\models\User;
 	}
 	else
 	{
-		echo $form->field($model, 'teamId')->dropDownList(User::teamDropdown(Yii::$app->user->identity->id)); 
+		echo $form->field($model, 'teamId')->dropDownList(User::teamDropdown(Yii::$app->user->identity->id));
 	}
 	?>
 
     <?= $form->field($model, 'classId')->dropDownList(ArrayHelper::map(RobotClass::find()->all(), 'id', 'name')) ?>
+
+    <?= $form->field($model, 'type')->dropDownList(['' => '', 'Walker' => 'Walker', 'Cluster' => 'Cluster'])?>
+
+    <?= $form->field($model, 'active')->dropDownList([0 => 'No', 1 => 'Yes']) ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

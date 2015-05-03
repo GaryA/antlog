@@ -53,7 +53,20 @@ $dataProvider = new ActiveDataProvider([
 echo GridView::widget([
 	'dataProvider' => $dataProvider,
 	'columns' => [
-		'robot.name',
+		[
+			'attribute' => 'robot.name',
+			'value' => function($model, $index, $dataColumn)
+			{
+				if ($model->robot->type == '')
+				{
+					return $model->robot->name;
+				}
+				else
+				{
+					return $model->robot->name . ' (' . $model->robot->type . ')';
+				}
+			},
+		],
 		[
 			'attribute' => 'robot.team.team_name',
 			'label' => 'Team'

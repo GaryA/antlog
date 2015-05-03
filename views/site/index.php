@@ -23,7 +23,7 @@ $this->title = 'AntLog 3.0';
 	<div class="body-content">
 
 		<div class="row">
-			<div class="col-lg-4 col-md-6">
+			<div class="col-lg-3 col-md-6">
 				<h2>
 					<a class="btn btn-primary btn-block" href="index.php?r=event">Events</a>
 				</h2>
@@ -83,7 +83,7 @@ echo GridView::widget (
 ] );
 ?>
 			</div>
-			<div class="col-lg-4 col-md-6">
+			<div class="col-lg-6 col-md-6">
 				<h2>
 					<a class="btn btn-primary btn-block" href="index.php?r=robot">Robots</a>
 				</h2>
@@ -104,7 +104,15 @@ echo GridView::widget (
 			'format' => 'raw',
 			'value' => function ($model, $index, $dataColumn)
 			{
-				return Html::a ( $model->name,
+				if ($model->type == '')
+				{
+					$type = '';
+				}
+				else
+				{
+					$type = ' (' . $model->type . ')';
+				}
+				return Html::a ( $model->name . $type,
 					[
 						'robot/view',
 						'id' => $model->id
@@ -123,7 +131,7 @@ echo GridView::widget (
 ] );
 ?>
             </div>
-			<div class="col-lg-4 col-md-6">
+			<div class="col-lg-3 col-md-6">
 				<h2>
 					<a class="btn btn-primary btn-block" href="index.php?r=user">Teams</a>
 				</h2>

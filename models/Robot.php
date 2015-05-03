@@ -3,16 +3,19 @@
 namespace app\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 use app\models\Event;
 use app\models\Entrant;
 
 /**
  * This is the model class for table "{{%robot}}".
  *
- * @property string $id
+ * @property integer $id
  * @property string $name
- * @property string $teamId
- * @property string $classId
+ * @property integer $teamId
+ * @property integer $classId
+ * @property string $type
+ * @property integer $active
  *
  * @property DoubleElim[] $doubleElims
  * @property Entrant[] $entrants
@@ -21,19 +24,43 @@ use app\models\Entrant;
  */
 class Robot extends \yii\db\ActiveRecord
 {
-	public static function dropdown()
+	/**
+	 * Generate array to populate dropdown list in forms
+	 * @param boolean $active
+	 * @return array
+	 */
+	public static function dropdown($active = NULL, $event = NULL)
 	{
-		$models = static::find()->all();
+		$query = static::find();
+		if (isset($active))
+		{
+			$query->andWhere(['active' => $active]);
+		}
+		if (isset($event))
+		{
+			// get all ids of robots entered in current event, return as array
+			$array = ArrayHelper::getColumn(Entrant::find()->where(['eventId' => $event])->all(), 'robotId');
+			// modify query to exclude ids in list
+			$query->andWhere(['not in', 'id', $array]);
+		}
+		$models = $query->all();
 		foreach ($models as $model)
 		{
-			$dropdown[$model->id] = $model->name;
+			if ($model->type != '')
+			{
+				$dropdown[$model->id] = $model->name . ' (' . $model->type . ')';
+			}
+			else
+			{
+				$dropdown[$model->id] = $model->name;
+			}
 		}
 		return $dropdown;
 	}
 
 	/**
 	 * Return checked if robot is entrant to any event which is not complete
-	 * Return value is checked attribute of checkbox 
+	 * Return value is checked attribute of checkbox
 	 * @param integer $target
 	 * @return string
 	 */
@@ -78,7 +105,7 @@ class Robot extends \yii\db\ActiveRecord
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Return true if robot belongs to logged-in user
 	 * @param model $model
@@ -95,7 +122,16 @@ class Robot extends \yii\db\ActiveRecord
 			return false;
 		}
 	}
-	
+
+	/**
+	 * Return string representation of boolean 'active' flag
+	 * @param record $data
+	 * @return string
+	 */
+	public function getActive($data)
+	{
+		return $data->active ? 'Yes' : 'No';
+	}
     /**
      * @inheritdoc
      */
@@ -111,8 +147,10 @@ class Robot extends \yii\db\ActiveRecord
     {
         return
 		[
-            [['name', 'teamId', 'classId'], 'required'],
+            [['name', 'teamId', 'classId', 'active'], 'required'],
             [['teamId', 'classId'], 'integer'],
+			[['active'],'boolean'],
+			[['active'], 'default', 'value' => 1],
             [['name'], 'string', 'max' => 50],
 			[['name'], 'unique', 'message' => 'Robot name "{value}" is already taken.'],
         ];

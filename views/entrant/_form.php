@@ -28,7 +28,7 @@ use app\models\Event;
 		}
 	?>
 
-    <?= $form->field($model, 'robotId')->dropDownList(ArrayHelper::map(Robot::find()->all(), 'id', 'name')) ?>
+    <?= $form->field($model, 'robotId')->dropDownList(Robot::dropdown(true, $model->eventId)) ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

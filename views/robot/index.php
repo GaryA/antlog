@@ -27,11 +27,16 @@ $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
 		'filterModel' => $searchModel,
+    	'rowOptions' => function ($model, $index, $widget, $grid)
+    	{
+    		return $model->active ? [] : ['class' => 'info'];
+    	},
         'columns' => [
             // ['class' => 'yii\grid\SerialColumn'],
 
             // 'id',
             'name',
+        	'type',
             [
 				'attribute' =>'teamId',
 				'label' => 'Team',
@@ -98,8 +103,8 @@ $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 				],
 			],
         ],
-    ]); 
-	
+    ]);
+
 	if (isset(Yii::$app->request->queryParams['RobotSearch']['teamId']))
 	{
 		$param = Yii::$app->request->queryParams['RobotSearch']['teamId'];

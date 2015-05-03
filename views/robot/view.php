@@ -44,11 +44,16 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             //'id',
             'name',
+        	'type',
             [
 				'attribute' => 'team.team_name',
             	'label' => 'Team',
 		    ],
             'class.name',
+        	[
+				'attribute' => 'active',
+        		'value' => $model->getActive($model),
+			]
         ],
     ]) ?>
 

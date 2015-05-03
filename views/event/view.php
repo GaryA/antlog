@@ -120,7 +120,15 @@ foreach ($teams as $team => $robots)
 	echo '<tr><td>' . User::findOne($team)->team_name . '</td><td>';
 	foreach ($robots as $robot)
 	{
-		echo Entrant::findOne($robot)->robot->name . '<br>';
+		$model = Entrant::findOne($robot);
+		if ($model->robot->type == '')
+		{
+			echo $model->robot->name . '<br>';
+		}
+		else
+		{
+			echo $model->robot->name . ' (' . $model->robot->type . ')<br>';
+		}
 	}
 	echo '</td><td>' . count($robots) . '</td></tr>';
 }
