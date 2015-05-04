@@ -6,14 +6,14 @@ return [
     'controllerMap' => [
         'fixture' => [
             'class' => 'yii\faker\FixtureController',
-            'fixtureDataPath' => '@tests/codeception/fixtures',
-            'templatePath' => '@tests/codeception/templates',
+            'fixtureDataPath' => '@tests/codeception/fixtures/data',
+            'templatePath' => '@tests/codeception/templates/fixtures',
             'namespace' => 'tests\codeception\fixtures',
         ],
     ],
     'components' => [
         'db' => [
-            'dsn' => 'mysql:host=localhost;dbname=yii2_basic_tests',
+            'dsn' => 'mysql:host=localhost;dbname=antlog_tests',
         ],
         'mailer' => [
             'useFileTransport' => true,

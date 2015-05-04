@@ -25,15 +25,16 @@ class SignupForm extends Model
             ['username', 'required'],
             ['username', 'unique', 'targetClass' => '\app\models\User', 'message' => 'Username "{value}" has already been taken.'],
             ['username', 'string', 'min' => 2, 'max' => 255],
-        	
+
         	['email', 'filter', 'filter' => 'trim'],
         	['email', 'required'],
        		['email', 'email'],
-        		
+
         	['team_name', 'filter', 'filter' => 'trim'],
         	['team_name', 'required'],
+            ['team_name', 'unique', 'targetClass' => '\app\models\User', 'message' => 'Team name "{value}" has already been taken.'],
         	['team_name', 'string', 'min' => 2, 'max' => 255],
-        		
+
             ['password', 'required'],
             ['password', 'string', 'min' => 5],
         ];
@@ -49,7 +50,7 @@ class SignupForm extends Model
     			'team_name' => 'Team',
     	];
     }
-    
+
     /**
      * Signs user up.
      *
@@ -68,9 +69,9 @@ class SignupForm extends Model
             $user->save(false);
 
 			// Add teams to the 'team' role for authorisation
-			$auth = Yii::$app->authManager;
-			$authorRole = $auth->getRole('team');
-			$auth->assign($authorRole, $user->getId());
+			//$auth = Yii::$app->authManager;
+			//$authorRole = $auth->getRole('team');
+			//$auth->assign($authorRole, $user->getId());
 
 			return $user;
         }
