@@ -24,15 +24,15 @@ class UpdateForm extends Model
         return [
             ['username', 'filter', 'filter' => 'trim'],
             ['username', 'required'],
-        	
+
         	['email', 'filter', 'filter' => 'trim'],
         	['email', 'required'],
        		['email', 'email'],
-        		
+
         	['team_name', 'filter', 'filter' => 'trim'],
         	['team_name', 'required'],
         	['team_name', 'string', 'min' => 2, 'max' => 255],
-        		
+
         ];
     }
 
@@ -46,7 +46,7 @@ class UpdateForm extends Model
     			'team_name' => 'Team',
     	];
     }
-    
+
     /**
      * Updates user profile.
      *
@@ -60,7 +60,6 @@ class UpdateForm extends Model
             $user->username = $this->username;
             $user->email = $this->email;
             $user->team_name = $this->team_name;
-            $user->setPassword($this->password);
             $user->save(false);
 
 			return $user;

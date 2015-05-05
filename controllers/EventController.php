@@ -200,6 +200,16 @@ class EventController extends Controller
     {
         $model = $this->findModel($id);
 
+        if ($model->state == 'Future')
+        {
+        	if ($model->eventDate == date("Y-m-d"))
+            {
+        		$model->stateRegistration($id);
+        		// reload model to ensure updated state is shown
+        		$model = $this->findModel($id);
+            }
+        }
+
 		return $this->render('view',
 		[
             'model' => $model,

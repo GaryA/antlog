@@ -19,7 +19,6 @@ $this->params['breadcrumbs'][] = 'Update';
                 <?= $form->field($model, 'username') ?>
                 <?= $form->field($model, 'email')->input('email') ?>
                 <?= $form->field($model, 'team_name') ?>
-                <?php //echo $form->field($model, 'password')->passwordInput() ?>
                 <div class="form-group">
                     <?= Html::submitButton('Update', ['class' => 'btn btn-primary', 'name' => 'update-button']) ?>
                 </div>

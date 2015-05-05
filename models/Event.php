@@ -11,7 +11,7 @@ use app\models\Fights;
  *
  * @property string $id
  * @property string $name
- * @property integer $eventDate
+ * @property string $eventDate
  * @property string $state
  * @property integer $classId
  * @property integer $offset
@@ -207,6 +207,18 @@ class Event extends \yii\db\ActiveRecord
 	}
 
 	/**
+	 * function to set event state to "Registration"
+	 */
+	public function stateRegistration($id)
+	{
+		$event = static::findOne($id);
+		$event->state = 'Registration';
+		return ($event->save(false, [
+			'state'
+		]));
+	}
+
+	/**
 	 * function to get teams (and their robots) for an event
 	 */
 	public static function getTeams($id)
@@ -250,6 +262,12 @@ class Event extends \yii\db\ActiveRecord
 			'not',
 			[
 				'state' => 'Complete'
+			]
+		])
+			->andWhere([
+			'not',
+			[
+				'state' => 'Future'
 			]
 		])
 			->andWhere([
