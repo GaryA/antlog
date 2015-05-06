@@ -41,6 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
 				'label' => 'Event',
 				'value' => $model->event->name,
 			],
+        	'group',
             [
 				'label' => 'Robot',
 				'value' => $model->robot->name,

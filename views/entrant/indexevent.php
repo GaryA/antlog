@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use dosamigos\grid\GroupGridView;
 use app\models\Robot;
 use app\models\Event;
 use app\models\EntrantSearch;
@@ -9,12 +10,10 @@ use app\models\User;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
+$event = Event::findOne($eventId);
 
-$this->title = 'Entrants';
+$this->title = $event->name . ' - Entrants';
 $this->params['breadcrumbs'][] = $this->title;
-
-$searchModel = New EntrantSearch();
-$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
 ?>
 <div class="entrant-index">
@@ -22,26 +21,23 @@ $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-	<?= Html::a('Create Entrant', ['create'], ['class' => 'btn btn-success']) ?>
+	<?php
+	if ($event->state == 'Registration')
+	{
+		echo Html::a('Add Entrant', ['create'], ['class' => 'btn btn-success']);
+	}
+	?>
     </p>
 
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-		'filterModel' => $searchModel,
+    <?= GroupGridView::widget([
+        'dataProvider' => $entrantProvider,
+    	'mergeColumns' => ['group'],
+    	'extraRowColumns' => ['group'],
+    	'extraRowValue' => function ($model, $index, $totals)
+    	{
+    		return '<b>Group ' . $model->group_num . '</b>';
+    	},
         'columns' => [
-            // ['class' => 'yii\grid\SerialColumn'],
-
-            // 'id',
-            [
-				'attribute' => 'eventId',
-				'label' => 'Event',
-				'filter' => Event::dropdown(),
-				'value' => function($model, $index, $dataColumn) {
-					$eventDropdown = Event::dropdown();
-					return $eventDropdown[$model->eventId];
-				},
-			],
-			'group',
             [
 				'attribute' =>'robot.name',
 				'label' => 'Robot',
@@ -59,8 +55,24 @@ $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 					return $teamDropdown[$model->robot->teamId];
 				},
 			],
-            'status',
-
+            [
+            	'attribute' => 'status',
+            	'value' => function($model, $index, $dataColumn) {
+            		if ($model->status == 0)
+            		{
+            			$value = 'Out';
+            		}
+            		else if ($model->status == 1)
+            		{
+            			$value = "Losers' Bracket";
+            		}
+            		else
+            		{
+            			$value = "Winners' Bracket";
+            		}
+            		return $value;
+            	},
+            ],
             [
 				'class' => 'yii\grid\ActionColumn',
 				'buttons' =>
@@ -102,9 +114,6 @@ $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         ],
     ]);
 
-		echo '<p>';
-		echo 'Number of entries: ' . $dataProvider->count . '<br>';
-		echo '</p>';
 	?>
 
 </div>

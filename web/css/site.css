@@ -3,6 +3,9 @@ body {
     height: 100%;
 }
 
+.groupview-extra-row {
+	text-align: center;
+}
 .wrap {
     min-height: 100%;
     height: auto;

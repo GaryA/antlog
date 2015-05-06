@@ -320,6 +320,7 @@ CREATE TABLE IF NOT EXISTS `aws_entrant` (
   `robotId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (robotId) REFERENCES aws_robot(id)',
   `status` int(11) DEFAULT '-1',
   `finalFightId` int(11) NOT NULL DEFAULT '0' COMMENT 'CONSTRAINT FOREIGN KEY (finalFightId) REFERENCES aws_fights(id)',
+  `group_num` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `EntrantID` (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=44 ;

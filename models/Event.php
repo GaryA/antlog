@@ -70,6 +70,8 @@ class Event extends \yii\db\ActiveRecord
 	public function setupEvent($id, $teams, $numEntrants)
 	{
 		$fights = new Fights();
+		$entrantModel = new Entrant();
+
 		/* calculate required size of each group */
 		$maxTeamSize = count(reset($teams));
 		if ($maxTeamSize <= 2 && $numEntrants < 32)
@@ -107,6 +109,7 @@ class Event extends \yii\db\ActiveRecord
 			$fights->insertDoubleElimination($id);
 
 			$offset = $fights->setupEvent($id, $groupList);
+			$entrantModel->setGroups($id, $groupList);
 
 			/* ready to start! */
 			$setupOK = $this->stateRunning($id, $offset);

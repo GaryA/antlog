@@ -54,20 +54,33 @@ class EntrantController extends Controller
             'dataProvider' => $dataProvider,
         ]);
 	}
-	
+
     /**
      * Lists all Entrant models.
      * @return mixed
      */
-    public function actionIndex()
+    public function actionIndex($eventId = NULL)
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Entrant::find(),
-        ]);
-
+   		if ($eventId == NULL)
+   		{
+    	$dataProvider = new ActiveDataProvider([
+           	'query' => Entrant::find(),
+       	]);
         return $this->render('index', [
-            'dataProvider' => $dataProvider,
+            'dataProvider' => NULL,
         ]);
+   		}
+   		else
+   		{
+   			$entrantProvider = new ActiveDataProvider([
+   				'query' => Entrant::find()->where(['eventId' => $eventId]),
+   				'sort'=> ['defaultOrder' => ['group'=>SORT_ASC]]
+   			]);
+   			return $this->render('indexevent', [
+   				'entrantProvider' => $entrantProvider,
+   				'eventId' => $eventId,
+   			]);
+   		}
     }
 
     /**

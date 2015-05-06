@@ -13,6 +13,7 @@ use Yii;
  * @property string $teamId
  * @property integer $teamSize
  * @property integer $status
+ * @property integer $group
  *
  * @property Event $event
  * @property Robot $robot
@@ -28,7 +29,7 @@ class Entrant extends \yii\db\ActiveRecord
 		}
 		return parent::beforeSave($insert);
 	}
-    
+
 	/**
      * @inheritdoc
      */
@@ -88,4 +89,22 @@ class Entrant extends \yii\db\ActiveRecord
 		return ($model->state == 'Registration') ? true : false;
 	}
 
+	/**
+	 * Set group numbers of entrants for current event
+	 * @param integer $id The id of the current event
+	 * @param array $groupList Array of groups, each element is an array of entrant IDs
+	 */
+	public function setGroups($id, $groupList)
+	{
+		foreach ($groupList as $group => $entrants)
+		{
+			foreach ($entrants as $entrantId)
+			{
+				Yii::$app->db->createCommand("UPDATE {{%entrant}}
+					SET `group_num` = $group
+					WHERE `id` = $entrantId")
+					->execute();
+			}
+		}
+	}
 }

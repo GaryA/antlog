@@ -72,20 +72,26 @@ $this->params['breadcrumbs'][] = $this->title;
 												]);
 											}
 								}
-								if ($model->state == 'Complete')
-								{
-									echo Html::a('Results', [
-										'result',
-										'id' => $model->id
-									], [
-										'class' => 'btn btn-primary'
-									]);
-								}
+								echo Html::a('Entrants', [
+									'@web/entrant',
+									'eventId' => $model->id
+								], [
+									'class' => 'btn btn-primary'
+								]);
 								if (($model->state == 'Running') || ($model->state == 'Complete'))
 								{
 									echo Html::a('Fights', [
 										'@web/fights',
 										'eventId' => $model->id
+									], [
+										'class' => 'btn btn-primary'
+									]);
+								}
+								if ($model->state == 'Complete')
+								{
+									echo Html::a('Results', [
+										'result',
+										'id' => $model->id
 									], [
 										'class' => 'btn btn-primary'
 									]);
@@ -117,7 +123,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
 </div>
 <div>
-	<table class="table table-striped table-bordered detail-view">
+
+<table class="table table-striped table-bordered detail-view">
 		<tr>
 			<th>Team</th>
 			<th>Robots</th>
