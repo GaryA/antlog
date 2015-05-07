@@ -3,6 +3,8 @@
 namespace app\models;
 
 use Yii;
+use app\models\Event;
+use app\models\Entrant;
 
 /**
  * This is the model class for table "{{%fights}}".
@@ -89,6 +91,90 @@ class Fights extends \yii\db\ActiveRecord
         ];
     }
 
+    public function updateCurrent($id, $winner)
+    {
+    	$record = $this->findOne($id);
+    	if ($winner == $record->robot1->id)
+    	{
+    		$loser = $record->robot2->id;
+    	}
+    	else if ($winner == $record->robot2->id)
+    	{
+    		$loser = $record->robot1->id;
+    	}
+    	else
+    	{
+    		$error = "Winner = $winner but does not match Robot1 $record->robot1->id or Robot2 $record->robot2->id";
+    		return ['debug', 'id' => $id, 'name' => 'Error', 'value' => $error];
+    	}
+
+    	$record->winnerId = $winner;
+    	$record->loserId = $loser;
+    	$record->save(false, ['winnerId', 'loserId']);
+
+    	$fightLoser = Entrant::findOne($loser);
+
+    	$finished = true;
+    	if ($record->winnerNextFight > 0)
+    	{
+    		if ($record->fightBracket == 'F')
+    		{
+    			if ($fightLoser->status == 1)
+    			{
+    				/* first final fight, no need for a rematch, make the second final a bye */
+    				$this->updateNext($record->id, $record->winnerNextFight, $record->winnerId);
+    				$this->updateNext($record->id, $record->loserNextFight, 0);
+    			}
+    			else
+    			{
+    				/* first final fight but need a rematch */
+    				$finished = false;
+    				$this->updateNext($record->id, $record->winnerNextFight, $record->winnerId);
+    				$this->updateNext($record->id, $record->loserNextFight, $record->loserId);
+    			}
+    		}
+    		else
+    		{
+    			$finished = false;
+    			$this->updateNext($record->id, $record->winnerNextFight, $record->winnerId);
+    			$this->updateNext($record->id, $record->loserNextFight, $record->loserId);
+    		}
+    		do
+    		{
+    			$status = $this->runByes($record->eventId);
+    		} while ($status == true);
+    	}
+    	if ($record->save())
+    	{
+    		$event = Event::findOne($record->eventId);
+    		$fightLoser->status -= 1;
+    		if ($fightLoser->status == 0)
+    		{
+    			$fightLoser->finalFightId = $record->id - $event->offset;
+    		}
+    		$fightLoser->save();
+    		if ($finished)
+    		{
+    			$entrant = Entrant::findOne($winner);
+    			$entrant->finalFightId = 256;
+    			$entrant->save();
+    			/* update event state */
+    			$event->state = 'Complete';
+    			$event->save(false, ['state']);
+    			/* announce results! */
+    			return ['event/result', 'id' => $record->eventId];
+    		}
+    		else
+    		{
+    			return ['index', 'id' => $record->id];
+    		}
+    	}
+    	else
+    	{
+    		$error = "Failed to save model to database";
+    		return ['debug', 'id' => $id, 'name' => 'Error', 'value' => $error];
+    	}
+    }
 	/**
 	 * function to run byes
 	 * @param integer $id

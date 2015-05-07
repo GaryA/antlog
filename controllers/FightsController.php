@@ -42,18 +42,19 @@ class FightsController extends Controller
     /**
      * Render debug view to dump variable name & value
      * @param integer $id Model ID
-     * @param string $debugName Name of variable to be dumped
-     * @param mixed $debugValue Variable to be dumped
      * @return mixed
+     *
+     * query params are name (label for variable), value (value of variable to dump)
      */
-    public function actionDebug($id, $debugName, $debugValue)
+    public function actionDebug($id)
     {
         $model = $this->findModel($id);
+        $params = Yii::$app->request->queryParams;
 
 		return $this->render('debug', [
             'model' => $model,
-			'debugName' => $debugName,
-			'debugValue' => $debugValue,
+			'debugName' => $params['name'],
+			'debugValue' => $params['value'],
         ]);
     }
 
@@ -110,71 +111,13 @@ class FightsController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
 		$request = Yii::$app->request;
-
 		$winner = $request->get('winner');
-		if ($winner == $model->robot1->id)
-		{
-			$loser = $model->robot2->id;
-		}
-		else if ($winner == $model->robot2->id)
-		{
-			$loser = $model->robot1->id;
-		}
-		else
-		{
-			$error = "Winner = $winner but does not match Robot1 $model->robot1->id or Robot2 $model->robot2->id";
-			return $this->actionDebug($id, 'Error', $error);
-		}
 
-		$model->winnerId = $winner;
-		$model->loserId = $loser;
-		$model->save(false, ['winnerId', 'loserId']);
+		$model = $this->findModel($id);
+		$result = $model->updateCurrent($id, $winner);
+		return $this->redirect($result);
 
-		$finished = true;
-		if ($model->winnerNextFight > 0)
-		{
-			$finished = false;
-			$model->updateNext($model->id, $model->winnerNextFight, $model->winnerId);
-			$model->updateNext($model->id, $model->loserNextFight, $model->loserId);
-
-			do
-			{
-				$status = $model->runByes($model->eventId);
-			} while ($status == true);
-        }
-		if ($model->save())
-		{
-			$entrant = Entrant::findOne($loser);
-			$entrant->status -= 1;
-			if ($entrant->status == 0)
-			{
-				$entrant->finalFightId = $model->id - Event::findOne($model->eventId)->offset;
-			}
-			$entrant->save();
-			if ($finished)
-			{
-				$entrant = Entrant::findOne($winner);
-				$entrant->finalFightId = 255;
-				$entrant->save();
-				/* update event state */
-				$event = Event::findOne($model->eventId);
-				$event->state = 'Complete';
-				$event->save(false, ['state']);
-				/* announce results! */
-				return $this->redirect(['event/result', 'id' => $model->eventId]);
-			}
-			else
-			{
-				return $this->redirect(['index', 'id' => $model->id]);
-			}
-        }
-		else
-		{
-			$error = "Failed to save model to database";
-            return $this->actionDebug($id, 'Error', $error);
-        }
     }
 
     /**

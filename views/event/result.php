@@ -78,9 +78,10 @@ echo GridView::widget([
 			{
 				switch ($model->finalFightId)
 				{
-					case 255:
+					case 256:
 						$position = '1st';
 						break;
+					case 255:
 					case 254:
 						$position = '2nd';
 						break;
