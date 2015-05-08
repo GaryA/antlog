@@ -151,11 +151,11 @@ class Event extends \yii\db\ActiveRecord
 		{
 			/* calculate array of groups with free slots */
 			unset($temp);
-			for ($i = 0; $i < $numGroups; $i ++)
+			for ($i = 1; $i <= $numGroups; $i ++)
 			{
-				if ($groupArray[$i]['free'] > 0)
+				if ($groupArray[$i-1]['free'] > 0)
 				{
-					$temp[$i] = $groupArray[$i]['free'];
+					$temp[$i] = $groupArray[$i-1]['free'];
 				}
 			}
 			$freeGroups = array_keys($temp);

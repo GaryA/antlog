@@ -168,26 +168,6 @@ echo GridView::widget (
 ] );
 ?>
 			</div>
-			<div class="col-lg-6">
-				<h2>Entrants</h2>
-
-				<p>Use this link to view and administer entrants to the current
-					event</p>
-
-				<p>
-					<a class="btn btn-primary btn-block" href="index.php?r=entrant">Entrants</a>
-				</p>
-			</div>
-			<div class="col-lg-6">
-				<h2>Fights</h2>
-
-				<p>Use this link to run the fights of the current competition</p>
-
-				<p>
-					<a class="btn btn-primary btn-block" href="index.php?r=fights">Fights</a>
-				</p>
-			</div>
 		</div>
-
 	</div>
 </div>

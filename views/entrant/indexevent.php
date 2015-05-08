@@ -13,7 +13,9 @@ use app\models\User;
 $event = Event::findOne($eventId);
 
 $this->title = $event->name . ' - Entrants';
-$this->params['breadcrumbs'][] = $this->title;
+$this->params['breadcrumbs'][] = ['label' => 'Events', 'url' => ['event/index']];
+$this->params['breadcrumbs'][] = ['label' => $event->name, 'url' => ['event/view', 'id' => $event->id]];
+$this->params['breadcrumbs'][] = 'Entrants';
 
 ?>
 <div class="entrant-index">
@@ -31,8 +33,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= GroupGridView::widget([
         'dataProvider' => $entrantProvider,
-    	'mergeColumns' => ['group'],
-    	'extraRowColumns' => ['group'],
+    	'mergeColumns' => ['group_num'],
+    	'extraRowColumns' => ['group_num'],
     	'extraRowValue' => function ($model, $index, $totals)
     	{
     		return '<b>Group ' . $model->group_num . '</b>';

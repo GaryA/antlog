@@ -9,18 +9,14 @@ use yii\data\ActiveDataProvider;
 /* @var $this yii\web\View */
 /* @var $model app\models\Event */
 
-$this->title = $model->name;
-$this->params['breadcrumbs'][] = [
-	'label' => 'Events',
-	'url' => [
-		'index'
-	]
-];
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = $model->name . ' (' . $model->eventDate . ') Results';
+$this->params['breadcrumbs'][] = ['label' => 'Events', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['event/view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = 'Results';
 ?>
 <div class="event-view">
 
-	<h1><?= Html::encode($this->title) . ' (' . $model->eventDate . ') Results' ?></h1>
+	<h1><?= Html::encode($this->title) ?></h1>
 
     <?php
     echo DetailView::widget(

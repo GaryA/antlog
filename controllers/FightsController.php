@@ -11,6 +11,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use yii\data\ActiveDataProvider;
 
 /**
  * FightsController implements the CRUD actions for Fights model.
@@ -60,17 +61,41 @@ class FightsController extends Controller
 
     /**
      * Lists all Fights models.
+     * @param integer $eventId
      * @return mixed
      */
-    public function actionIndex()
+    public function actionIndex($eventId = NULL, $byes = 0)
     {
-        $searchModel = new FightsSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+    	if ($eventId == NULL)
+    	{
+        	$searchModel = new FightsSearch();
+        	$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+        	return $this->render('index', [
+        	    'searchModel' => $searchModel,
+        	    'dataProvider' => $dataProvider,
+        	]);
+    	}
+    	else
+    	{
+    		$query = Fights::find()->where(['eventId' => $eventId]);
+    		if ($byes == 0)
+    		{
+    			$query->andWhere(['not', ['robot1Id' => 0]])->andWhere(['not', ['robot2Id' => 0]]);
+    		}
+    		if ($byes == 1)
+    		{
+    			$query->andWhere(['or', ['>', 'robot1Id', 0], ['>', 'robot2Id', 0]]);
+    		}
+    		$fightsProvider = new ActiveDataProvider([
+    			'query' => $query,
+    			'sort'=> ['defaultOrder' => ['fightRound'=>SORT_ASC, 'fightGroup' => SORT_ASC, 'fightBracket' => SORT_ASC, 'fightNo' => SORT_ASC]]
+    		]);
+    		return $this->render('indexevent', [
+    			'fightsProvider' => $fightsProvider,
+    			'eventId' => $eventId,
+    		]);
+    	}
     }
 
     /**

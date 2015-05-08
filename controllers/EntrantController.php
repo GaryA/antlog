@@ -74,7 +74,7 @@ class EntrantController extends Controller
    		{
    			$entrantProvider = new ActiveDataProvider([
    				'query' => Entrant::find()->where(['eventId' => $eventId]),
-   				'sort'=> ['defaultOrder' => ['group'=>SORT_ASC]]
+   				'sort'=> ['defaultOrder' => ['group_num'=>SORT_ASC]]
    			]);
    			return $this->render('indexevent', [
    				'entrantProvider' => $entrantProvider,
