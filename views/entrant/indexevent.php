@@ -1,16 +1,12 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
+use yii\helpers\Url;
 use dosamigos\grid\GroupGridView;
-use app\models\Robot;
-use app\models\Event;
-use app\models\EntrantSearch;
 use app\models\User;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
-$event = Event::findOne($eventId);
 
 $this->title = $event->name . ' - Entrants';
 $this->params['breadcrumbs'][] = ['label' => 'Events', 'url' => ['event/index']];
@@ -26,7 +22,7 @@ $this->params['breadcrumbs'][] = 'Entrants';
 	<?php
 	if ($event->state == 'Registration')
 	{
-		echo Html::a('Add Entrant', ['create'], ['class' => 'btn btn-success']);
+		echo Html::a('Add Entrant', ['create', 'eventId' => $event->id], ['class' => 'btn btn-success']);
 	}
 	?>
     </p>
@@ -41,48 +37,23 @@ $this->params['breadcrumbs'][] = 'Entrants';
     	},
         'columns' => [
             [
-				'attribute' =>'robot.name',
-				'label' => 'Robot',
-				'value' => function($model, $index, $dataColumn) {
-					$robotDropdown = Robot::dropdown();
-					return $robotDropdown[$model->robotId];
-				},
-			],
-			[
-				'attribute' => 'robot.team.team_name',
-				'label' => 'Team',
-				'filter' => User::teamDropdown(),
-				'value' => function($model, $index, $dataColumn) {
-					$teamDropdown = User::teamDropdown();
-					return $teamDropdown[$model->robot->teamId];
-				},
-			],
-            [
-            	'attribute' => 'status',
-            	'value' => function($model, $index, $dataColumn) {
-            		if ($model->status == 0)
-            		{
-            			$value = 'Out';
-            		}
-            		else if ($model->status == 1)
-            		{
-            			$value = "Losers' Bracket";
-            		}
-            		else
-            		{
-            			$value = "Winners' Bracket";
-            		}
-            		return $value;
-            	},
-            ],
-            [
 				'class' => 'yii\grid\ActionColumn',
 				'buttons' =>
 				[
+					'view' => function($url, $model, $key)
+					{
+						$url = Url::toRoute(['view', 'id' => $model->id, 'eventId' => $model->eventId]);
+						return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url,
+							[
+								'title' => Yii::t('yii', 'View'),
+								'data-pjax' => '0',
+							]);
+					},
 					'delete' => function ($url, $model, $key)
 					{
 						if (User::isUserAdmin() && $model->isEditable($model->eventId))
 						{
+							$url = Url::toRoute(['delete', 'id' => $model->id, 'eventId' => $model->eventId]);
 							return  Html::a('<span class="glyphicon glyphicon-trash"></span>', $url,
 							[
                     			'title' => Yii::t('yii', 'Delete'),
@@ -100,6 +71,7 @@ $this->params['breadcrumbs'][] = 'Entrants';
 					{
 						if (User::isUserAdmin() && $model->isEditable($model->eventId))
 						{
+							$url = Url::toRoute(['update', 'id' => $model->id, 'eventId' => $model->eventId]);
 							return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url,
 							[
                 				'title' => Yii::t('yii', 'Update'),
@@ -113,6 +85,34 @@ $this->params['breadcrumbs'][] = 'Entrants';
 					},
 				],
 			],
+            [
+				'attribute' =>'robot.name',
+				'label' => 'Robot',
+    		],
+			[
+				'attribute' => 'robot.team.team_name',
+				'label' => 'Team',
+    		],
+            [
+            	'attribute' => 'status',
+            	'enableSorting' => false,
+            	'value' => function($model, $index, $dataColumn) {
+            		if ($model->status == 0)
+            		{
+            			$value = 'Out';
+            		}
+            		else if ($model->status == 1)
+            		{
+            			$value = "Losers' Bracket";
+            		}
+            		else
+            		{
+            			$value = "Winners' Bracket";
+            		}
+            		return $value;
+            	},
+            ],
+
         ],
     ]);
 

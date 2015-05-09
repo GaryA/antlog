@@ -6,8 +6,9 @@ use yii\helpers\Html;
 /* @var $model app\models\Entrant */
 
 $this->title = 'Update Entrant: ' . ' ' . $model->event->name . ' - ' . $model->robot->name;
-$this->params['breadcrumbs'][] = ['label' => 'Entrants', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' => 'Events', 'url' => ['event/index']];
+$this->params['breadcrumbs'][] = ['label' => $event->name, 'url' => ['event/view', 'id' => $event->id]];
+$this->params['breadcrumbs'][] = ['label' => 'Entrants', 'url' => ['entrant/index', 'eventId' => $event->id]];
 $this->params['breadcrumbs'][] = 'Update';
 ?>
 <div class="entrant-update">
@@ -16,6 +17,7 @@ $this->params['breadcrumbs'][] = 'Update';
 
     <?= $this->render('_form', [
         'model' => $model,
+    	'eventId' => $event->id,
     ]) ?>
 
 </div>

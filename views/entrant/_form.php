@@ -17,18 +17,12 @@ use app\models\Event;
     <?php $form = ActiveForm::begin(); ?>
 
     <?php
-		$eventField = $form->field($model, 'eventId');
-		if ($model->isNewRecord)
-		{
-			echo $eventField->dropDownList(ArrayHelper::map(Event::find()->where(['state' => 'Registration'])->all(), 'id', 'name'));
-		}
-		else
-		{
-			echo $eventField->textInput(['value' => $model->event->name, 'disabled' => 'true']);
-		}
+		$event = Event::findOne($eventId);
+    	$eventField = $form->field($model, 'eventId');
+		echo $eventField->dropDownList([$event->id => $event->name]);
 	?>
 
-    <?= $form->field($model, 'robotId')->dropDownList(Robot::dropdown(true, $model->eventId)) ?>
+    <?= $form->field($model, 'robotId')->dropDownList(Robot::dropdown(true, $eventId)) ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

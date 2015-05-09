@@ -45,7 +45,8 @@ class Entrant extends \yii\db\ActiveRecord
     {
         return [
             [['eventId', 'robotId'], 'required'],
-            [['eventId', 'robotId', 'status'], 'integer']
+            [['eventId', 'robotId', 'status'], 'integer'],
+        	['robotId', 'validateRobot'],
         ];
     }
 
@@ -110,4 +111,18 @@ class Entrant extends \yii\db\ActiveRecord
 		}
 		Yii::trace('Leaving ' . __METHOD__);
 	}
+
+	/**
+	 * function to ensure a robot can only enter an event once
+	 */
+	public function validateRobot($attribute, $params)
+	{
+		if (Entrant::find()->andWhere(['eventId' => $this->eventId])
+			->andWhere(['robotId' => $this->robotId])
+			->count() > 0)
+		{
+			$this->addError($attribute, 'The selected robot is aready entered into the current event');
+		}
+	}
+
 }

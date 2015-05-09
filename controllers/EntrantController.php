@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Entrant;
+use app\models\Event;
 use app\models\User;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
@@ -78,7 +79,7 @@ class EntrantController extends Controller
    			]);
    			return $this->render('indexevent', [
    				'entrantProvider' => $entrantProvider,
-   				'eventId' => $eventId,
+   				'event' => Event::findOne($eventId),
    			]);
    		}
     }
@@ -86,48 +87,63 @@ class EntrantController extends Controller
     /**
      * Displays a single Entrant model.
      * @param string $id
+     * @param integer $eventId
      * @return mixed
      */
-    public function actionView($id)
+    public function actionView($id, $eventId = NULL)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        if ($eventId == NULL)
+        {
+        	return $this->render('view', [
+        		'model' => $this->findModel($id),
+        	]);
+        }
+        else
+        {
+			return $this->render('viewevent', [
+				'model' => $this->findModel($id),
+				'event' => Event::findOne($eventId),
+			]);
+		}
     }
 
     /**
      * Creates a new Entrant model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
+     * If creation is successful, the browser will be redirected to the entrants list for the current event.
+     * @param integer $eventId
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate($eventId)
     {
         $model = new Entrant();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['index', 'eventId' => $eventId]);
         } else {
             return $this->render('create', [
                 'model' => $model,
+            	'event' => Event::findOne($eventId),
             ]);
         }
     }
 
     /**
      * Updates an existing Entrant model.
-     * If update is successful, the browser will be redirected to the 'view' page.
+     * If update is successful, the browser will be redirected to the entrants list for the current event.
      * @param string $id
+     * @param integer $eventId
      * @return mixed
      */
-    public function actionUpdate($id)
+    public function actionUpdate($id, $eventId)
     {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['index', 'eventId' => $eventId]);
         } else {
             return $this->render('update', [
                 'model' => $model,
+            	'event' => Event::findOne($eventId),
             ]);
         }
     }
@@ -136,13 +152,14 @@ class EntrantController extends Controller
      * Deletes an existing Entrant model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param string $id
+     * @param integer $eventId
      * @return mixed
      */
-    public function actionDelete($id)
+    public function actionDelete($id, $eventId)
     {
         $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        return $this->redirect(['index', 'eventId' => $eventId]);
     }
 
     /**
