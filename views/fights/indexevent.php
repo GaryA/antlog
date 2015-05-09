@@ -86,9 +86,13 @@ $this->params['breadcrumbs'][] = $this->title;
 							return $prefix . $model->robot1->robot->name . $suffix;
 						}
 					}
-					else
+					else if ($model->robot1Id == 0)
 					{
 						return '-- BYE --';
+					}
+					else
+					{
+						return '-- UNKNOWN --';
 					}
 				},
 			],
@@ -119,9 +123,13 @@ $this->params['breadcrumbs'][] = $this->title;
 							return $prefix . $model->robot2->robot->name . $suffix;
 						}
 					}
-					else
+					else if ($model->robot2Id == 0)
 					{
 						return '-- BYE --';
+					}
+					else
+					{
+						return '-- UNKNOWN --';
 					}
 				},
 			],

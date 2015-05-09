@@ -22,81 +22,50 @@ $this->params['breadcrumbs'][] = $this->title;
 	<h1><?= Html::encode($this->title) ?></h1>
 
 	<p>
-        <?php
-								if (User::isUserAdmin())
-								{
-									echo Html::a('Update', [
-										'update',
-										'id' => $model->id
-									], [
-										'class' => 'btn btn-primary'
-									]);
-									echo Html::a('Delete', [
-										'delete',
-										'id' => $model->id
-									], [
-										'class' => 'btn btn-danger',
-										'data' => [
-											'confirm' => 'Are you sure you want to delete this item?',
-											'method' => 'post'
-										]
-									]);
-
-									if ($model->state == 'Registration')
-									{
-										echo Html::a('Do Draw', [
-											'draw',
-											'id' => $model->id
-										], [
-											'class' => 'btn btn-primary'
-										]);
-									}
-									else
-										if ($model->state == 'Setup')
-										{
-											echo Html::a('Re-Do Draw', [
-												'setup',
-												'id' => $model->id
-											], [
-												'class' => 'btn btn-primary'
-											]);
-										}
-										else
-											if ($model->state == 'Running')
-											{
-												echo Html::a('Run Fights', [
-													'run',
-													'id' => $model->id
-												], [
-													'class' => 'btn btn-primary'
-												]);
-											}
-								}
-								echo Html::a('Entrants', [
-									'@web/entrant',
-									'eventId' => $model->id
-								], [
-									'class' => 'btn btn-primary'
-								]);
-								if (($model->state == 'Running') || ($model->state == 'Complete'))
-								{
-									echo Html::a('Fights', [
-										'@web/fights',
-										'eventId' => $model->id
-									], [
-										'class' => 'btn btn-primary'
-									]);
-								}
-								if ($model->state == 'Complete')
-								{
-									echo Html::a('Results', [
-										'result',
-										'id' => $model->id
-									], [
-										'class' => 'btn btn-primary'
-									]);
-								}
-								?>
+<?php
+	if (User::isUserAdmin())
+	{
+		if ($model->isOKToDelete($model->id))
+		{
+			echo Html::a('Delete', ['delete', 'id' => $model->id],
+				['class' => 'btn btn-danger',
+					'data' => [
+						'confirm' => 'Are you sure you want to delete this item?',
+						'method' => 'post'
+					]
+				]);
+		}
+		if ($model->state == 'Registration')
+		{
+			echo Html::a('Update', ['update', 'id' => $model->id],
+				['class' => 'btn btn-primary']);
+			echo Html::a('Do Draw', ['draw', 'id' => $model->id],
+				['class' => 'btn btn-primary']);
+		}
+		else if ($model->state == 'Setup')
+		{
+			echo Html::a('Re-Do Draw', ['setup', 'id' => $model->id],
+				['class' => 'btn btn-primary']);
+		}
+		else if ($model->state == 'Running')
+		{
+			echo Html::a('Run Fights', ['run', 'id' => $model->id],
+				['class' => 'btn btn-primary']);
+		}
+	}
+	echo Html::a('Entrants', ['@web/entrant', 'eventId' => $model->id],
+		['class' => 'btn btn-primary']);
+	if (($model->state == 'Running') || ($model->state == 'Complete'))
+	{
+		echo Html::a('Fights', ['@web/fights', 'eventId' => $model->id],
+			['class' => 'btn btn-primary']);
+	}
+	if ($model->state == 'Complete')
+	{
+		echo Html::a('Results', ['result', 'id' => $model->id],
+			['class' => 'btn btn-info']);
+	}
+?>
     </p>
 
     <?php
@@ -105,7 +74,6 @@ $this->params['breadcrumbs'][] = $this->title;
     		'model' => $model,
     		'attributes' =>
     		[
-    			// 'id',
     			'name',
     			[
     				'attribute' => 'eventDate',

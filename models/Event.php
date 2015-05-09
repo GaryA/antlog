@@ -2,6 +2,7 @@
 namespace app\models;
 
 use Yii;
+use yii\helpers\VarDumper;
 use app\models\Robot;
 use app\models\Entrant;
 use app\models\Fights;
@@ -69,6 +70,7 @@ class Event extends \yii\db\ActiveRecord
 	 */
 	public function setupEvent($id, $teams, $numEntrants)
 	{
+		Yii::trace('Entering ' . __METHOD__);
 		$fights = new Fights();
 		$entrantModel = new Entrant();
 
@@ -104,7 +106,7 @@ class Event extends \yii\db\ActiveRecord
 			{
 				$groupList[$group][] = $robot;
 			}
-
+			Yii::trace('$groupList = ' . VarDumper::dumpAsString($groupList));
 			/* add a new set of fights to the fights table */
 			$fights->insertDoubleElimination($id);
 
@@ -118,6 +120,7 @@ class Event extends \yii\db\ActiveRecord
 				Yii::$app->getSession()->setFlash('error', 'Failed to save Running state to event model.');
 			}
 		}
+		Yii::trace('Leaving ' . __METHOD__);
 		return;
 	}
 
@@ -132,6 +135,7 @@ class Event extends \yii\db\ActiveRecord
 	 */
 	private function assignGroups($teams, $numEntrants, $numGroups)
 	{
+		Yii::trace('Entering ' . __METHOD__);
 		$groupSize = intval($numEntrants / $numGroups);
 		$remainder = $numEntrants % $numGroups;
 		/* create group arrays */
@@ -143,6 +147,7 @@ class Event extends \yii\db\ActiveRecord
 				'robots' => array()
 			];
 		}
+		Yii::trace('$groupArray = ' . VarDumper::dumpAsString($groupArray));
 		/* assign robots to groups - this can fail to find a solution! */
 		$teamGroups = array();
 		// return $this->actionDebug($id, '$groupArray', $groupArray);
@@ -151,11 +156,11 @@ class Event extends \yii\db\ActiveRecord
 		{
 			/* calculate array of groups with free slots */
 			unset($temp);
-			for ($i = 1; $i <= $numGroups; $i ++)
+			for ($i = 0; $i < $numGroups; $i ++)
 			{
-				if ($groupArray[$i-1]['free'] > 0)
+				if ($groupArray[$i]['free'] > 0)
 				{
-					$temp[$i] = $groupArray[$i-1]['free'];
+					$temp[$i] = $groupArray[$i]['free'];
 				}
 			}
 			$freeGroups = array_keys($temp);
@@ -178,6 +183,7 @@ class Event extends \yii\db\ActiveRecord
 				$i ++;
 			}
 		}
+		Yii::trace('Leaving ' . __METHOD__ . ' with $entrants = ' . VarDumper::dumpAsString($entrants));
 		return [
 			0,
 			$entrants
@@ -201,9 +207,11 @@ class Event extends \yii\db\ActiveRecord
 	 */
 	private function stateRunning($id, $offset)
 	{
+		Yii::trace('Entering ' . __METHOD__);
 		$event = static::findOne($id);
 		$event->state = 'Running';
 		$event->offset = $offset;
+		Yii::trace('Leaving ' . __METHOD__);
 		return ($event->save(false, [
 			'state', 'offset'
 		]));
@@ -258,27 +266,10 @@ class Event extends \yii\db\ActiveRecord
 	 */
 	public function validateState($attribute, $params)
 	{
-		if (Event::find()->andWhere([
-			'classId' => $this->classId
-		])
-			->andWhere([
-			'not',
-			[
-				'state' => 'Complete'
-			]
-		])
-			->andWhere([
-			'not',
-			[
-				'state' => 'Future'
-			]
-		])
-			->andWhere([
-			'not',
-			[
-				'id' => $this->id
-			]
-		])
+		if (Event::find()->andWhere(['classId' => $this->classId])
+			->andWhere(['not', ['state' => 'Complete']])
+			->andWhere(['not', ['state' => 'Future']])
+			->andWhere(['not', ['id' => $this->id]])
 			->count() > 0)
 		{
 			$this->addError($attribute, 'There can be only one open event per weight class');

@@ -41,7 +41,7 @@ $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 					return $eventDropdown[$model->eventId];
 				},
 			],
-			'group',
+			'group_num',
             [
 				'attribute' =>'robot.name',
 				'label' => 'Robot',

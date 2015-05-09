@@ -96,15 +96,18 @@ class Entrant extends \yii\db\ActiveRecord
 	 */
 	public function setGroups($id, $groupList)
 	{
+		Yii::trace('Entering ' . __METHOD__);
 		foreach ($groupList as $group => $entrants)
 		{
+			$group_num = $group + 1;
 			foreach ($entrants as $entrantId)
 			{
 				Yii::$app->db->createCommand("UPDATE {{%entrant}}
-					SET `group_num` = $group
+					SET `group_num` = $group_num
 					WHERE `id` = $entrantId")
 					->execute();
 			}
 		}
+		Yii::trace('Leaving ' . __METHOD__);
 	}
 }

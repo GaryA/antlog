@@ -81,11 +81,13 @@ class FightsController extends Controller
     		$query = Fights::find()->where(['eventId' => $eventId]);
     		if ($byes == 0)
     		{
-    			$query->andWhere(['not', ['robot1Id' => 0]])->andWhere(['not', ['robot2Id' => 0]]);
+    			// only show fights where both robots are known
+    			$query->andWhere(['>', 'robot1Id', 0])->andWhere(['>', 'robot2Id', 0]);
     		}
     		if ($byes == 1)
     		{
-    			$query->andWhere(['or', ['>', 'robot1Id', 0], ['>', 'robot2Id', 0]]);
+    			// only show fights where at least one robot is known
+    			$query->andWhere(['>', 'robot1Id', 0])->orWhere(['>', 'robot2Id', 0]);
     		}
     		$fightsProvider = new ActiveDataProvider([
     			'query' => $query,

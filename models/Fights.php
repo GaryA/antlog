@@ -166,7 +166,7 @@ class Fights extends \yii\db\ActiveRecord
     		}
     		else
     		{
-    			return ['index', 'id' => $record->id];
+    			return ['index', 'id' => $record->eventId, 'byes' => 0];
     		}
     	}
     	else
@@ -262,28 +262,31 @@ class Fights extends \yii\db\ActiveRecord
 	 */
 	public function setupEvent($id, $groupList)
 	{
-		/* shuffle robots within groups */
+		Yii::trace('Entering ' . __METHOD__);
+		/* get offset of first fight for this event */
+		$record = $this->find()
+			->where(['eventId' => $id])
+			->orderBy('id')
+			->one();
+		$offset = $record->id - 1;
 		foreach ($groupList as $groupNum => $group)
 		{
-			/* get offset of first fight for this event */
-			$record = $this->find()
-				->where(['eventId' => $id])
-				->orderBy('id')
-				->one();
-			$offset = $record->id - 1;
-			/* put robot ids into fights table */
+			/* shuffle robots within groups */
 			shuffle($group);
+			/* put robot ids into fights table */
 			foreach ($group as $index => $robot)
 			{
 				$fightId = $this->_startMap[$index][$groupNum] + $offset;
 				$column = $this->_startMap[$index][8];
+				Yii::trace('$fightId = ' . $fightId . ' $column = ' . $column . ' $robot = ' . $robot);
 				Yii::$app->db->createCommand("UPDATE {{%fights}}
 				   SET `$column` = $robot
 				   WHERE `id` = $fightId")
 				   ->execute();
 			}
-			return $offset;
 		}
+		Yii::trace('Leaving ' . __METHOD__ . ' with $offset = ' . $offset);
+		return $offset;
 	}
 	/**
 	 * inserts a set of double elimination fights into the table
@@ -291,6 +294,7 @@ class Fights extends \yii\db\ActiveRecord
 	 */
 	public function insertDoubleElimination($eventId)
 	{
+		Yii::trace('Entering ' . __METHOD__);
 		Yii::$app->db->createCommand('INSERT INTO {{%fights}} (`fightGroup`,`fightRound`,`fightBracket`,
 			`fightNo`,`robot1Id`,`robot2Id`,`winnerId`,`loserId`,`winnerNextFight`,`loserNextFight`)
 			SELECT `fightGroup`,`fightRound`,`fightBracket`,`fightNo`,`robot1Id`,`robot2Id`,`winnerId`,
@@ -302,6 +306,7 @@ class Fights extends \yii\db\ActiveRecord
 			SET `eventId` = ' . $eventId .
 			' WHERE `winnerId` = -1')
 			->execute();
+		Yii::trace('Leaving ' . __METHOD__);
 	}
 
     /**

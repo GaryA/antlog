@@ -44,6 +44,13 @@ $config = [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
                 ],
+				[
+					'class' => 'yii\log\FileTarget',
+					'levels' => ['trace'],
+					'logFile' => '@app/runtime/logs/trace.log',
+					'maxFileSize' => 1024 * 4,
+					'maxLogFiles' => 20,
+				],
             ],
         ],
         'db' => require(__DIR__ . '/db.php'),
