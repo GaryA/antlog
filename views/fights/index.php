@@ -25,7 +25,11 @@ $this->params['breadcrumbs'][] = $this->title;
     	'extraRowColumns' => ['fightRound', 'fightBracket', 'fightGroup'],
 		'extraRowValue' => function($model, $index, $totals)
 		{
-			if ($model->fightRound == 14)
+			if ($model->fightRound == 15)
+			{
+				$retVal = "Final (Replay)";
+			}
+			else if ($model->fightRound == 14)
 			{
 				$retVal = "Final";
 			}

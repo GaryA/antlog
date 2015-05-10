@@ -4,6 +4,7 @@ use yii\widgets\DetailView;
 use yii\grid\GridView;
 use app\models\Team;
 use app\models\Entrant;
+use app\models\Event;
 use yii\data\ActiveDataProvider;
 
 /* @var $this yii\web\View */
@@ -35,6 +36,8 @@ $this->params['breadcrumbs'][] = 'Results';
 </div>
 
 <?php
+$event = $model;
+
 $query = Entrant::find()->where([
 	'eventId' => $model->id
 ]);
@@ -72,46 +75,7 @@ echo GridView::widget([
 			'label' => 'Position',
 			'value' => function ($model, $index, $dataColumn)
 			{
-				switch ($model->finalFightId)
-				{
-					case 256:
-						$position = '1st';
-						break;
-					case 255:
-					case 254:
-						$position = '2nd';
-						break;
-					case 253:
-						$position = '3rd';
-						break;
-					case 252:
-						$position = '4th';
-						break;
-					case 251:
-					case 250:
-						$position = 'Joint 5th';
-						break;
-					case 249:
-					case 248:
-						$position = 'Joint 7th';
-						break;
-					case 243:
-					case 244:
-					case 245:
-					case 246:
-						$position = 'Joint 9th';
-						break;
-					case 237:
-					case 238:
-					case 239:
-					case 240:
-						$position = 'Joint 13th';
-						break;
-					default:
-						$position = '';
-						break;
-				}
-				return $position;
+				return Event::getPosition($model->finalFightId, $model->eventId);
 			}
 		]
 /*			[

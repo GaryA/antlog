@@ -16,6 +16,8 @@ use app\models\Fights;
  * @property string $state
  * @property integer $classId
  * @property integer $offset
+ * @property integer $eventType
+ * @property integer $num_groups
  *
  * @property Entrant[] $entrants
  * @property RobotClass $class
@@ -276,6 +278,38 @@ class Event extends \yii\db\ActiveRecord
 		}
 	}
 
+	public static function getPosition($finalFight, $eventId)
+	{
+		$event = Event::findOne($eventId);
+		$eventType = $event->eventType;
+		$numGroups = $event->num_groups;
+
+		switch ($eventType)
+		{
+			case 1:	// double elimination
+				switch ($numGroups)
+				{
+					case 2:
+						$position = static::getPosDE2($finalFight);
+						break;
+					case 4:
+						$position = static::getPosDE4($finalFight);
+						break;
+					case 8:
+						$position = static::getPosDE8($finalFight);
+						break;
+					default:
+						$position = '';
+						break;
+				}
+				break;
+			default:
+				$position = '';
+				break;
+		}
+		return $position;
+	}
+
 	/**
 	 * @inheritdoc
 	 */
@@ -327,5 +361,71 @@ class Event extends \yii\db\ActiveRecord
 		{
 			return ($countA > $countB) ? - 1 : 1;
 		}
+	}
+
+	private static function getPosDE2($finalFight)
+	{
+		switch ($finalFight)
+		{
+			default:
+				$position = '';
+				break;
+		}
+		return $position;
+	}
+
+	private static function getPosDE4($finalFight)
+	{
+		switch ($finalFight)
+		{
+			case 256:
+				$position = '1st';
+				break;
+			case 255:
+			case 254:
+				$position = '2nd';
+				break;
+			case 253:
+				$position = '3rd';
+				break;
+			case 252:
+				$position = '4th';
+				break;
+			case 251:
+			case 250:
+				$position = 'Joint 5th';
+				break;
+			case 249:
+			case 248:
+				$position = 'Joint 7th';
+				break;
+			case 243:
+			case 244:
+			case 245:
+			case 246:
+				$position = 'Joint 9th';
+				break;
+			case 237:
+			case 238:
+			case 239:
+			case 240:
+				$position = 'Joint 13th';
+				break;
+			default:
+				$position = '';
+				break;
+		}
+		return $position;
+	}
+
+	private static function getPosDE8($finalFight)
+	{
+		switch ($finalFight)
+		{
+			default:
+				$position = '';
+				break;
+		}
+		return $position;
 	}
 }

@@ -152,12 +152,12 @@ class Fights extends \yii\db\ActiveRecord
     		{
     			$fightLoser->finalFightId = $record->id - $event->offset;
     		}
-    		$fightLoser->save();
+    		$fightLoser->save(false, ['status', 'finalFightId']);
     		if ($finished)
     		{
     			$entrant = Entrant::findOne($winner);
     			$entrant->finalFightId = 256;
-    			$entrant->save();
+    			$entrant->save(false, ['finalFightId']);
     			/* update event state */
     			$event->state = 'Complete';
     			$event->save(false, ['state']);
@@ -166,7 +166,7 @@ class Fights extends \yii\db\ActiveRecord
     		}
     		else
     		{
-    			return ['index', 'id' => $record->eventId, 'byes' => 0];
+    			return ['index', 'eventId' => $record->eventId, 'byes' => 0, 'complete' => 0];
     		}
     	}
     	else
@@ -238,7 +238,7 @@ class Fights extends \yii\db\ActiveRecord
 					$nextRecord->save(false, ['robot1Id']);
 					$status = true;
 				}
-				else if ($nextRecord->robot2Id == -1)
+				else if (($nextRecord->robot2Id == -1) && (($nextRecord->robot1Id != $robotId) || ($nextRecord->robot1Id == 0)))
 				{
 					$nextRecord->robot2Id = $robotId;
 					$nextRecord->save(false, ['robot2Id']);

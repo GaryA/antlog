@@ -64,7 +64,7 @@ class FightsController extends Controller
      * @param integer $eventId
      * @return mixed
      */
-    public function actionIndex($eventId = NULL, $byes = 0)
+    public function actionIndex($eventId = NULL, $byes = 0, $complete = 1)
     {
     	if ($eventId == NULL)
     	{
@@ -79,6 +79,11 @@ class FightsController extends Controller
     	else
     	{
     		$query = Fights::find()->where(['eventId' => $eventId]);
+			if ($complete == 0)
+    		{
+    			// don't show completed fights
+    			$query->andWhere(['winnerId' => -1]);
+    		}
     		if ($byes == 0)
     		{
     			// only show fights where both robots are known

@@ -35,7 +35,12 @@ $this->params['breadcrumbs'][] = $this->title;
 					]
 				]);
 		}
-		if ($model->state == 'Registration')
+		if ($model->state == 'Future')
+		{
+			echo Html::a('Open', ['open', 'id' => $model->id],
+				['class' => 'btn btn-primary']);
+		}
+		else if ($model->state == 'Registration')
 		{
 			echo Html::a('Update', ['update', 'id' => $model->id],
 				['class' => 'btn btn-primary']);

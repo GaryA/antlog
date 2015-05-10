@@ -89,6 +89,18 @@ class EventController extends Controller
 	}
 
 	/**
+	 * Open event registration
+	 * @param integer $id
+	 * @return \app\controllers\mixed
+	 */
+	public function actionOpen($id)
+	{
+		$model = $this->findModel($id);
+		$model->stateRegistration($id);
+		return $this->actionView($id);
+	}
+
+	/**
 	 * Start an event. Run the first fights and all the initial byes
 	 * @param integer $id the ID of the event
 	 * @return mixed
@@ -102,8 +114,8 @@ class EventController extends Controller
 			$status = $fights->runByes($id);
 			$count += 1;
 		} while ($status == true);
-		$message = "Ran $count byes";
-		return $this->actionDebug($id, 'Message', $message);
+		Yii::$app->getSession()->setFlash('success', "Ran $count byes.");
+		return $this->redirect(['@web/fights/index', 'eventId' => $id, 'byes' => 0]);
 	}
 
 	/**
