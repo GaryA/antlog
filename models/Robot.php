@@ -6,6 +6,7 @@ use Yii;
 use yii\helpers\ArrayHelper;
 use app\models\Event;
 use app\models\Entrant;
+use app\models\Fights;
 
 /**
  * This is the model class for table "{{%robot}}".
@@ -89,7 +90,7 @@ class Robot extends \yii\db\ActiveRecord
 	}
 
 	/**
-	 * Return true if robot is not in any complete event (so may be edited)
+	 * Return true if robot is not in any fight (so may be edited)
 	 * @param integer $id
 	 * @return boolean
 	 */
@@ -98,7 +99,23 @@ class Robot extends \yii\db\ActiveRecord
 		$entrants = Entrant::find()->where(['robotId' => $id])->all();
 		foreach ($entrants as $entrant)
 		{
-			if (Event::find()->where(['id' => $entrant->eventId])->andWhere(['not', ['state' => 'Registration']])->count() > 0)
+			if (Fights::find()->where(['robot1Id' => $entrant->id])
+				->orWhere(['robot2Id' => $entrant->id])
+				->count() > 0)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public function isOKToRetire($id)
+	{
+		$entrants = Entrant::find()->where(['robotId' => $id])->all();
+		foreach ($entrants as $entrant)
+		{
+			if (Event::find()->where(['id' => $entrant->eventId])
+				->andWhere(['not', ['state' => 'Complete']]))
 			{
 				return false;
 			}

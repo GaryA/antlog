@@ -109,6 +109,11 @@ class RobotController extends Controller
         } else {
             return $this->render('create', [
                 'model' => $model,
+            	'changeName' => true,
+            	'changeTeam' => true,
+            	'changeClass' => true,
+            	'changeType' => true,
+            	'retire' => true,
             ]);
         }
     }
@@ -128,6 +133,11 @@ class RobotController extends Controller
         } else {
             return $this->render('update', [
                 'model' => $model,
+            	'changeName' => $model->isOKToEdit($id),
+            	'changeTeam' => $model->isOKToEdit($id),
+            	'changeClass' => $model->isOKToDelete($id),
+            	'changeType' => $model->isOKToDelete($id),
+            	'retire' => $model->isOKToRetire($id),
             ]);
         }
     }

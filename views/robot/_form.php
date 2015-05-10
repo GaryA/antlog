@@ -13,12 +13,18 @@ use app\models\User;
 
 <div class="robot-form">
 
-    <?php $form = ActiveForm::begin(); ?>
-
-    <?= $form->field($model, 'name')->textInput(['maxlength' => 50]) ?>
-
     <?php
-	if (User::isUserAdmin())
+    $form = ActiveForm::begin();
+	if ($changeName == true)
+	{
+    	echo $form->field($model, 'name')->textInput(['maxlength' => 50]);
+	}
+	else
+	{
+		echo $form->field($model, 'name')->textInput(['value' => $model->name, 'disabled' => true]);
+	}
+
+	if (User::isUserAdmin() && ($changeTeam == true))
 	{
 		echo $form->field($model, 'teamId')->dropDownList(User::teamDropdown());
 	}
@@ -26,13 +32,37 @@ use app\models\User;
 	{
 		echo $form->field($model, 'teamId')->dropDownList(User::teamDropdown(Yii::$app->user->identity->id));
 	}
-	?>
 
-    <?= $form->field($model, 'classId')->dropDownList(ArrayHelper::map(RobotClass::find()->all(), 'id', 'name')) ?>
+	if ($changeClass == true)
+	{
+    	echo $form->field($model, 'classId')->dropDownList(ArrayHelper::map(RobotClass::find()->all(), 'id', 'name'));
+	}
+	else
+	{
+		echo $form->field($model, 'classId')->dropDownList(ArrayHelper::map(RobotClass::find()
+			->where(['id' => $model->classId])
+			->all(), 'id', 'name'));
+	}
 
-    <?= $form->field($model, 'type')->dropDownList(['' => '', 'Walker' => 'Walker', 'Cluster' => 'Cluster'])?>
+	if ($changeType == true)
+	{
+    	echo $form->field($model, 'type')->dropDownList(['' => '', 'Walker' => 'Walker', 'Cluster' => 'Cluster']);
+	}
+	else
+	{
+		echo $form->field($model, 'type')->textInput(['value'=>$model->type, 'disabled' => true]);
+	}
 
-    <?= $form->field($model, 'active')->dropDownList([0 => 'No', 1 => 'Yes']) ?>
+	if ($retire == true)
+	{
+    	echo $form->field($model, 'active')->dropDownList([0 => 'No', 1 => 'Yes']);
+	}
+	else
+	{
+		$active = ($model->active == 1) ? [1 => 'Yes'] : [0 => 'No'];
+		echo $form->field($model, 'active')->dropDownList($active);
+	}
+    ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
