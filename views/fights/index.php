@@ -70,7 +70,7 @@ $this->params['breadcrumbs'][] = $this->title;
 				{
 					if ($model->robot1Id > 0)
 					{
-						return '<a href = index.php?r=fights/update&id=' . $index . '&winner=' . $model->robot1->id . '>' . $model->robot1->robot->name . '</a>';
+						return Html::a($model->robot1->robot->name, ['/fights/update', 'id' => $index, 'winner' => $model->robot1->id]);
 					}
 					else
 					{
@@ -89,7 +89,7 @@ $this->params['breadcrumbs'][] = $this->title;
 				{
 					if ($model->robot2Id > 0)
 					{
-						return '<a href = index.php?r=fights/update&id=' . $index . '&winner=' . $model->robot2->id . '>' . $model->robot2->robot->name . '</a>';
+						return Html::a($model->robot2->robot->name, ['/fights/update', 'id' => $index, 'winner' => $model->robot2->id]);
 					}
 					else
 					{

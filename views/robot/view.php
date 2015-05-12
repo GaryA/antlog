@@ -52,8 +52,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'class.name',
         	[
 				'attribute' => 'active',
-        		'value' => $model->getActive($model),
-			]
+        		'format' => 'boolean',
+ 			]
         ],
     ]) ?>
 

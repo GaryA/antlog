@@ -24,8 +24,7 @@ class RobotSearch extends Robot
     {
         return [
             [['id', 'teamId', 'classId'], 'integer'],
-        	[['active'], 'boolean'],
-            [['name', 'team.name', 'class.name', 'type', 'active'], 'safe'],
+            [['name', 'team.name', 'class.name', 'type'], 'safe'],
         ];
     }
 
@@ -54,8 +53,8 @@ class RobotSearch extends Robot
         ]);
 
 		$dataProvider->sort->attributes['team.name'] = [
-			'asc' => ['{{%team}}.name' => SORT_ASC],
-			'desc' => ['{{%team}}.name' => SORT_DESC],
+			'asc' => ['{{%user}}.team_name' => SORT_ASC],
+			'desc' => ['{{%user}}.team_name' => SORT_DESC],
 		];
 
 		$dataProvider->sort->attributes['class.name'] = [
@@ -77,13 +76,12 @@ class RobotSearch extends Robot
             'id' => $this->id,
             'teamId' => $this->teamId,
             'classId' => $this->classId,
-        	'active' => $this->active,
         ]);
 
         $query->andFilterWhere(['like', '{{%robot}}.name', $this->name]);
         $query->andFilterWhere(['like', '{{%robot}}.type', $this->type]);
 
-		$query->andFilterWhere(['like', '{{%team}}.name', $this->getAttribute('team.name')]);
+		$query->andFilterWhere(['like', '{{%user}}.team_name', $this->getAttribute('team.name')]);
 		$query->andFilterWhere(['like', '{{%robot_class}}.name', $this->getAttribute('class.name')]);
 
         return $dataProvider;

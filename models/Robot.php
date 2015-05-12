@@ -140,15 +140,6 @@ class Robot extends \yii\db\ActiveRecord
 		}
 	}
 
-	/**
-	 * Return string representation of boolean 'active' flag
-	 * @param record $data
-	 * @return string
-	 */
-	public function getActive($data)
-	{
-		return $data->active ? 'Yes' : 'No';
-	}
     /**
      * @inheritdoc
      */
@@ -184,6 +175,7 @@ class Robot extends \yii\db\ActiveRecord
             'name' => 'Robot Name',
             'teamId' => 'Team Name',
             'classId' => 'Class',
+			'active' => 'Active',
         ];
     }
 

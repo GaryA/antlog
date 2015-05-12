@@ -25,7 +25,7 @@ $this->title = 'AntLog 3.0';
 		<div class="row">
 			<div class="col-lg-3 col-md-6">
 				<h2>
-					<a class="btn btn-primary btn-block" href="index.php?r=event">Events</a>
+				<?= Html::a('Events', ['/event'], ['class' => 'btn btn-primary btn-block']) ?>
 				</h2>
 
 <?php
@@ -85,7 +85,7 @@ echo GridView::widget (
 			</div>
 			<div class="col-lg-6 col-md-6">
 				<h2>
-					<a class="btn btn-primary btn-block" href="index.php?r=robot">Robots</a>
+				<?= Html::a('Robots', ['/robot'], ['class' => 'btn btn-primary btn-block']) ?>
 				</h2>
 <?php
 $robotData->pagination =
@@ -133,7 +133,7 @@ echo GridView::widget (
             </div>
 			<div class="col-lg-3 col-md-6">
 				<h2>
-					<a class="btn btn-primary btn-block" href="index.php?r=user">Teams</a>
+				<?= Html::a('Teams', ['/user'], ['class' => 'btn btn-primary btn-block']) ?>
 				</h2>
 <?php
 $teamData->pagination =
