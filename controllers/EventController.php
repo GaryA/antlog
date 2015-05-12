@@ -214,7 +214,7 @@ class EventController extends Controller
 
         if ($model->state == 'Future')
         {
-        	if ($model->eventDate == date("Y-m-d"))
+        	if ($model->eventDate == date('Y-m-d'))
             {
         		$model->stateRegistration($id);
         		// reload model to ensure updated state is shown
@@ -238,10 +238,17 @@ class EventController extends Controller
     {
         $model = new Event();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save())
-		{
-			return $this->redirect(['view', 'id' => $model->id]);
-		}
+        if ($model->load(Yii::$app->request->post()))
+        {
+        	if ($model->eventDate == date('Y-m-d'))
+        	{
+        		$model->state = 'Registration';
+        	}
+        	if ($model->save())
+			{
+				return $this->redirect(['view', 'id' => $model->id]);
+			}
+        }
 		return $this->render('create',
 		[
 			'model' => $model,

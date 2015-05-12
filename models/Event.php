@@ -116,7 +116,7 @@ class Event extends \yii\db\ActiveRecord
 			$entrantModel->setGroups($id, $groupList);
 
 			/* ready to start! */
-			$setupOK = $this->stateRunning($id, $offset);
+			$setupOK = $this->stateRunning($id, $offset, $numGroups);
 			if ($setupOK == false)
 			{
 				Yii::$app->getSession()->setFlash('error', 'Failed to save Running state to event model.');
@@ -207,15 +207,16 @@ class Event extends \yii\db\ActiveRecord
 	/**
 	 * function to set event state to "Running"
 	 */
-	private function stateRunning($id, $offset)
+	private function stateRunning($id, $offset, $numGroups)
 	{
 		Yii::trace('Entering ' . __METHOD__);
 		$event = static::findOne($id);
 		$event->state = 'Running';
 		$event->offset = $offset;
+		$event->num_groups = $numGroups;
 		Yii::trace('Leaving ' . __METHOD__);
 		return ($event->save(false, [
-			'state', 'offset'
+			'state', 'offset', 'num_groups'
 		]));
 	}
 
@@ -287,21 +288,7 @@ class Event extends \yii\db\ActiveRecord
 		switch ($eventType)
 		{
 			case 1:	// double elimination
-				switch ($numGroups)
-				{
-					case 2:
-						$position = static::getPosDE2($finalFight);
-						break;
-					case 4:
-						$position = static::getPosDE4($finalFight);
-						break;
-					case 8:
-						$position = static::getPosDE8($finalFight);
-						break;
-					default:
-						$position = '';
-						break;
-				}
+				$position = static::getPosDE($finalFight);
 				break;
 			default:
 				$position = '';
@@ -363,18 +350,7 @@ class Event extends \yii\db\ActiveRecord
 		}
 	}
 
-	private static function getPosDE2($finalFight)
-	{
-		switch ($finalFight)
-		{
-			default:
-				$position = '';
-				break;
-		}
-		return $position;
-	}
-
-	private static function getPosDE4($finalFight)
+	private static function getPosDE($finalFight)
 	{
 		switch ($finalFight)
 		{
@@ -411,17 +387,6 @@ class Event extends \yii\db\ActiveRecord
 			case 240:
 				$position = 'Joint 13th';
 				break;
-			default:
-				$position = '';
-				break;
-		}
-		return $position;
-	}
-
-	private static function getPosDE8($finalFight)
-	{
-		switch ($finalFight)
-		{
 			default:
 				$position = '';
 				break;

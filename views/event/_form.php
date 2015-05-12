@@ -31,23 +31,21 @@ echo $form->field($model, 'eventDate')->widget(DatePicker::classname(),
 			'format' => 'yyyy-mm-dd',
 		]
 	]);
+
+	$list = $model->isNewRecord ? ['Future' => 'Future'] : [$model->state => $model->state];
+	echo $form->field($model, 'state')->dropDownList($list);
+
+	if ($model->isOKToDelete($model->id))
+	{
+		echo $form->field($model, 'classId')->dropDownList(ArrayHelper::map(RobotClass::find()->all(), 'id', 'name'));
+	}
+	else
+	{
+		echo $form->field($model, 'classId')->dropDownList(ArrayHelper::map(RobotClass::find()
+			->where(['id' => $model->classId])
+			->all(), 'id', 'name'));
+	}
 ?>
-
-	<?= $form->field($model, 'state')->textInput(['value' => $model->isNewRecord ? 'Registration' : $model->state, 'disabled' => 'true'])?>
-
-    <?php
-				if ($model->isOKToDelete($model->id))
-				{
-					echo $form->field($model, 'classId')->dropDownList(ArrayHelper::map(RobotClass::find()->all(), 'id', 'name'));
-				}
-				else
-				{
-					echo $form->field($model, 'classId')->dropDownList(ArrayHelper::map(RobotClass::find()->where([
-						'id' => $model->classId
-					])
-						->all(), 'id', 'name'));
-				}
-				?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary'])?>

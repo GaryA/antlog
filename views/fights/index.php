@@ -37,6 +37,10 @@ $this->params['breadcrumbs'][] = $this->title;
 			{
 				$retVal = "Third Place Play-off";
 			}
+			else if ($model->fightRound == 12)
+			{
+				$retVal = "Fourth Place Play-off";
+			}
 			else if ($model->fightGroup == 9)
 			{
 				$retVal = "Finals Round $model->fightRound, $model->fightBracket bracket";

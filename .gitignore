@@ -28,3 +28,6 @@ phpunit.phar
 /phpunit.xml
 
 tests/_output/*
+
+# databases used for functional testing
+databases/*
