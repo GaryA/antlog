@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: May 12, 2015 at 10:17 PM
+-- Generation Time: May 13, 2015 at 09:15 PM
 -- Server version: 5.6.14
 -- PHP Version: 5.5.6
 
@@ -17,7 +17,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Database: `antlog`
+-- Database: `antlog_tests`
 --
 CREATE DATABASE IF NOT EXISTS `antlog_tests` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
 USE `antlog_tests`;
@@ -394,6 +394,26 @@ CREATE TABLE IF NOT EXISTS `aws_fights` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `aws_migration`
+--
+
+DROP TABLE IF EXISTS `aws_migration`;
+CREATE TABLE IF NOT EXISTS `aws_migration` (
+  `version` varchar(180) NOT NULL,
+  `apply_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`version`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `aws_migration`
+--
+
+INSERT INTO `aws_migration` (`version`, `apply_time`) VALUES
+('m000000_000000_base', 1430743433);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `aws_robot`
 --
 
@@ -454,14 +474,15 @@ CREATE TABLE IF NOT EXISTS `aws_user` (
   `team_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=32 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=33 ;
 
 --
 -- Dumping data for table `aws_user`
 --
 
 INSERT INTO `aws_user` (`id`, `username`, `password_hash`, `auth_key`, `password_reset_token`, `email`, `status`, `created_at`, `updated_at`, `user_group`, `team_name`) VALUES
-(1, 'admin', '$2y$13$PdkQ4FExnX4OBm51q0WOwuBK1HkXQiGoj9hdt3vHLuIQeoZBCtcsK', 'Ml836D_d49Ja3KiK6eSdrVe8R-nm2A_B', NULL, 'admin@admin.com', 10, 1429478521, 1429740286, 1, '');
+(1, 'admin', '$2y$13$PdkQ4FExnX4OBm51q0WOwuBK1HkXQiGoj9hdt3vHLuIQeoZBCtcsK', 'Ml836D_d49Ja3KiK6eSdrVe8R-nm2A_B', NULL, 'admin@admin.com', 10, 1429478521, 1429740286, 1, ''),
+(32, 'test_user', '$2y$13$8cqmR1dTL7R7z3eHrQ2Yyex6BBpfr4s2Hj7XCl5LWFi.VyjpVOa1S', 'faO25a8BlYNH2a7-5biXHgBWmo0V4WiK', NULL, 'user@test.com', 10, 1431544461, 1431544461, 2, 'Team Test');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
