@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: May 04, 2015 at 11:13 PM
+-- Generation Time: May 12, 2015 at 10:17 PM
 -- Server version: 5.6.14
 -- PHP Version: 5.5.6
 
@@ -17,7 +17,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Database: `antlog_tests`
+-- Database: `antlog`
 --
 CREATE DATABASE IF NOT EXISTS `antlog_tests` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
 USE `antlog_tests`;
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `aws_double_elim` (
   `sequence` int(11) NOT NULL DEFAULT '-1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `FightID` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Double elimination template' AUTO_INCREMENT=255 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Double elimination template' AUTO_INCREMENT=256 ;
 
 --
 -- Dumping data for table `aws_double_elim`
@@ -245,12 +245,12 @@ INSERT INTO `aws_double_elim` (`id`, `eventId`, `fightGroup`, `fightRound`, `fig
 (191, 0, 8, 4, 'L', 1, -1, -1, -1, -1, 24, 0, -1),
 (192, 0, 8, 4, 'L', 2, -1, -1, -1, -1, 24, 0, -1),
 (193, 0, 1, 4, 'W', 1, -1, -1, -1, -1, 40, 32, -1),
-(194, 0, 2, 4, 'W', 1, -1, -1, -1, -1, 41, 32, -1),
-(195, 0, 3, 4, 'W', 1, -1, -1, -1, -1, 39, 32, -1),
+(194, 0, 2, 4, 'W', 1, -1, -1, -1, -1, 40, 32, -1),
+(195, 0, 3, 4, 'W', 1, -1, -1, -1, -1, 40, 32, -1),
 (196, 0, 4, 4, 'W', 1, -1, -1, -1, -1, 40, 32, -1),
 (197, 0, 5, 4, 'W', 1, -1, -1, -1, -1, 36, 32, -1),
-(198, 0, 6, 4, 'W', 1, -1, -1, -1, -1, 37, 32, -1),
-(199, 0, 7, 4, 'W', 1, -1, -1, -1, -1, 35, 32, -1),
+(198, 0, 6, 4, 'W', 1, -1, -1, -1, -1, 36, 32, -1),
+(199, 0, 7, 4, 'W', 1, -1, -1, -1, -1, 36, 32, -1),
 (200, 0, 8, 4, 'W', 1, -1, -1, -1, -1, 36, 32, -1),
 (201, 0, 1, 5, 'L', 1, -1, -1, -1, -1, 16, 0, -1),
 (202, 0, 1, 5, 'L', 1, -1, -1, -1, -1, 15, 0, -1),
@@ -277,12 +277,12 @@ INSERT INTO `aws_double_elim` (`id`, `eventId`, `fightGroup`, `fightRound`, `fig
 (223, 0, 7, 6, 'L', 1, -1, -1, -1, -1, 8, 0, -1),
 (224, 0, 8, 6, 'L', 1, -1, -1, -1, -1, 8, 0, -1),
 (225, 0, 1, 7, 'L', 1, -1, -1, -1, -1, 12, 0, -1),
-(226, 0, 2, 7, 'L', 1, -1, -1, -1, -1, 13, 0, -1),
-(227, 0, 3, 7, 'L', 1, -1, -1, -1, -1, 11, 0, -1),
+(226, 0, 2, 7, 'L', 1, -1, -1, -1, -1, 12, 0, -1),
+(227, 0, 3, 7, 'L', 1, -1, -1, -1, -1, 12, 0, -1),
 (228, 0, 4, 7, 'L', 1, -1, -1, -1, -1, 12, 0, -1),
 (229, 0, 5, 7, 'L', 1, -1, -1, -1, -1, 8, 0, -1),
-(230, 0, 6, 7, 'L', 1, -1, -1, -1, -1, 9, 0, -1),
-(231, 0, 7, 7, 'L', 1, -1, -1, -1, -1, 7, 0, -1),
+(230, 0, 6, 7, 'L', 1, -1, -1, -1, -1, 8, 0, -1),
+(231, 0, 7, 7, 'L', 1, -1, -1, -1, -1, 8, 0, -1),
 (232, 0, 8, 7, 'L', 1, -1, -1, -1, -1, 8, 0, -1),
 (233, 0, 9, 8, 'W', 1, -1, -1, -1, -1, 8, 11, -1),
 (234, 0, 9, 8, 'W', 2, -1, -1, -1, -1, 8, 12, -1),
@@ -305,7 +305,8 @@ INSERT INTO `aws_double_elim` (`id`, `eventId`, `fightGroup`, `fightRound`, `fig
 (251, 0, 9, 11, 'L', 2, -1, -1, -1, -1, 1, 0, -1),
 (252, 0, 9, 12, 'L', 1, -1, -1, -1, -1, 1, 0, -1),
 (253, 0, 9, 13, 'L', 1, -1, -1, -1, -1, 1, 0, -1),
-(254, 0, 10, 14, 'F', 1, -1, -1, -1, -1, 0, 0, -1);
+(254, 0, 10, 14, 'F', 1, -1, -1, -1, -1, 1, 1, -1),
+(255, 0, 10, 15, 'F', 1, -1, -1, -1, -1, 0, 0, -1);
 
 -- --------------------------------------------------------
 
@@ -320,9 +321,10 @@ CREATE TABLE IF NOT EXISTS `aws_entrant` (
   `robotId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (robotId) REFERENCES aws_robot(id)',
   `status` int(11) DEFAULT '-1',
   `finalFightId` int(11) NOT NULL DEFAULT '0' COMMENT 'CONSTRAINT FOREIGN KEY (finalFightId) REFERENCES aws_fights(id)',
+  `group_num` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `EntrantID` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=44 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=49 ;
 
 -- --------------------------------------------------------
 
@@ -335,12 +337,34 @@ CREATE TABLE IF NOT EXISTS `aws_event` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
   `eventDate` date NOT NULL,
-  `state` enum('Complete','Running','Setup','Registration') NOT NULL DEFAULT 'Registration',
+  `state` enum('Complete','Running','Setup','Registration','Future') NOT NULL DEFAULT 'Registration',
   `classId` int(11) NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (classId) REFERENCES aws_robot_class(id)',
+  `eventType` tinyint(4) NOT NULL DEFAULT '1' COMMENT 'CONSTRAINT FOREIGN KEY (eventType) REFERENCES aws_event_type(id)',
+  `num_groups` tinyint(4) NOT NULL,
   `offset` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `aws_event_type`
+--
+
+DROP TABLE IF EXISTS `aws_event_type`;
+CREATE TABLE IF NOT EXISTS `aws_event_type` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(32) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+
+--
+-- Dumping data for table `aws_event_type`
+--
+
+INSERT INTO `aws_event_type` (`id`, `name`) VALUES
+(1, 'double_elim');
 
 -- --------------------------------------------------------
 
@@ -365,27 +389,7 @@ CREATE TABLE IF NOT EXISTS `aws_fights` (
   `sequence` int(11) NOT NULL DEFAULT '-1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `FightID` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Double elimination template' AUTO_INCREMENT=256 ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `aws_migration`
---
-
-DROP TABLE IF EXISTS `aws_migration`;
-CREATE TABLE IF NOT EXISTS `aws_migration` (
-  `version` varchar(180) NOT NULL,
-  `apply_time` int(11) DEFAULT NULL,
-  PRIMARY KEY (`version`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `aws_migration`
---
-
-INSERT INTO `aws_migration` (`version`, `apply_time`) VALUES
-('m000000_000000_base', 1430743433);
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Double elimination template' AUTO_INCREMENT=766 ;
 
 -- --------------------------------------------------------
 
@@ -399,10 +403,12 @@ CREATE TABLE IF NOT EXISTS `aws_robot` (
   `name` varchar(50) NOT NULL,
   `teamId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (teamId) REFERENCES aws_user(id)',
   `classId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (classId) REFERENCES aws_robot_class(id)',
+  `type` set('','Walker','Cluster') NOT NULL,
+  `active` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `RobotID_2` (`id`),
   KEY `RobotID` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=44 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=45 ;
 
 -- --------------------------------------------------------
 
@@ -448,15 +454,14 @@ CREATE TABLE IF NOT EXISTS `aws_user` (
   `team_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=334 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=32 ;
 
 --
 -- Dumping data for table `aws_user`
 --
 
 INSERT INTO `aws_user` (`id`, `username`, `password_hash`, `auth_key`, `password_reset_token`, `email`, `status`, `created_at`, `updated_at`, `user_group`, `team_name`) VALUES
-(326, 'admin', '$2y$13$gmN2iV9XFzNoKMiElVJDdey4LvLj5ZojGfwmtOkNmMtzK0/lRDP0u', 'lJimmcbUHj3bHrcH0rYo9mq1hBrMG0Ek', 't5GU9NwpuGYSfb7FEZMAxqtuz2PkEvv_1430768701', 'admin@test.com', 10, 1430761615, 1430761615, 1, 'admin'),
-(327, 'test_user', '$2y$13$aaIMjgJtxDw8mhqffcfJXetTJvHvT2aeFSoKSyHE4jzXCRdJDn6WO', 'Q9XWMbYleBwAYl_kNvhrSIEH4d-FxdjE', '4BSNyiZNAuxjs5Mty990c47sVrgllIi_1430768701', 'user@test.com', 0, 1430761657, 1430761657, 2, 'Team Test');
+(1, 'admin', '$2y$13$PdkQ4FExnX4OBm51q0WOwuBK1HkXQiGoj9hdt3vHLuIQeoZBCtcsK', 'Ml836D_d49Ja3KiK6eSdrVe8R-nm2A_B', NULL, 'admin@admin.com', 10, 1429478521, 1429740286, 1, '');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

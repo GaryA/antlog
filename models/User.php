@@ -28,7 +28,7 @@ class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
-	
+
 	const ROLE_ADMIN = 1;
 	const ROLE_TEAM = 2;
 
@@ -61,10 +61,10 @@ class User extends ActiveRecord implements IdentityInterface
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
 			['user_group', 'default', 'value' => self::ROLE_TEAM],
-			['user_group', 'in', 'range' => [self::ROLE_ADMIN, self::ROLE_TEAM]], 
+			['user_group', 'in', 'range' => [self::ROLE_ADMIN, self::ROLE_TEAM]],
         ];
     }
-    
+
     /**
      * Return an array of user IDs and names to populate a dropdown box
      * Only returns users that are teams (not administrators)
@@ -81,13 +81,14 @@ class User extends ActiveRecord implements IdentityInterface
     	{
     		$models = static::find()->where(['user_group' => self::ROLE_TEAM])->all();
     	}
+    	$dropdown = NULL;
     	foreach ($models as $model)
     	{
     		$dropdown[$model->id] = $model->team_name;
     	}
     	return $dropdown;
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -221,7 +222,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $this->password_reset_token = null;
     }
-	
+
 	/**
 	 * Check whether current user belongs to admin group
 	 * @return boolean
@@ -240,7 +241,7 @@ class User extends ActiveRecord implements IdentityInterface
 
 	/**
 	 * Check whether ID (probably team ID) is current user
-	 * @param integer $id The ID to be checked 
+	 * @param integer $id The ID to be checked
 	 * @return boolean
 	 */
 	public static function isCurrentUser($id)
@@ -254,7 +255,7 @@ class User extends ActiveRecord implements IdentityInterface
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Get all robots belonging to user (team)
 	 * @return \yii\db\ActiveQuery
@@ -263,7 +264,7 @@ class User extends ActiveRecord implements IdentityInterface
 	{
 		return $this->hasMany(Robot::className(), ['teamId' => 'id']);
 	}
-	
+
 	/**
 	 * Return true if user's team contains no robots (so may be deleted)
 	 * @param integer $id
@@ -273,5 +274,5 @@ class User extends ActiveRecord implements IdentityInterface
 	{
 		return Robot::find()->where(['teamId' => $id])->count() > 0 ? false : true;
 	}
-	
+
 }
