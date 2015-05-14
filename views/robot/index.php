@@ -36,7 +36,7 @@ $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
             // 'id',
             'name',
-        	'type',
+        	'type.name',
             [
 				'attribute' =>'teamId',
 				'label' => 'Team',

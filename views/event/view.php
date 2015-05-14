@@ -110,13 +110,13 @@ foreach ($teams as $team => $robots)
 	foreach ($robots as $robot)
 	{
 		$model = Entrant::findOne($robot);
-		if ($model->robot->type == '')
+		if ($model->robot->typeId == 0)
 		{
 			echo $model->robot->name . '<br>';
 		}
 		else
 		{
-			echo $model->robot->name . ' (' . $model->robot->type . ')<br>';
+			echo $model->robot->name . ' (' . $model->robot->type->name . ')<br>';
 		}
 	}
 	echo '</td><td>' . count($robots) . '</td></tr>';

@@ -104,13 +104,13 @@ echo GridView::widget (
 			'format' => 'raw',
 			'value' => function ($model, $index, $dataColumn)
 			{
-				if ($model->type == '')
+				if ($model->typeId == 0)
 				{
 					$type = '';
 				}
 				else
 				{
-					$type = ' (' . $model->type . ')';
+					$type = ' (' . $model->type->name . ')';
 				}
 				return Html::a ( $model->name . $type,
 					[

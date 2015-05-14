@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use yii\widgets\ActiveForm;
 use app\models\RobotClass;
+use app\models\RobotType;
 use app\models\User;
 
 /* @var $this yii\web\View */
@@ -46,11 +47,13 @@ use app\models\User;
 
 	if ($changeType == true)
 	{
-    	echo $form->field($model, 'type')->dropDownList(['' => '', 'Walker' => 'Walker', 'Cluster' => 'Cluster']);
+    	echo $form->field($model, 'typeId')->dropDownList(ArrayHelper::map(RobotType::find()->all(), 'id', 'name'));
 	}
 	else
 	{
-		echo $form->field($model, 'type')->textInput(['value'=>$model->type, 'disabled' => true]);
+		echo $form->field($model, 'typeId')->dropDownList(ArrayHelper::map(RobotType::find()
+			->where(['id' => $model->typeId])
+			->all(), 'id', 'name'));
 	}
 
 	if ($retire == true)

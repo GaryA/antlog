@@ -44,7 +44,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             //'id',
             'name',
-        	'type',
+        	'type.name',
             [
 				'attribute' => 'team.team_name',
             	'label' => 'Team',

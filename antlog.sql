@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: May 12, 2015 at 10:17 PM
+-- Generation Time: May 14, 2015 at 10:12 PM
 -- Server version: 5.6.14
 -- PHP Version: 5.5.6
 
@@ -337,7 +337,7 @@ CREATE TABLE IF NOT EXISTS `aws_event` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
   `eventDate` date NOT NULL,
-  `state` enum('Complete','Running','Setup','Registration','Future') NOT NULL DEFAULT 'Registration',
+  `state` enum('Complete','Running','Setup','Registration','Future') NOT NULL DEFAULT 'Future',
   `classId` int(11) NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (classId) REFERENCES aws_robot_class(id)',
   `eventType` tinyint(4) NOT NULL DEFAULT '1' COMMENT 'CONSTRAINT FOREIGN KEY (eventType) REFERENCES aws_event_type(id)',
   `num_groups` tinyint(4) NOT NULL,
@@ -403,7 +403,7 @@ CREATE TABLE IF NOT EXISTS `aws_robot` (
   `name` varchar(50) NOT NULL,
   `teamId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (teamId) REFERENCES aws_user(id)',
   `classId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (classId) REFERENCES aws_robot_class(id)',
-  `type` set('','Walker','Cluster') NOT NULL,
+  `typeId` smallint(6) NOT NULL DEFAULT '0' COMMENT 'CONSTRAINT FOREIGN KEY (typeId) REFERENCES aws_robot_type(id)',
   `active` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `RobotID_2` (`id`),
@@ -424,14 +424,37 @@ CREATE TABLE IF NOT EXISTS `aws_robot_class` (
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='List of robot weight classes' AUTO_INCREMENT=4 ;
 
+
 --
 -- Dumping data for table `aws_robot_class`
 --
 
 INSERT INTO `aws_robot_class` (`id`, `name`) VALUES
-(1, 'Antweight'),
+(1, 'Nanoweight'),
 (2, 'Fleaweight'),
-(3, 'Nanoweight');
+(3, 'Antweight');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `aws_robot_type`
+--
+
+DROP TABLE IF EXISTS `aws_robot_type`;
+CREATE TABLE IF NOT EXISTS `aws_robot_type` (
+  `id` smallint(6) NOT NULL,
+  `name` varchar(32) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `aws_robot_type`
+--
+
+INSERT INTO `aws_robot_type` (`id`, `name`) VALUES
+(0, 'Roller'),
+(1, 'Walker'),
+(2, 'Cluster');
 
 -- --------------------------------------------------------
 

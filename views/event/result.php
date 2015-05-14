@@ -56,13 +56,13 @@ echo GridView::widget([
 			'attribute' => 'robot.name',
 			'value' => function($model, $index, $dataColumn)
 			{
-				if ($model->robot->type == '')
+				if ($model->robot->typeId == 0)
 				{
 					return $model->robot->name;
 				}
 				else
 				{
-					return $model->robot->name . ' (' . $model->robot->type . ')';
+					return $model->robot->name . ' (' . $model->robot->type->name . ')';
 				}
 			},
 		],

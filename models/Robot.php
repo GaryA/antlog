@@ -15,7 +15,7 @@ use app\models\Fights;
  * @property string $name
  * @property integer $teamId
  * @property integer $classId
- * @property string $type
+ * @property integer $typeId
  * @property integer $active
  *
  * @property DoubleElim[] $doubleElims
@@ -47,9 +47,9 @@ class Robot extends \yii\db\ActiveRecord
 		$models = $query->all();
 		foreach ($models as $model)
 		{
-			if ($model->type != '')
+			if ($model->typeId != 0)
 			{
-				$dropdown[$model->id] = $model->name . ' (' . $model->type . ')';
+				$dropdown[$model->id] = $model->name . ' (' . $model->type->name . ')';
 			}
 			else
 			{
@@ -155,8 +155,8 @@ class Robot extends \yii\db\ActiveRecord
     {
         return
 		[
-            [['name', 'teamId', 'classId', 'active'], 'required'],
-            [['teamId', 'classId'], 'integer'],
+            [['name', 'teamId', 'classId', 'typeId', 'active'], 'required'],
+            [['teamId', 'classId', 'typeId'], 'integer'],
 			[['active'],'boolean'],
 			[['active'], 'default', 'value' => 1],
             [['name'], 'string', 'max' => 50],
@@ -175,6 +175,7 @@ class Robot extends \yii\db\ActiveRecord
             'name' => 'Robot Name',
             'teamId' => 'Team Name',
             'classId' => 'Class',
+			'typeId' => 'Type',
 			'active' => 'Active',
         ];
     }
@@ -209,5 +210,13 @@ class Robot extends \yii\db\ActiveRecord
     public function getClass()
     {
         return $this->hasOne(RobotClass::className(), ['id' => 'classId']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getType()
+    {
+    	return $this->hasOne(RobotType::className(), ['id' => 'typeId']);
     }
 }
