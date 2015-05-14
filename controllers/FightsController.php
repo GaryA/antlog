@@ -92,7 +92,7 @@ class FightsController extends Controller
     		if ($byes == 1)
     		{
     			// only show fights where at least one robot is known
-    			$query->andWhere(['>', 'robot1Id', 0])->orWhere(['>', 'robot2Id', 0]);
+    			$query->andWhere(['or', 'robot1Id > 0', 'robot2Id > 0']);
     		}
     		$fightsProvider = new ActiveDataProvider([
     			'query' => $query,
