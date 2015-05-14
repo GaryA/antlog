@@ -30,21 +30,25 @@ class Robot extends \yii\db\ActiveRecord
 	 * @param boolean $active
 	 * @return array
 	 */
-	public static function dropdown($active = NULL, $event = NULL)
+	public static function dropdown($active = NULL, $eventId = NULL)
 	{
 		$query = static::find();
 		if (isset($active))
 		{
 			$query->andWhere(['active' => $active]);
 		}
-		if (isset($event))
+		if (isset($eventId))
 		{
+			$event = Event::findOne($eventId);
 			// get all ids of robots entered in current event, return as array
-			$array = ArrayHelper::getColumn(Entrant::find()->where(['eventId' => $event])->all(), 'robotId');
+			$array = ArrayHelper::getColumn(Entrant::find()->where(['eventId' => $eventId])->all(), 'robotId');
 			// modify query to exclude ids in list
 			$query->andWhere(['not in', 'id', $array]);
+			// modify query to exclude robots from bigger classes than the event is for
+			$query->andWhere(['<=', 'classId', $event->classId]);
 		}
 		$models = $query->all();
+		$dropdown = [];
 		foreach ($models as $model)
 		{
 			if ($model->typeId != 0)
