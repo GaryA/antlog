@@ -20,9 +20,9 @@ class RobotCreatePage extends BasePage
 		extract($robotData);
 		$this->actor->fillField(['name' => "Robot[name]"], $name);
 		$this->actor->selectOption(['name' => "Robot[classId]"], $classId);
-		$this->actor->selectOption(['name' => "Robot[type]"], $type);
+		$this->actor->selectOption(['name' => "Robot[typeId]"], $typeId);
 		$this->actor->selectOption(['name' => "Robot[active]"], $active);
-		
+
 		$this->actor->click('Create');
     }
 }

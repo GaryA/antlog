@@ -42,7 +42,7 @@ class RobotCest
 		$loginPage = LoginPage::openBy($I);
 		$loginPage->login('test_user', 'password');
 	}
-	
+
     /**
      * @before login
      * @param \codeception_frontend\FunctionalTester $I
@@ -54,12 +54,12 @@ class RobotCest
 
         $robotCreatePage = RobotCreatePage::openBy($I);
         $I->see('Create Robot', 'h1');
- 
+
         $I->amGoingTo('submit new robot form with no data');
 
         $robotCreatePage->submit([
 			'name' => '',
-			'type' => '',
+			'typeId' => 0,
 			'classId' => 1,
 			'active' => 0,
 		]);
@@ -70,7 +70,7 @@ class RobotCest
         $I->amGoingTo('submit new robot form with correct data');
         $robotCreatePage->submit([
             'name' => 'Test Robot',
-            'type' => 'Walker',
+            'typeId' => 1,
 			'classId' => 1,
             'active' => 1,
         ]);
@@ -79,7 +79,7 @@ class RobotCest
         $I->seeRecord('app\models\Robot', [
             'name' => 'Test Robot',
 			'classId' => 1,
-            'type' => 'Walker',
+            'typeId' => 1,
 			'active' => '1',
         ]);
 
