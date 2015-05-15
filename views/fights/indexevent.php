@@ -19,7 +19,8 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="fights-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1><?= Html::encode($this->title . ' - ' . $event->name) ?></h1>
+    <p>Winners shown in <b>bold</b></p>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <?= GroupGridView::widget([
