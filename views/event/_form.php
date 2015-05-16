@@ -27,6 +27,7 @@ echo $form->field($model, 'eventDate')->widget(DatePicker::classname(),
 		],
 		'pluginOptions' =>
 		[
+			'todayHighlight' => true,
 			'autoclose'=>true,
 			'format' => 'yyyy-mm-dd',
 		]

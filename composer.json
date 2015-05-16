@@ -1,16 +1,15 @@
 {
-    "name": "yiisoft/yii2-app-basic",
+    "name": "GaryA/AntLog",
     "description": "Yii 2 Basic Application Template",
-    "keywords": ["yii2", "framework", "basic", "application template"],
-    "homepage": "http://www.yiiframework.com/",
+    "keywords": ["yii2", "antlog", "aws", "application"],
+    "homepage": "http://www.garya.org.uk/",
     "type": "project",
     "license": "BSD-3-Clause",
     "support": {
-        "issues": "https://github.com/yiisoft/yii2/issues?state=open",
-        "forum": "http://www.yiiframework.com/forum/",
-        "wiki": "http://www.yiiframework.com/wiki/",
-        "irc": "irc://irc.freenode.net/yii",
-        "source": "https://github.com/yiisoft/yii2"
+        "issues": "https://github.com/garya/antlog/issues?state=open",
+        "forum": "http://robotwars101.org/forum/",
+        "wiki": "http://github.com/garya/antlog/wiki/",
+        "source": "https://github.com/garya/antlog"
     },
     "minimum-stability": "stable",
     "require": {
@@ -19,7 +18,8 @@
         "yiisoft/yii2-bootstrap": "*",
         "yiisoft/yii2-swiftmailer": "*",
 		"kartik-v/yii2-widgets": "*",
-		"2amigos/yii2-grid-view-library" : "*"
+		"2amigos/yii2-grid-view-library" : "*",
+		"mdmsoft/yii2-captcha": "1.0.0"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",
