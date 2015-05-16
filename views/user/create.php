@@ -4,7 +4,7 @@ use yii\helpers\Html;
 
 
 /* @var $this yii\web\View */
-/* @var $model app\models\Team */
+/* @var $model app\models\User */
 
 $this->title = 'Create Team';
 $this->params['breadcrumbs'][] = ['label' => 'Teams', 'url' => ['index']];

@@ -18,8 +18,7 @@
         "yiisoft/yii2-bootstrap": "*",
         "yiisoft/yii2-swiftmailer": "*",
 		"kartik-v/yii2-widgets": "*",
-		"2amigos/yii2-grid-view-library" : "*",
-		"mdmsoft/yii2-captcha": "1.0.0"
+		"2amigos/yii2-grid-view-library" : "*"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",

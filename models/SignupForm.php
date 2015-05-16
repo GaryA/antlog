@@ -14,6 +14,7 @@ class SignupForm extends Model
     public $email;
     public $password;
     public $team_name;
+    public $captcha;
 
     /**
      * @inheritdoc
@@ -37,6 +38,9 @@ class SignupForm extends Model
 
             ['password', 'required'],
             ['password', 'string', 'min' => 5],
+
+        	['captcha', 'captcha'],
+        	['captcha', 'required'],
         ];
     }
 
