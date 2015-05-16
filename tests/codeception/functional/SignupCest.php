@@ -7,6 +7,7 @@ use app\models\User;
 
 class SignupCest
 {
+	protected $captcha = 'testme';
 
     /**
      * This method is called before each cest class test method
@@ -66,6 +67,7 @@ class SignupCest
             'email' => 'tester.email',
             'password' => 'password',
 			'team_name' => 'Team Test 2',
+        	'captcha' => $this->captcha,
         ]);
 
         $I->expectTo('see that email address is wrong');
@@ -80,6 +82,7 @@ class SignupCest
             'email' => 'user@test.com',
             'password' => 'password',
 			'team_name' => 'New Team Test',
+        	'captcha' => $this->captcha,
         ]);
 
         $I->expectTo('see that username has already been taken');
@@ -94,6 +97,7 @@ class SignupCest
             'email' => 'user@test.com',
             'password' => 'password',
 			'team_name' => 'Team Test',
+        	'captcha' => $this->captcha,
         ]);
 
         $I->expectTo('see that  team name has already been taken');
@@ -108,6 +112,7 @@ class SignupCest
             'email' => 'user2@test.com',
             'password' => 'password',
 			'team_name' => 'Team Test 2',
+        	'captcha' => $this->captcha,
         ]);
 
         $I->expectTo('see that user is created');

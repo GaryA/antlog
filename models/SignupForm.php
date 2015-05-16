@@ -71,12 +71,6 @@ class SignupForm extends Model
             $user->setPassword($this->password);
             $user->generateAuthKey();
             $user->save(false);
-
-			// Add teams to the 'team' role for authorisation
-			//$auth = Yii::$app->authManager;
-			//$authorRole = $auth->getRole('team');
-			//$auth->assign($authorRole, $user->getId());
-
 			return $user;
         }
 

@@ -17,8 +17,6 @@ use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
-//use app\models\ContactForm;
-//use app\models\EntryForm;
 
 class SiteController extends Controller
 {
@@ -64,12 +62,6 @@ class SiteController extends Controller
 			[
                 'class' => 'yii\web\ErrorAction',
             ],
-/*
-            'captcha' => [
-            	'class' => 'mdm\captcha\CaptchaAction',
-                'level' => 1,
-            ],
-*/
   			'captcha' =>
 			[
                 'class' => 'yii\captcha\CaptchaAction',
@@ -166,22 +158,8 @@ class SiteController extends Controller
 
         return $this->goHome();
     }
-/*
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
 
-            return $this->refresh();
-        } else {
-            return $this->render('contact', [
-                'model' => $model,
-            ]);
-        }
-    }
-*/
-	/**
+    /**
 	 * Render the about view
 	 * @return mixed
 	 */

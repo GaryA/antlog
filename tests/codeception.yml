@@ -1,9 +1,9 @@
 actor: Tester
 coverage:
-    #c3_url: http://localhost:8080/index-test.php/
+    c3_url: http://antlog.local/index-test.php/
     enabled: true
-    #remote: true
-    #remote_config: '../tests/codeception.yml'
+    remote: true
+    remote_config: '../tests/codeception.yml'
     white_list:
         include:
             - ../models/*
