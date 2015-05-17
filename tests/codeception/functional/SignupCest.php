@@ -124,5 +124,12 @@ class SignupCest
 
         $I->expectTo('see that user logged in');
         $I->seeLink('Logout (test_user2)');
+
+        $I->amGoingTo('logout newly created user');
+        $I->sendAjaxPostRequest('/site/logout');
+
+        $I->expectTo('see that user is logged out');
+        $I->seeInCurrentUrl('/site/logout');
+        //$I->see('Login', 'li');
     }
 }

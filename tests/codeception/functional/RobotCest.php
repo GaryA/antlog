@@ -43,8 +43,14 @@ class RobotCest
 		$loginPage->login('test_user', 'password');
 	}
 
+	protected function logout($I)
+	{
+		$I->click('Logout (test_user)');
+	}
+
     /**
      * @before login
+     * @after logout
      * @param \codeception_frontend\FunctionalTester $I
      * @param \Codeception\Scenario $scenario
      */
@@ -69,7 +75,7 @@ class RobotCest
 
         $I->amGoingTo('submit new robot form with correct data');
         $robotCreatePage->submit([
-            'name' => 'Test Robot',
+            'name' => 'Test Robot 2',
             'typeId' => 1,
 			'classId' => 1,
             'active' => 1,
@@ -77,13 +83,56 @@ class RobotCest
 
         $I->expectTo('see that robot is created');
         $I->seeRecord('app\models\Robot', [
-            'name' => 'Test Robot',
+            'name' => 'Test Robot 2',
 			'classId' => 1,
             'typeId' => 1,
-			'active' => '1',
+			'active' => 1,
         ]);
+        $I->see('Test Robot 2');
+        $I->see('Nanoweight');
+        $I->see('Walker');
+        $I->see('Yes');
 
-        $I->expectTo('see that robot is created');
-        $I->see('Test Robot');
+    }
+
+    /**
+     * @before login
+     * @after logout
+     * @param \codeception_frontend\FunctionalTester $I
+     * @param \Codeception\Scenario $scenario
+     */
+    public function testRobotUpdate($I, $scenario)
+    {
+    	$I->amGoingTo('update existing robot');
+    	$I->haveRecord('app\models\Robot', [
+    		'id' => 1,
+    		'name' => 'Test Robot',
+    		'teamId' => 32,
+    		'classId' => 1,
+    		'typeId' => 1,
+    		'active' => 1,
+    	]);
+    	$I->amOnPage(['robot/view', 'id' => 1]);
+    	$I->click('Update');
+    	$I->see('Update Robot: Test Robot', 'h1');
+
+    	$I->amGoingTo('change robot name');
+    	$I->fillField('Robot[name]', 'New Test Robot');
+    	$I->selectOption(['name' => "Robot[classId]"], 2);
+    	$I->selectOption(['name' => "Robot[typeId]"], 2);
+    	$I->selectOption(['name' => "Robot[active]"], 0);
+    	$I->click('Update');
+
+    	$I->expectTo('see that robot name is changed');
+    	$I->seeRecord('app\models\Robot', [
+    		'name' => 'New Test Robot',
+    		'classId' => 2,
+    		'typeId' => 2,
+    		'active' => 0,
+    	]);
+    	$I->see('New Test Robot');
+    	$I->see('Fleaweight');
+    	$I->see('Cluster');
+    	$I->see('No');
     }
 }
