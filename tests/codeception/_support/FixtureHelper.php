@@ -2,6 +2,7 @@
 namespace tests\codeception\_support;
 use tests\codeception\fixtures\UserFixture;
 use tests\codeception\fixtures\RobotFixture;
+use tests\codeception\fixtures\EntrantFixture;
 use Codeception\Module;
 use yii\test\FixtureTrait;
 /**
@@ -52,6 +53,10 @@ class FixtureHelper extends Module
         	'robot' => [
         		'class' => RobotFixture::className(),
         		'dataFile' => '@tests/codeception/fixtures/data/aws_robot.php',
+        	],
+        	'entrant' => [
+        		'class' => EntrantFixture::className(),
+        		'dataFile' => '@tests/codeception/fixtures/data/aws_entrant.php',
         	],
         ];
     }

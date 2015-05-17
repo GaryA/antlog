@@ -135,4 +135,5 @@ class RobotCest
     	$I->see('Cluster');
     	$I->see('No');
     }
+
 }
