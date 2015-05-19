@@ -23,49 +23,16 @@ $this->params['breadcrumbs'][] = $this->title;
             [
 				'attribute' =>'username',
 				'label' => 'User Name',
+            	'format' => 'raw',
+            	'value' => function($model, $index, $dataColumn)
+            	{
+            		return Html::a($model->username, ['view', 'id' => $model->id]);
+            	}
         	],
         	[
         		'attribute' => 'team_name',
-        		'label' => 'Team Name'		
+        		'label' => 'Team Name'
         	],
-            [
-				'class' => 'yii\grid\ActionColumn',
-				'buttons' =>
-				[
-					'delete' => function ($url, $model, $key)
-					{
-						if ((User::isCurrentUser($model->id) || User::isUserAdmin()) && $model->isTeamEmpty($model->id))
-						{
-							return  Html::a('<span class="glyphicon glyphicon-trash"></span>', $url,
-							[
-                    			'title' => Yii::t('yii', 'Delete'),
-                    			'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                    			'data-method' => 'post',
-                    			'data-pjax' => '0',
-							]);
-						}
-						else
-						{
-							return '';
-						}
-					},
-					'update' => function ($url, $model, $key)
-					{
-						if (User::isCurrentUser($model->id) || User::isUserAdmin())
-						{
-							return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url,
-							[
-                				'title' => Yii::t('yii', 'Update'),
-                				'data-pjax' => '0',
-							]);
-						}
-						else
-						{
-							return '';
-						}
-					},
-				],
-			],
         ],
     ]); ?>
 

@@ -21,7 +21,7 @@ $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Robot', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('New Robot', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([
@@ -35,7 +35,14 @@ $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
             // ['class' => 'yii\grid\SerialColumn'],
 
             // 'id',
-            'name',
+            [
+            	'attribute' => 'name',
+            	'format' => 'raw',
+            	'value' => function($model, $index, $dataColumn)
+            	{
+            		return Html::a($model->name, ['view', 'id' => $model->id]);
+            	}
+            ],
         	'type.name',
             [
 				'attribute' =>'teamId',
@@ -63,44 +70,6 @@ $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 					$checked = Robot::isSignedUp($model->id);
 					return '<div><input type="checkbox" name="signup" value="true" disabled ' . $checked . '></div>';
 				},
-			],
-            [
-				'class' => 'yii\grid\ActionColumn',
-				'buttons' =>
-				[
-					'delete' => function ($url, $model, $key)
-					{
-						if (($model->isUser($model) || User::isUserAdmin()) && $model->isOKToDelete($model->id))
-						{
-							return  Html::a('<span class="glyphicon glyphicon-trash"></span>', $url,
-							[
-                    			'title' => Yii::t('yii', 'Delete'),
-                    			'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                    			'data-method' => 'post',
-                    			'data-pjax' => '0',
-							]);
-						}
-						else
-						{
-							return '';
-						}
-					},
-					'update' => function ($url, $model, $key)
-					{
-						if (($model->isUser($model) || User::isUserAdmin()) && $model->isOKToEdit($model->id))
-						{
-							return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url,
-							[
-                				'title' => Yii::t('yii', 'Update'),
-                				'data-pjax' => '0',
-							]);
-						}
-						else
-						{
-							return '';
-						}
-					},
-				],
 			],
         ],
     ]);

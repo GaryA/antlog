@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
         if (($model->event->state == 'Registration') && User::isUserAdmin())
 		{
 			echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
-			echo Html::a('Delete', ['delete', 'id' => $model->id],
+			echo Html::a('Delete', ['delete', 'id' => $model->id, 'eventId' => $model->eventId],
 			[
 				'class' => 'btn btn-danger',
 				'data' =>
