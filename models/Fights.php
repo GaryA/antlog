@@ -262,7 +262,6 @@ class Fights extends \yii\db\ActiveRecord
 	 */
 	public function setupEvent($id, $groupList)
 	{
-		Yii::trace('Entering ' . __METHOD__);
 		/* get offset of first fight for this event */
 		$record = $this->find()
 			->where(['eventId' => $id])
@@ -278,14 +277,12 @@ class Fights extends \yii\db\ActiveRecord
 			{
 				$fightId = $this->_startMap[$index][$groupNum] + $offset;
 				$column = $this->_startMap[$index][8];
-				Yii::trace('$fightId = ' . $fightId . ' $column = ' . $column . ' $robot = ' . $robot);
 				Yii::$app->db->createCommand("UPDATE {{%fights}}
 				   SET `$column` = $robot
 				   WHERE `id` = $fightId")
 				   ->execute();
 			}
 		}
-		Yii::trace('Leaving ' . __METHOD__ . ' with $offset = ' . $offset);
 		return $offset;
 	}
 	/**
@@ -294,7 +291,6 @@ class Fights extends \yii\db\ActiveRecord
 	 */
 	public function insertDoubleElimination($eventId)
 	{
-		Yii::trace('Entering ' . __METHOD__);
 		Yii::$app->db->createCommand('INSERT INTO {{%fights}} (`fightGroup`,`fightRound`,`fightBracket`,
 			`fightNo`,`robot1Id`,`robot2Id`,`winnerId`,`loserId`,`winnerNextFight`,`loserNextFight`)
 			SELECT `fightGroup`,`fightRound`,`fightBracket`,`fightNo`,`robot1Id`,`robot2Id`,`winnerId`,
@@ -306,7 +302,6 @@ class Fights extends \yii\db\ActiveRecord
 			SET `eventId` = ' . $eventId .
 			' WHERE `winnerId` = -1')
 			->execute();
-		Yii::trace('Leaving ' . __METHOD__);
 	}
 
     /**
