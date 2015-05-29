@@ -15,7 +15,11 @@ $config = [
 		//	'class' => 'yii\rbac\DbManager',
 		//	'defaultRoles' => ['admin', 'team'],
 		//],
-        'request' => [
+    	'consoleRunner' => [
+    		'class' => 'vova07\console\ConsoleRunner',
+    		'file' => '@app/yii'
+    	],
+    	'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'abcdefghijklmnopqrstuvwxyz012345',
         ],

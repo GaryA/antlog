@@ -145,7 +145,7 @@ class EventController extends Controller
 			}
 			else
 			{
-				$event->setupEvent($id, $teams, $numEntrants);
+				Yii::$app->consoleRunner->run("event/setup $id $numEntrants");
 			}
 		}
 		return $this->actionView($id);
@@ -162,7 +162,7 @@ class EventController extends Controller
 		$teams = $event->getTeams($id);
 		/* calculate number of entrants for this event */
 		$numEntrants = $event->getEntrants()->count();
-		$event->setupEvent($teams, $numEntrants);
+		Yii::$app->consoleRunner->run("event/setup $id $numEntrants");
 		return $this->actionView($id);
 	}
 

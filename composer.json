@@ -18,7 +18,8 @@
         "yiisoft/yii2-bootstrap": "*",
         "yiisoft/yii2-swiftmailer": "*",
 		"kartik-v/yii2-widgets": "*",
-		"2amigos/yii2-grid-view-library" : "*"
+		"2amigos/yii2-grid-view-library" : "*",
+		"vova07/yii2-console-runner-extension": "*"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",
