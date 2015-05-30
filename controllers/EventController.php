@@ -72,6 +72,15 @@ class EventController extends Controller
         ];
     }
 
+    public function actions()
+    {
+    	return array(
+    		'GetProgressBarData'=>array(
+    			'class'=>'ActionGetProgressBarData',
+    		),
+    	);
+    }
+
 	/**
 	 * Display results of a completed event
 	 * @param integer $id the ID of the event

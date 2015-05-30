@@ -1,6 +1,7 @@
 <?php
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use yii\widgets\ActiveForm;
 use yii\grid\GridView;
 use app\models\User;
 use app\models\Entrant;
@@ -23,6 +24,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
 	<p>
 <?php
+	$form = ActiveForm::begin(['id' => 'event_button_form']);
+
 	if (User::isUserAdmin())
 	{
 		if ($model->isOKToDelete($model->id))
@@ -44,8 +47,8 @@ $this->params['breadcrumbs'][] = $this->title;
 		{
 			echo Html::a('Update', ['update', 'id' => $model->id],
 				['class' => 'btn btn-primary']);
-			echo Html::a('Do Draw', ['draw', 'id' => $model->id],
-				['class' => 'btn btn-primary']);
+			echo Html::submitButton('Do Draw', ['name' => 'do_draw', 'class' => 'btn btn-primary']);
+			echo Html::hiddenInput('progress_key', uniqid(), ['id'=>'progress_key']);
 		}
 		else if ($model->state == 'Setup')
 		{
@@ -70,6 +73,8 @@ $this->params['breadcrumbs'][] = $this->title;
 		echo Html::a('Results', ['result', 'id' => $model->id],
 			['class' => 'btn btn-info']);
 	}
+
+	ActiveForm::end();
 ?>
     </p>
 
@@ -95,8 +100,22 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
 
 </div>
-<div>
 
+<?php
+        $jsCode=<<<EOD
+jQuery('#event_button_form input[type=submit]').on('click', function() {
+        $('#progress_key').val(uniqid());
+        open_progress_bar();
+        return true;
+    });
+
+EOD;
+
+$this->registerJs($jsCode, $this::POS_READY, __CLASS__.'#'.'event_button_form');
+$this->render('_progressbar');
+?>
+
+<div>
 <table class="table table-striped table-bordered detail-view">
 		<tr>
 			<th>Team</th>
@@ -124,3 +143,4 @@ foreach ($teams as $team => $robots)
 ?>
 </table>
 </div>
+
