@@ -12,14 +12,22 @@ use Yii;
 class EventController extends Controller
 {
     /**
-     * This command echoes what you have entered as the message.
+     * This command runs the event setup action.
      * @param integer $id Event ID.
      * @param integer $numEntrants Number of entrants.
      */
-    public function actionSetup($id, $numEntrants)
+    public function actionSetup($postId, $eventId, $numEntrants)
     {
-    	$event = Event::findOne($id);
-		$teams = $event->getTeams($id);
-		$event->setupEvent($id, $teams, $numEntrants);
+    	set_time_limit(0);
+		$filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . "{$postId}";
+		$post = file_get_contents($filename);
+		$post = json_decode($post, true);
+		$key = $post['progress_key'];
+
+    	$event = Event::findOne($eventId);
+		$teams = $event->getTeams($eventId);
+		$event->setupEvent($key, $eventId, $teams, $numEntrants);
+
+		unlink($filename);
     }
 }

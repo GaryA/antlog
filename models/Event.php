@@ -6,6 +6,7 @@ use yii\helpers\VarDumper;
 use app\models\Robot;
 use app\models\Entrant;
 use app\models\Fights;
+use app\models\ProgressBar;
 
 /**
  * This is the model class for table "{{%event}}".
@@ -66,14 +67,18 @@ class Event extends \yii\db\ActiveRecord
 	/**
 	 * function to set up event and generate corresponding fights
 	 *
+	 * @param string $key
 	 * @param integer $id
 	 * @param array $teams
 	 * @param integer $numEntrants
 	 */
-	public function setupEvent($id, $teams, $numEntrants)
+	public function setupEvent($key, $id, $teams, $numEntrants)
 	{
 		$fights = new Fights();
 		$entrantModel = new Entrant();
+		$progress = new ProgressBar($key);
+
+		$progress->start(6);
 
 		/* calculate required size of each group */
 		$maxTeamSize = count(reset($teams));
@@ -82,6 +87,7 @@ class Event extends \yii\db\ActiveRecord
 			$numGroups = 2;
 		}
 		else
+		{
 			if ($maxTeamSize <= 4 && $numEntrants < 64)
 			{
 				$numGroups = 4;
@@ -90,6 +96,7 @@ class Event extends \yii\db\ActiveRecord
 			{
 				$numGroups = 8;
 			}
+		}
 		/* assign robots to groups */
 		$retVal = $this->assignGroups($teams, $numEntrants, $numGroups);
 		if ($retVal[0] == 1)
@@ -99,6 +106,7 @@ class Event extends \yii\db\ActiveRecord
 		}
 		else
 		{
+			$progress->inc();
 			$entrants = $retVal[1];
 
 			/* create an array of robots per group */
@@ -107,19 +115,24 @@ class Event extends \yii\db\ActiveRecord
 			{
 				$groupList[$group][] = $robot;
 			}
+			$progress->inc();
 			/* add a new set of fights to the fights table */
 			$fights->insertDoubleElimination($id);
-
+			$progress->inc();
 			$offset = $fights->setupEvent($id, $groupList);
+			$progress->inc();
 			$entrantModel->setGroups($id, $groupList);
-
+			$progress->inc();
 			/* ready to start! */
 			$setupOK = $this->stateRunning($id, $offset, $numGroups);
 			if ($setupOK == false)
 			{
 				Yii::$app->getSession()->setFlash('error', 'Failed to save Running state to event model.');
 			}
+			$progress->inc();
 		}
+
+		$progress->stop();
 		return;
 	}
 

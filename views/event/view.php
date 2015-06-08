@@ -47,8 +47,9 @@ $this->params['breadcrumbs'][] = $this->title;
 		{
 			echo Html::a('Update', ['update', 'id' => $model->id],
 				['class' => 'btn btn-primary']);
-			echo Html::submitButton('Do Draw', ['name' => 'do_draw', 'class' => 'btn btn-primary']);
+			echo Html::a('Do Draw', false, ['id' => 'do_draw', 'class' => 'btn btn-primary']);
 			echo Html::hiddenInput('progress_key', uniqid(), ['id'=>'progress_key']);
+			echo Html::hiddenInput('id', $model->id, ['id' => 'event_id']);
 		}
 		else if ($model->state == 'Setup')
 		{
@@ -77,7 +78,10 @@ $this->params['breadcrumbs'][] = $this->title;
 	ActiveForm::end();
 ?>
     </p>
+<p>
+<?= $this->render('_progressbar')?>
 
+</p>
     <?php
     echo DetailView::widget(
     	[
@@ -102,17 +106,7 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 
 <?php
-        $jsCode=<<<EOD
-jQuery('#event_button_form input[type=submit]').on('click', function() {
-        $('#progress_key').val(uniqid());
-        open_progress_bar();
-        return true;
-    });
-
-EOD;
-
-$this->registerJs($jsCode, $this::POS_READY, __CLASS__.'#'.'event_button_form');
-$this->render('_progressbar');
+$this->registerJsFile('js/do_draw_button.js', ['depends' => 'yii\web\YiiAsset'], __CLASS__.'#'.'event_button_form');
 ?>
 
 <div>

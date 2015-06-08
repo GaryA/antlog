@@ -11,6 +11,7 @@ use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use app\models\Fights;
 use app\models\User;
+use app\models\ProgressBar;
 
 /**
  * EventController implements the CRUD actions for Event model.
@@ -81,6 +82,19 @@ class EventController extends Controller
     	);
     }
 
+    /**
+     * Get progress and return as JSON data
+     * @param string $key identifier for this progress bar
+     */
+    public function actionGetProgressBarData($key)
+    {
+    	if(Yii::$app->request->isAjax)
+    	{
+    		$response = ProgressBar::get($key);
+    		echo json_encode($response);
+    	}
+    }
+
 	/**
 	 * Display results of a completed event
 	 * @param integer $id the ID of the event
@@ -129,35 +143,46 @@ class EventController extends Controller
 
 	/**
 	 * Start an event. Build the fights table and do the draw
-	 * @param integer $id the ID of the event
+	 * @param integer $eventId the ID of the event
 	 * @return mixed
 	 */
-	public function actionDraw($id)
+	public function actionDraw($eventId)
 	{
-
-		/* get the teams array */
-		$event = $this->findModel($id);
-		$teams = $event->getTeams($id);
-		/* calculate number of entrants for this event */
-		$numEntrants = $event->getEntrants()->count();
-		if ($numEntrants < 8 || $numEntrants > 128)
+		if(Yii::$app->request->isAjax)
 		{
-			Yii::$app->getSession()->setFlash('error', 'Number of entrants outside allowed range.');
-		}
-		else
-		{
-			/* change state to setup */
-			$setupOK = $event->stateSetup($id);
-			if ($setupOK == false)
+			$post = Yii::$app->request->post();
+			$postId = uniqid();
+			//$postId = 'post.txt';
+			$filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . "{$postId}";
+			/* get the teams array */
+			$event = $this->findModel($eventId);
+			$teams = $event->getTeams($eventId);
+			/* calculate number of entrants for this event */
+			$numEntrants = $event->getEntrants()->count();
+			if ($numEntrants < 8 || $numEntrants > 128)
 			{
-				Yii::$app->getSession()->setFlash('error', 'Failed to save Setup state to event model.');
+				Yii::$app->getSession()->setFlash('error', 'Number of entrants outside allowed range.');
 			}
 			else
 			{
-				Yii::$app->consoleRunner->run("event/setup $id $numEntrants");
+				/* change state to setup */
+				$setupOK = $event->stateSetup($eventId);
+				if ($setupOK == false)
+				{
+					Yii::$app->getSession()->setFlash('error', 'Failed to save Setup state to event model.');
+				}
+				else
+				{
+					file_put_contents($filename, json_encode($post));
+					Yii::$app->consoleRunner->run("event/setup $postId $eventId $numEntrants");
+					return '{"status":"OK"}';
+				}
 			}
 		}
-		return $this->actionView($id);
+		else
+		{
+			return $this->actionView($eventId);
+		}
 	}
 
 	/**
@@ -219,23 +244,23 @@ class EventController extends Controller
      */
     public function actionView($id)
     {
-        $model = $this->findModel($id);
+   		$model = $this->findModel($id);
 
-        if ($model->state == 'Future')
-        {
-        	if ($model->eventDate == date('Y-m-d'))
-            {
-        		$model->stateRegistration($id);
-        		// reload model to ensure updated state is shown
-        		$model = $this->findModel($id);
-            }
-        }
+       	if ($model->state == 'Future')
+       	{
+       		if ($model->eventDate == date('Y-m-d'))
+       	    {
+       			$model->stateRegistration($id);
+       			// reload model to ensure updated state is shown
+       			$model = $this->findModel($id);
+       	    }
+       	}
 
 		return $this->render('view',
 		[
-            'model' => $model,
+       	    'model' => $model,
 			'teams' => $model->getTeams($id),
-        ]);
+       	]);
     }
 
     /**
