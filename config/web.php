@@ -17,7 +17,8 @@ $config = [
 		//],
     	'consoleRunner' => [
     		'class' => 'vova07\console\ConsoleRunner',
-    		'file' => '@app/yii'
+    		'file' => '@app/yii',
+    		'php' => 'C:\xampp\php\php.exe'
     	],
     	'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation

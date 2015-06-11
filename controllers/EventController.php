@@ -128,17 +128,18 @@ class EventController extends Controller
 	 * @param integer $id the ID of the event
 	 * @return mixed
 	 */
-	public function actionRun($id)
+	public function actionRun($eventId)
 	{
-		$fights = new Fights();
-		$count = 0;
-		do
+		if(Yii::$app->request->isAjax)
 		{
-			$status = $fights->runByes($id);
-			$count += 1;
-		} while ($status == true);
-		Yii::$app->getSession()->setFlash('success', "Ran $count byes.");
-		return $this->redirect(['@web/fights/index', 'eventId' => $id, 'byes' => 0]);
+			/* redirect to fights page when complete */
+			$redirect = "?r=fights/index&eventId=$eventId&byes=0&complete=0";
+			$postId = $this->createPostFile();
+			Yii::$app->consoleRunner->run("event/run $postId $eventId $redirect");
+			return '{"status":"OK"}';
+		}
+		//Yii::$app->getSession()->setFlash('success', "Ran $count byes.");
+		//return $this->redirect(['@web/fights/index', 'eventId' => $eventId, 'byes' => 0]);
 	}
 
 	/**
@@ -150,10 +151,8 @@ class EventController extends Controller
 	{
 		if(Yii::$app->request->isAjax)
 		{
-			$post = Yii::$app->request->post();
-			$postId = uniqid();
-			//$postId = 'post.txt';
-			$filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . "{$postId}";
+			/* redirect to current page when complete */
+			$redirect = '';
 			/* get the teams array */
 			$event = $this->findModel($eventId);
 			$teams = $event->getTeams($eventId);
@@ -173,8 +172,8 @@ class EventController extends Controller
 				}
 				else
 				{
-					file_put_contents($filename, json_encode($post));
-					Yii::$app->consoleRunner->run("event/setup $postId $eventId $numEntrants");
+					$postId = $this->createPostFile();
+					Yii::$app->consoleRunner->run("event/setup $postId $eventId $numEntrants $redirect");
 					return '{"status":"OK"}';
 				}
 			}
@@ -187,17 +186,27 @@ class EventController extends Controller
 
 	/**
 	 * Set up an event (only needed if the first attempt at a draw fails)
-	 * @param integer $id
+	 * @param integer $eventId
 	 * @return view
 	 */
-	public function actionSetup($id)
+	public function actionSetup($eventId)
 	{
-		$event = $this->findModel($id);
-		$teams = $event->getTeams($id);
-		/* calculate number of entrants for this event */
-		$numEntrants = $event->getEntrants()->count();
-		Yii::$app->consoleRunner->run("event/setup $id $numEntrants");
-		return $this->actionView($id);
+		if(Yii::$app->request->isAjax)
+		{
+			/* redirect to current page when complete */
+			$redirect = '';
+			/* get the teams array */
+			$event = $this->findModel($eventId);
+			$teams = $event->getTeams($eventId);
+			/* calculate number of entrants for this event */
+			$numEntrants = $event->getEntrants()->count();
+			$postId = $this->createPostFile();
+			Yii::$app->consoleRunner->run("event/setup $postId $eventId $numEntrants $redirect");
+		}
+		else
+		{
+			return $this->actionView($eventId);
+		}
 	}
 
 	/**
@@ -342,5 +351,18 @@ class EventController extends Controller
 		{
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+
+    /**
+     * Creates a file containing the post data, for use by the CLI script
+     * @return string The post file ID
+     */
+    protected function createPostFile()
+    {
+    	$post = Yii::$app->request->post();
+    	$postId = uniqid();
+    	$filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . "{$postId}";
+    	file_put_contents($filename, json_encode($post));
+    	return $postId;
     }
 }

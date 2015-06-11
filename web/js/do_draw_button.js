@@ -1,10 +1,11 @@
-jQuery("#do_draw").on('click', function()
+jQuery(".do_draw").on('click', function()
 {
+	var target = $(this).data('target');
 	$.ajax(
 	{
 		type: "post",
 		dataType: 'json',
-		url: 'index.php?r=event/draw&eventId=' + $('#event_id').val(),
+		url: 'index.php?r=' + target + '&eventId=' + $('#event_id').val(),
 		data: $('#event_button_form').serializeArray()
 	})
 	.done(function(response)

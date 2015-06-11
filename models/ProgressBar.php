@@ -28,17 +28,25 @@ class ProgressBar
 		$this->path = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR;
 	}
 
-	public function start($total)
+	public function start($total, $redirect)
 	{
 		$this->data['running'] = 1;
 		$this->data['done'] = 0;
 		$this->data['total'] = $total;
+		$this->data['redirect'] = $redirect;
 		$this->put();
 	}
 
 	public function stop()
 	{
 		$this->data['running'] = 0;
+		$this->put();
+	}
+
+	public function complete()
+	{
+		$this->data['running'] = 0;
+		$this->data['done'] = $this->data['total'];
 		$this->put();
 	}
 
@@ -58,9 +66,10 @@ class ProgressBar
 		{
 			$ret = Yii::$app->cache->set($this->data['key'],
 			[
-				'running'=>$this->data['running'],
-				'total'=>$this->data['total'],
-				'done'=>$this->data['done']
+				'running' => $this->data['running'],
+				'total' => $this->data['total'],
+				'done' => $this->data['done'],
+				'redirect' => $this->data['redirect']
 			],
 			1 * 60);
 		}
@@ -83,7 +92,7 @@ class ProgressBar
 			}
 			else
 			{
-				$data = ['running' => 1, 'total' => 100, 'done' => 0];
+				$data = ['running' => 1, 'total' => 100, 'done' => 0, 'redirect' => ''];
 			}
 		}
 		else
@@ -91,7 +100,7 @@ class ProgressBar
 			$data = Yii::$app->cache->get($key);
 			if($data === false)
 			{
-				$data = ['running' =>1, 'total'=>100, 'done'=>0];
+				$data = ['running' =>1, 'total'=>100, 'done'=>0, 'redirect' => ''];
 			}
 		}
 		return $data;

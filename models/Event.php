@@ -72,13 +72,13 @@ class Event extends \yii\db\ActiveRecord
 	 * @param array $teams
 	 * @param integer $numEntrants
 	 */
-	public function setupEvent($key, $id, $teams, $numEntrants)
+	public function setupEvent($key, $redirect, $id, $teams, $numEntrants)
 	{
 		$fights = new Fights();
 		$entrantModel = new Entrant();
 		$progress = new ProgressBar($key);
 
-		$progress->start(6);
+		$progress->start(6, $redirect);
 
 		/* calculate required size of each group */
 		$maxTeamSize = count(reset($teams));
