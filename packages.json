@@ -1,0 +1,11 @@
+{
+    "package": {
+        "name": "garya/antlog",
+        "version": "dev",
+        "source": {
+          "url": "https://github.com/GaryA/antlog",
+          "type": "git",
+          "reference": "master"
+        }
+    }
+}
