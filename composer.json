@@ -1,6 +1,6 @@
 {
-    "name": "GaryA/AntLog",
-    "description": "Yii 2 Basic Application Template",
+    "name": "garya/antlog",
+    "description": "AntLog Application",
     "keywords": ["yii2", "antlog", "aws", "application"],
     "homepage": "http://www.garya.org.uk/",
     "type": "project",
@@ -12,6 +12,12 @@
         "source": "https://github.com/garya/antlog"
     },
     "minimum-stability": "stable",
+	"repositories": [
+		{
+			"type": "git",
+			"url": "https://github.com/garya/yii2-console-runner-extension"
+		}
+	],
     "require": {
         "php": ">=5.4.0",
         "yiisoft/yii2": "*",
