@@ -6,16 +6,16 @@
     "type": "project",
     "license": "BSD-3-Clause",
     "support": {
-        "issues": "https://github.com/garya/antlog/issues?state=open",
-        "forum": "http://robotwars101.org/forum/",
-        "wiki": "http://github.com/garya/antlog/wiki/",
-        "source": "https://github.com/garya/antlog"
+        "issues": "https://github.com/GaryA/antlog/issues?state=open",
+        "forum": "http://robotwars101.org/forum/viewtopic.php?f=9&t=1250",
+        "wiki": "http://github.com/GaryA/antlog/wiki/",
+        "source": "https://github.com/GaryA/antlog"
     },
     "minimum-stability": "stable",
 	"repositories": [
 		{
 			"type": "git",
-			"url": "https://github.com/garya/yii2-console-runner-extension"
+			"url": "https://github.com/GaryA/yii2-console-runner-extension.git"
 		}
 	],
     "require": {
@@ -26,7 +26,7 @@
 		"yiisoft/yii2-jui": "~2.0.0",
 		"kartik-v/yii2-widgets": "*",
 		"2amigos/yii2-grid-view-library" : "*",
-		"vova07/yii2-console-runner-extension": "*"
+		"vova07/yii2-console-runner-extension": "dev-master"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",
