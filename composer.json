@@ -16,6 +16,10 @@
 		{
 			"type": "git",
 			"url": "https://github.com/GaryA/yii2-console-runner-extension.git"
+		},
+		{
+			"type": "git",
+			"url": "https://github.com/GaryA/yii2-dev-env.git"
 		}
 	],
     "require": {
@@ -26,7 +30,7 @@
 		"yiisoft/yii2-jui": "~2.0.0",
 		"kartik-v/yii2-widgets": "*",
 		"2amigos/yii2-grid-view-library" : "*",
-		"vova07/yii2-console-runner-extension": "dev-master"
+		"vova07/yii2-console-runner-extension": ">=0.1.1"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",
@@ -36,7 +40,8 @@
 		"codeception/codeception": "2.0.*@stable",
         "codeception/c3": "*",
         "codeception/verify": "*",
-        "codeception/specify": "*"
+        "codeception/specify": "*",
+        "garya/yii2-dev-env": "*"
     },
     "config": {
         "process-timeout": 1800

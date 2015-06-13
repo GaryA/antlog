@@ -1,8 +1,13 @@
 <?php
 
-// comment out the following two lines when deployed to production
-defined('YII_DEBUG') or define('YII_DEBUG', true);
-defined('YII_ENV') or define('YII_ENV', 'dev');
+// If the package is installed via composer with --no-dev then yii2-dev-env will not be included
+// If the development packages are included then including dev-env.php will set the YII_DEBUG and
+// YII_ENV constants to their development/debug values, otherwise they default to production values
+$dev_env = __DIR__ . '/../vendor/garya/yii2-dev-env/dev-env.php';
+if(file_exists($dev_env))
+{
+	include $dev_env;
+}
 
 require(__DIR__ . '/../vendor/autoload.php');
 require(__DIR__ . '/../vendor/yiisoft/yii2/Yii.php');
