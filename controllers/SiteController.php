@@ -185,13 +185,13 @@ class SiteController extends Controller
 				}
                 else
                 {
-                	Yii::$app->getSession()->setFlash('success', "Check email file in server's runtime/mail folder.");
+                	Yii::$app->getSession()->setFlash('success', "Check password reset file in server's runtime folder.");
                 }
                 return $this->goHome();
             }
 			else
 			{
-                Yii::$app->getSession()->setFlash('error', 'Sorry, we are unable to reset password for email provided.');
+                Yii::$app->getSession()->setFlash('error', 'Sorry, we are unable to reset password for username provided.');
             }
         }
 

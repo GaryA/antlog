@@ -31,7 +31,7 @@ class PasswordResetRequestForm extends Model
     /**
      * Sends an email with a link, for resetting the password.
      *
-     * @return boolean whether the email was send
+     * @return boolean whether the email was sent
      */
     public function sendEmail()
     {
@@ -51,21 +51,21 @@ class PasswordResetRequestForm extends Model
 
             if ($user->save())
             {
+            	$filename = \Yii::getAlias('@runtime') . '/' . $user->username . '-password-reset.txt';
+            	$resetLink = \Yii::$app->urlManager->createAbsoluteUrl(['site/reset-password', 'token' => $user->password_reset_token]);
+            	$myFile = fopen($filename, 'w');
+            	if ($myFile !== false)
+            	{
+            		fwrite($myFile, 'User: ' . $user->username . "\r\n");
+            		fwrite($myFile, 'URL: ' . $resetLink . "\r\n");
+            		fclose($myFile);
+            	}
+
             	return \Yii::$app->mailer->compose(['html' => 'passwordResetToken-html', 'text' => 'passwordResetToken-text'], ['user' => $user])
                     ->setFrom([\Yii::$app->params['supportEmail'] => \Yii::$app->name . ' robot'])
                     ->setTo($this->email)
                     ->setSubject('Password reset for ' . \Yii::$app->name)
                     ->send();
-
-/*				$myFile = fopen(\Yii::getAlias('@app') . "/password-reset.txt", "w");
-				if ($myFile !== false)
-				{
-					fwrite($myFile, 'User: ' . $user->username . "\r\n");
-					fwrite($myFile, 'Token: ' . $user->password_reset_token . "\r\n");
-					fclose($myFile);
-					return true;
-				}
-*/
            }
         }
         return false;
