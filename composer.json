@@ -14,8 +14,8 @@
     "minimum-stability": "stable",
 	"repositories": [
 		{
-			"type": "git",
-			"url": "https://github.com/GaryA/yii2-console-runner-extension.git"
+			"type": "composer",
+			"url": "http://antlog.garya.org.uk/"
 		},
 		{
 			"type": "git",
