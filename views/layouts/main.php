@@ -5,6 +5,7 @@ use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
 use app\widgets\Alert;
+use app\models\User;
 
 /* @var $this \yii\web\View */
 /* @var $content string */
@@ -44,6 +45,11 @@ AppAsset::register($this);
             }
             else
             {
+            	if (User::isUserAdmin())
+            	{
+            		$menuItems[] = ['label' => 'Import', 'url' => ['db/import']];
+            		$menuItems[] = ['label' => 'Export', 'url' => ['db/export']];
+            	}
                 $menuItems[] =
                 [
                 	'label' => 'Logout (' . Yii::$app->user->identity->username . ')',
