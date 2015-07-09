@@ -104,7 +104,10 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 
 <?php
-$this->registerJsFile('js/do_draw_button.js', ['depends' => 'yii\web\YiiAsset'], __CLASS__.'#'.'event_button_form');
+$this->registerJsFile(
+	Yii::getAlias('@web') . '/js/do_draw_button.js',
+	['depends' => 'yii\web\YiiAsset'],
+	__CLASS__.'#'.'event_button_form');
 ?>
 
 <div>
