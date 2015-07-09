@@ -7,14 +7,16 @@ $config = [
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'components' => [
-		// 'urlManager' => [
-		//	'showScriptName' => false,
-		//	'enablePrettyUrl' => true,
-		// ],
-		//'authManager' => [
-		//	'class' => 'yii\rbac\DbManager',
-		//	'defaultRoles' => ['admin', 'team'],
-		//],
+		'urlManager' => [
+    		'class' => 'yii\web\UrlManager',
+			'showScriptName' => false,
+			'enablePrettyUrl' => true,
+			'rules' => [
+				'<controller:\w+>/<id:\d+>' => '<controller>/view',
+				'<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
+				'<controller:\w+>/<action:\w+>' => '<controller>/<action>',
+			],
+		],
     	'consoleRunner' => [
     		'class' => 'vova07\console\ConsoleRunner',
     		'file' => '@app/yii',

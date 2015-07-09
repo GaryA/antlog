@@ -9,6 +9,11 @@ if(file_exists($dev_env))
 	include $dev_env;
 }
 
+// Define environment
+// 'web' for online "master" installation
+// 'local' for event "slave" installation
+if (!defined('ANTLOG_ENV')) define('ANTLOG_ENV', 'local');
+
 require(__DIR__ . '/../../antlog/vendor/autoload.php');
 require(__DIR__ . '/../../antlog/vendor/yiisoft/yii2/Yii.php');
 
