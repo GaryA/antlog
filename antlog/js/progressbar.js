@@ -21,8 +21,8 @@ function show_progress()
 		$('.progress-bar').css('width', percentage + '%').attr('aria-valuenow', percentage).html(percentage + '% Complete');
 		if (percentage == 100)
 		{
-			//$("#progress-wrapper").css('display', 'none');
 			$(location).attr('href', data.redirect); // redirect to target page
+			// Need to set an error message here (AFTER redirect) if the long task has not completed properly...
 		}
 		else
 		{

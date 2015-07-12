@@ -178,10 +178,7 @@ class EventController extends Controller
 				}
 			}
 		}
-		else
-		{
-			return $this->actionView($eventId);
-		}
+		return $this->actionView($eventId);
 	}
 
 	/**
@@ -202,6 +199,7 @@ class EventController extends Controller
 			$numEntrants = $event->getEntrants()->count();
 			$postId = $this->createPostFile();
 			Yii::$app->consoleRunner->run("event/setup $postId $eventId $numEntrants $redirect");
+			return '{"status":"OK"}';
 		}
 		else
 		{
