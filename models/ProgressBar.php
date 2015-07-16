@@ -34,12 +34,16 @@ class ProgressBar
 		$this->data['done'] = 0;
 		$this->data['total'] = $total;
 		$this->data['redirect'] = $redirect;
+		$this->data['error'] = 0;
+		$this->data['errorMessage'] = '';
 		$this->put();
 	}
 
-	public function stop()
+	public function stop($message)
 	{
 		$this->data['running'] = 0;
+		$this->data['error'] = 1;
+		$this->data['errorMessage'] = $message;
 		$this->put();
 	}
 
@@ -47,6 +51,8 @@ class ProgressBar
 	{
 		$this->data['running'] = 0;
 		$this->data['done'] = $this->data['total'];
+		$this->data['error'] = 0;
+		$this->data['errorMessage'] = '';
 		$this->put();
 	}
 
@@ -69,7 +75,9 @@ class ProgressBar
 				'running' => $this->data['running'],
 				'total' => $this->data['total'],
 				'done' => $this->data['done'],
-				'redirect' => $this->data['redirect']
+				'redirect' => $this->data['redirect'],
+				'error' => $this->data['error'],
+				'errorMessage' => $this->data['errorMessage']
 			],
 			1 * 60);
 		}
@@ -92,7 +100,7 @@ class ProgressBar
 			}
 			else
 			{
-				$data = ['running' => 1, 'total' => 100, 'done' => 0, 'redirect' => ''];
+				$data = ['running' => 1, 'total' => 100, 'done' => 0, 'redirect' => '', 'error' => 0, 'errorMessage' => ''];
 			}
 		}
 		else
@@ -100,7 +108,7 @@ class ProgressBar
 			$data = Yii::$app->cache->get($key);
 			if($data === false)
 			{
-				$data = ['running' =>1, 'total'=>100, 'done'=>0, 'redirect' => ''];
+				$data = ['running' => 1, 'total'=> 100, 'done'=> 0, 'redirect' => '', 'error' => 0, 'errorMessage' => ''];
 			}
 		}
 		return $data;

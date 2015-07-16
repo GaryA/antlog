@@ -245,6 +245,19 @@ class EventController extends Controller
     }
 
     /**
+     * Displays a single Event model with an error message.
+     * @param string $id
+     * @return mixed
+     */
+    public function actionError($id, $message)
+    {
+    	$model = $this->findModel($id);
+    	Yii::$app->getSession()->setFlash('error', $message);
+
+    	return $this->redirect(['event/view', 'id' => $id]);
+    }
+
+    /**
      * Displays a single Event model.
      * @param string $id
      * @return mixed

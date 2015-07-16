@@ -105,7 +105,7 @@ class Event extends \yii\db\ActiveRecord
 			// Yii::$app->getSession()->setFlash('error', 'Team size is bigger than number of spaces available.');
 			// setFlash will not work here as the function is called from the CLI script, not from the web page.
 			// Need a way of progressbar.js setting a message (popup?) AFTER redirecting back to the original page...
-			$progress->complete();
+			$progress->stop('Team size is bigger than number of spaces available');
 		}
 		else
 		{
@@ -133,9 +133,8 @@ class Event extends \yii\db\ActiveRecord
 				Yii::$app->getSession()->setFlash('error', 'Failed to save Running state to event model.');
 			}
 			$progress->inc();
+			$progress->complete();
 		}
-
-		$progress->stop();
 		return;
 	}
 
