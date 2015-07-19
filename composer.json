@@ -56,7 +56,7 @@
             "setPermission": [
                 {
                     "runtime": "0777",
-                    "web/assets": "0777",
+                    "antlog/assets": "0777",
                     "yii": "0755"
                 }
             ],
