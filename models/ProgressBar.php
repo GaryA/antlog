@@ -70,7 +70,7 @@ class ProgressBar
 		}
 		else
 		{
-			$ret = Yii::$app->cache->set($this->data['key'],
+			$ret = Yii::$app->cache->set($this->key,
 			[
 				'running' => $this->data['running'],
 				'total' => $this->data['total'],

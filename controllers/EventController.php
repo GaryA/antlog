@@ -133,7 +133,7 @@ class EventController extends Controller
 		if(Yii::$app->request->isAjax)
 		{
 			/* redirect to fights page when complete */
-			$redirect = "?r=fights/index&eventId=$eventId&byes=0&complete=0";
+			$redirect = "\"?r=fights/index&eventId=$eventId&byes=0&complete=0\"";
 			$postId = $this->createPostFile();
 			Yii::$app->consoleRunner->run("event/run $postId $eventId $redirect");
 			return '{"status":"OK"}';
