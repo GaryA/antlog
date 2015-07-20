@@ -19,9 +19,19 @@ function show_progress()
 		}
 		var percentage_txt = percentage + "%" + " [" + done + "/" + total + "]";
 		$('.progress-bar').css('width', percentage + '%').attr('aria-valuenow', percentage).html(percentage + '% Complete');
-		if (percentage == 100)
+		if (parseInt(data.error) == 1)
 		{
-			//$("#progress-wrapper").css('display', 'none');
+			// redirect via an error handler to provide an error message to the user
+			var message = encodeURIComponent(data.errorMessage);
+			var protocol = $(location).attr('protocol');
+			var hostname = $(location).attr('hostname');
+			var pathname = $(location).attr('pathname'); 
+			var search = $(location).attr('search');
+			search = search.replace('view', 'error');
+			$(location).attr('href', protocol + "//" + hostname + pathname + search + "&message=" + message);
+		}
+		else if (percentage == 100)
+		{
 			$(location).attr('href', data.redirect); // redirect to target page
 		}
 		else

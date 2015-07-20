@@ -60,11 +60,11 @@ $this->params['breadcrumbs'][] = $this->title;
 		echo Html::hiddenInput('progress_key', uniqid(), ['id'=>'progress_key']);
 		echo Html::hiddenInput('id', $model->id, ['id' => 'event_id']);
 	}
-	echo Html::a('Entrants', ['@web/entrant', 'eventId' => $model->id],
+	echo Html::a('Entrants', ['/entrant', 'eventId' => $model->id],
 		['class' => 'btn btn-primary']);
 	if (($model->state == 'Running') || ($model->state == 'Complete'))
 	{
-		echo Html::a('Fights', ['@web/fights', 'eventId' => $model->id],
+		echo Html::a('Fights', ['/fights', 'eventId' => $model->id],
 			['class' => 'btn btn-primary']);
 	}
 	if ($model->state == 'Complete')
@@ -104,7 +104,10 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 
 <?php
-$this->registerJsFile('js/do_draw_button.js', ['depends' => 'yii\web\YiiAsset'], __CLASS__.'#'.'event_button_form');
+$this->registerJsFile(
+	Yii::getAlias('@web') . '/js/do_draw_button.js',
+	['depends' => 'yii\web\YiiAsset'],
+	__CLASS__.'#'.'event_button_form');
 ?>
 
 <div>

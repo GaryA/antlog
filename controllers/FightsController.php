@@ -7,6 +7,7 @@ use app\models\Fights;
 use app\models\Entrant;
 use app\models\Event;
 use app\models\FightsSearch;
+use app\models\User;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -98,6 +99,11 @@ class FightsController extends Controller
     			'query' => $query,
     			'sort'=> ['defaultOrder' => ['fightRound'=>SORT_ASC, 'fightGroup' => SORT_ASC, 'fightBracket' => SORT_ASC, 'fightNo' => SORT_ASC]]
     		]);
+    		if (!User::isUserAdmin())
+    		{
+    			// if user is not Admin, automatically reload the page every 30 seconds
+    			Yii::$app->view->registerMetaTag(['http-equiv' => 'refresh', 'content' => '30']);
+    		}
     		return $this->render('indexevent', [
     			'fightsProvider' => $fightsProvider,
     			'eventId' => $eventId,

@@ -18,7 +18,7 @@ use app\models\User;
     $form = ActiveForm::begin();
 	if ($changeName == true)
 	{
-    	echo $form->field($model, 'name')->textInput(['maxlength' => 50]);
+    	echo $form->field($model, 'name')->textInput(['maxlength' => 100]);
 	}
 	else
 	{
@@ -36,7 +36,9 @@ use app\models\User;
 
 	if ($changeClass == true)
 	{
-    	echo $form->field($model, 'classId')->dropDownList(ArrayHelper::map(RobotClass::find()->all(), 'id', 'name'));
+    	echo $form->field($model, 'classId')->dropDownList(ArrayHelper::map(RobotClass::find()
+    		->orderBy(['id' => SORT_DESC])
+    		->all(), 'id', 'name'));
 	}
 	else
 	{
@@ -58,7 +60,7 @@ use app\models\User;
 
 	if ($retire == true)
 	{
-    	echo $form->field($model, 'active')->dropDownList([0 => 'No', 1 => 'Yes']);
+    	echo $form->field($model, 'active')->dropDownList([1 => 'Yes', 0 => 'No']);
 	}
 	else
 	{

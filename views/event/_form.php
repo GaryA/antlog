@@ -15,7 +15,7 @@ use app\models\Entrant;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'name')->textInput(['maxlength' => 20])?>
+    <?= $form->field($model, 'name')->textInput(['maxlength' => 100])?>
 
 <?php
 echo $form->field($model, 'eventDate')->widget(DatePicker::classname(),

@@ -133,7 +133,7 @@ class EventController extends Controller
 		if(Yii::$app->request->isAjax)
 		{
 			/* redirect to fights page when complete */
-			$redirect = "?r=fights/index&eventId=$eventId&byes=0&complete=0";
+			$redirect = "\"?r=fights/index&eventId=$eventId&byes=0&complete=0\"";
 			$postId = $this->createPostFile();
 			Yii::$app->consoleRunner->run("event/run $postId $eventId $redirect");
 			return '{"status":"OK"}';
@@ -178,10 +178,7 @@ class EventController extends Controller
 				}
 			}
 		}
-		else
-		{
-			return $this->actionView($eventId);
-		}
+		return $this->actionView($eventId);
 	}
 
 	/**
@@ -202,6 +199,7 @@ class EventController extends Controller
 			$numEntrants = $event->getEntrants()->count();
 			$postId = $this->createPostFile();
 			Yii::$app->consoleRunner->run("event/setup $postId $eventId $numEntrants $redirect");
+			return '{"status":"OK"}';
 		}
 		else
 		{
@@ -244,6 +242,19 @@ class EventController extends Controller
 		[
             'dataProvider' => $dataProvider,
         ]);
+    }
+
+    /**
+     * Displays a single Event model with an error message.
+     * @param string $id
+     * @return mixed
+     */
+    public function actionError($id, $message)
+    {
+    	$model = $this->findModel($id);
+    	Yii::$app->getSession()->setFlash('error', $message);
+
+    	return $this->redirect(['event/view', 'id' => $id]);
     }
 
     /**

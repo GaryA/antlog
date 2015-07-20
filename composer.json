@@ -14,8 +14,8 @@
     "minimum-stability": "stable",
 	"repositories": [
 		{
-			"type": "git",
-			"url": "https://github.com/GaryA/yii2-console-runner-extension.git"
+			"type": "composer",
+			"url": "http://antlog.garya.org.uk/"
 		},
 		{
 			"type": "git",
@@ -30,7 +30,7 @@
 		"yiisoft/yii2-jui": "~2.0.0",
 		"kartik-v/yii2-widgets": "*",
 		"2amigos/yii2-grid-view-library" : "*",
-		"vova07/yii2-console-runner-extension": ">=0.1.1"
+		"vova07/yii2-console-runner-extension": ">=0.1.2"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",
@@ -56,7 +56,7 @@
             "setPermission": [
                 {
                     "runtime": "0777",
-                    "web/assets": "0777",
+                    "antlog/assets": "0777",
                     "yii": "0755"
                 }
             ],

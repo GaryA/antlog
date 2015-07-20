@@ -78,7 +78,7 @@ class Event extends \yii\db\ActiveRecord
 		$entrantModel = new Entrant();
 		$progress = new ProgressBar($key);
 
-		$progress->start(6, $redirect);
+		$progress->start(6 + count($teams), $redirect);
 
 		/* calculate required size of each group */
 		$maxTeamSize = count(reset($teams));
@@ -98,11 +98,14 @@ class Event extends \yii\db\ActiveRecord
 			}
 		}
 		/* assign robots to groups */
-		$retVal = $this->assignGroups($teams, $numEntrants, $numGroups);
+		$retVal = $this->assignGroups($teams, $numEntrants, $numGroups, $progress);
 		if ($retVal[0] == 1)
 		{
 			/* can't fit team in remaining groups */
-			Yii::$app->getSession()->setFlash('error', 'Team size is bigger than number of spaces available.');
+			// Yii::$app->getSession()->setFlash('error', 'Team size is bigger than number of spaces available.');
+			// setFlash will not work here as the function is called from the CLI script, not from the web page.
+			// Need a way of progressbar.js setting a message (popup?) AFTER redirecting back to the original page...
+			$progress->stop('Team size is bigger than number of spaces available');
 		}
 		else
 		{
@@ -130,9 +133,8 @@ class Event extends \yii\db\ActiveRecord
 				Yii::$app->getSession()->setFlash('error', 'Failed to save Running state to event model.');
 			}
 			$progress->inc();
+			$progress->complete();
 		}
-
-		$progress->stop();
 		return;
 	}
 
@@ -143,9 +145,10 @@ class Event extends \yii\db\ActiveRecord
 	 * @param array $teams
 	 * @param integer $numGroups
 	 * @param integer $numEntrants
+	 * @param ProgressBar $progress
 	 * @return array $entrants
 	 */
-	private function assignGroups($teams, $numEntrants, $numGroups)
+	private function assignGroups($teams, $numEntrants, $numGroups, $progress)
 	{
 		$groupSize = intval($numEntrants / $numGroups);
 		$remainder = $numEntrants % $numGroups;
@@ -192,6 +195,7 @@ class Event extends \yii\db\ActiveRecord
 				$groupArray[$groupNum]['free'] -= 1;
 				$i ++;
 			}
+			$progress->inc();
 		}
 		return [
 			0,
