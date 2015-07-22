@@ -3,6 +3,12 @@ body {
     height: 100%;
 }
 
+.groupview-center-align {
+	text-align: center;
+}
+.groupview-right-align {
+	text-align: right;
+}
 .groupview-extra-row {
 	text-align: center;
 }

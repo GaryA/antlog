@@ -62,11 +62,15 @@ $this->params['breadcrumbs'][] = $this->title;
             //'fightNo',
 			[
 				'attribute' => 'robot1.robot.team.team_name',
+				'contentOptions' => ['class' => 'groupview-right-align'],
+				'headerOptions' => ['class' => 'groupview-right-align'],
 				'label' => 'Team',
 			],
 			[
 				'attribute' => 'robot1.robot.name',
 				'format' => 'raw',
+				'contentOptions' => ['class' => 'groupview-right-align'],
+				'headerOptions' => ['class' => 'groupview-right-align'],
 				'value' => function($model, $index, $dataColumn)
 				{
 					if ($model->robot1Id > 0)
@@ -98,8 +102,11 @@ $this->params['breadcrumbs'][] = $this->title;
 				},
 			],
 			[
-				'attribute' => 'robot2.robot.team.team_name',
-				'label' => 'Team',
+				'label' => 'vs',
+				'contentOptions' => ['class' => 'groupview-center-align'],
+				'headerOptions' => ['class' => 'groupview-center-align'],
+				'format' => 'html',
+				'content' => function($model, $index, $dataColumn){return 'vs';},
 			],
 			[
 				'attribute' => 'robot2.robot.name',
@@ -133,6 +140,10 @@ $this->params['breadcrumbs'][] = $this->title;
 						return '-- UNKNOWN --';
 					}
 				},
+			],
+			[
+				'attribute' => 'robot2.robot.team.team_name',
+				'label' => 'Team',
 			],
 			// 'winnerId',
             // 'loserId',
