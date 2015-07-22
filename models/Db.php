@@ -4,6 +4,10 @@ namespace app\models;
 use Yii;
 use yii\db\ActiveRecord;
 use app\models\Robot;
+use app\models\User;
+use app\models\Event;
+use app\models\Entrant;
+use app\models\Fights;
 
 /**
  * Db model
@@ -76,12 +80,12 @@ class Db extends ActiveRecord
 	    $records = $query->all();
 		$numRecords = $query->count();
 		$passwordHash = Yii::$app->security->generatePasswordHash('password');
-		$password = "`password_hash`='$passwordHash', "; /* dummy password_hash */
+		$userPassword = "`password_hash`='$passwordHash', "; /* dummy password_hash */
 		$email = "`email`='email@example.com', "; /* dummy email */
 		if (ANTLOG_ENV == 'web')
 		{
 			fwrite($this->exportFile, "DROP TABLE IF EXISTS `$this->prefix" . "user`;\n");
-			fwrite($this->exportFile, "CREATE TABLE IF NOT EXISTS `aws_user` (\n");
+			fwrite($this->exportFile, "CREATE TABLE IF NOT EXISTS `$this->prefix" . "user` (\n");
 			fwrite($this->exportFile, " `id` int(11) NOT NULL AUTO_INCREMENT,\n");
 			fwrite($this->exportFile, " `username` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,\n");
 			fwrite($this->exportFile, " `password_hash` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,\n");
@@ -106,6 +110,10 @@ class Db extends ActiveRecord
 				if ($record->user_group == User::ROLE_ADMIN)
 				{
 					$password = "`password_hash`='" . Yii::$app->security->generatePasswordHash('admin') . "', ";
+				}
+				else
+				{
+					$password = $userPassword;
 				}
 				$createdAt = "`created_at`=0, ";
 				$updatedAt = "`updated_at`=0, ";
@@ -161,6 +169,59 @@ class Db extends ActiveRecord
 		// Export all robots
 		// For local:
 		// Export all robots (created/modified since last import?)
+		$this->exportFile = fopen($this->exportFilename, 'a');
+		$model = new Robot;
+		$query = $model->find();
+		if (ANTLOG_ENV == 'local')
+		{
+			//$query = $query->where(['...' => ...]);
+		}
+	    $records = $query->all();
+		$numRecords = $query->count();
+		if (ANTLOG_ENV == 'web')
+		{
+			fwrite($this->exportFile, "DROP TABLE IF EXISTS `$this->prefix" . "robot`;\n");
+			fwrite($this->exportFile, "CREATE TABLE IF NOT EXISTS `$this->prefix" . "robot` (\n");
+			fwrite($this->exportFile, " `id` int(10) NOT NULL AUTO_INCREMENT,\n");
+			fwrite($this->exportFile, " `name` varchar(100) NOT NULL,\n");
+			fwrite($this->exportFile, " `teamId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (teamId) REFERENCES aws_user(id)',\n");
+			fwrite($this->exportFile, " `classId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (classId) REFERENCES aws_robot_class(id)',\n");
+			fwrite($this->exportFile, " `typeId` smallint(6) NOT NULL DEFAULT '0' COMMENT 'CONSTRAINT FOREIGN KEY (typeId) REFERENCES aws_robot_type(id)',\n");
+			fwrite($this->exportFile, " `active` tinyint(1) NOT NULL,\n");
+			fwrite($this->exportFile, " PRIMARY KEY (`id`),\n");
+			fwrite($this->exportFile, " UNIQUE KEY `RobotID_2` (`id`),\n");
+			fwrite($this->exportFile, " KEY `RobotID` (`id`)\n");
+			fwrite($this->exportFile, ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;\n");
+		}
+		foreach ($records as $record)
+		{
+			$insertRecord = true;
+			if (ANTLOG_ENV == 'web')
+			{
+				$update = '';
+			}
+			else
+			{
+				$update = " ON DUPLICATE KEY UPDATE ";
+				$update .= "`name`='$record->name', ";
+				$update .= "`classId`=$record->classId, ";
+				$update .= "`typeId`=$record->typeId, ";
+				$update .= "`active`=$record->active";
+			}
+			if ($insertRecord == true)
+			{
+				$string = "INSERT INTO `$this->prefix" . "robot` SET ";
+				$string .= "`id`=$record->id, ";
+				$string .= "`name`='$record->name', ";
+				$string .= "`teamId`=$record->teamId, ";
+				$string .= "`classId`=$record->classId, ";
+				$string .= "`typeId`=$record->typeId, ";
+				$string .= "`active`=$record->active";
+				$string .= $update . ";\n";
+				fwrite($this->exportFile, $string);
+			}
+		}
+		fclose($this->exportFile);
 	}
 
 	public function exportEvents()
@@ -170,6 +231,61 @@ class Db extends ActiveRecord
 		// Is it necessary to export events? Or just set the initial auto-increment value?
 		// For local:
 		// Export all events (created since last import?)
+		$this->exportFile = fopen($this->exportFilename, 'a');
+		$model = new Event;
+		$query = $model->find();
+		if (ANTLOG_ENV == 'local')
+		{
+			//$query = $query->where(['...' => ...]);
+		}
+	    $records = $query->all();
+		$numRecords = $query->count();
+		if (ANTLOG_ENV == 'web')
+		{
+			fwrite($this->exportFile, "DROP TABLE IF EXISTS `$this->prefix" . "event`;\n");
+			fwrite($this->exportFile, "CREATE TABLE IF NOT EXISTS `$this->prefix" . "event` (\n");
+			fwrite($this->exportFile, " `id` int(10) NOT NULL AUTO_INCREMENT,\n");
+			fwrite($this->exportFile, " `name` varchar(100) NOT NULL,\n");
+			fwrite($this->exportFile, " `eventDate` date NOT NULL,\n");
+			fwrite($this->exportFile, " `state` enum('Complete','Running','Setup','Registration','Future') NOT NULL DEFAULT 'Registration',\n");
+			fwrite($this->exportFile, " `classId` int(11) NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (classId) REFERENCES aws_robot_class(id)',\n");
+			fwrite($this->exportFile, " `eventType` tinyint(4) NOT NULL DEFAULT '1' COMMENT 'CONSTRAINT FOREIGN KEY (eventType) REFERENCES aws_event_type(id)',\n");
+			fwrite($this->exportFile, " `num_groups` tinyint(4) NOT NULL DEFAULT '0',\n");
+			fwrite($this->exportFile, " `offset` int(11) DEFAULT NULL,\n");
+			fwrite($this->exportFile, " PRIMARY KEY (`id`),\n");
+			fwrite($this->exportFile, " UNIQUE KEY `id` (`id`)\n");
+			fwrite($this->exportFile, ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;\n");
+		}
+		foreach ($records as $record)
+		{
+			$insertRecord = true;
+			if (ANTLOG_ENV == 'web')
+			{
+				$update = '';
+			}
+			else
+			{
+				$update = " ON DUPLICATE KEY UPDATE ";
+				$update .= "`state`='$record->state', ";
+				$update .= "`num_groups`=$record->num_groups, ";
+				$update .= "`offset`=$record->offset";
+			}
+			if ($insertRecord == true)
+			{
+				$string = "INSERT INTO `$this->prefix" . "event` SET ";
+				$string .= "`id`=$record->id, ";
+				$string .= "`name`='$record->name', ";
+				$string .= "`eventDate`=$record->eventDate, ";
+				$string .= "`state`='$record->state', ";
+				$string .= "`classId`=$record->classId, ";
+				$string .= "`eventType`=$record->eventType, ";
+				$string .= "`num_groups`=$record->num_groups, ";
+				$string .= "`offset`=$record->offset";
+				$string .= $update . ";\n";
+				fwrite($this->exportFile, $string);
+			}
+		}
+		fclose($this->exportFile);
 	}
 
 	public function exportEntrants()
@@ -178,6 +294,57 @@ class Db extends ActiveRecord
 		// Export all entrants - to cater for online sign-ups
 		// For local:
 		// Export all entrants (created since last import?)
+		$this->exportFile = fopen($this->exportFilename, 'a');
+		$model = new Entrant;
+		$query = $model->find();
+		if (ANTLOG_ENV == 'local')
+		{
+			//$query = $query->where(['...' => ...]);
+		}
+	    $records = $query->all();
+		$numRecords = $query->count();
+		if (ANTLOG_ENV == 'web')
+		{
+			fwrite($this->exportFile, "DROP TABLE IF EXISTS `$this->prefix" . "entrant`;\n");
+			fwrite($this->exportFile, "CREATE TABLE IF NOT EXISTS `$this->prefix" . "entrant` (\n");
+			fwrite($this->exportFile, " `id` int(10) NOT NULL AUTO_INCREMENT,\n");
+			fwrite($this->exportFile, " `eventId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (eventId) REFERENCES aws_event(id)',\n");
+			fwrite($this->exportFile, " `robotId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (robotId) REFERENCES aws_robot(id)',\n");
+			fwrite($this->exportFile, " `status` int(11) DEFAULT '-1',\n");
+			fwrite($this->exportFile, " `finalFightId` int(11) NOT NULL DEFAULT '0' COMMENT 'CONSTRAINT FOREIGN KEY (finalFightId) REFERENCES aws_fights(id)',\n");
+			fwrite($this->exportFile, " `group_num` int(11) DEFAULT NULL,\n");
+			fwrite($this->exportFile, " PRIMARY KEY (`id`),\n");
+			fwrite($this->exportFile, " UNIQUE KEY `EntrantID` (`id`)\n");
+			fwrite($this->exportFile, ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;\n");
+		}
+		foreach ($records as $record)
+		{
+			$insertRecord = true;
+			if (ANTLOG_ENV == 'web')
+			{
+				$update = '';
+			}
+			else
+			{
+				$update = " ON DUPLICATE KEY UPDATE ";
+				$update .= "`status`=$record->status, ";
+				$update .= "`finalFightId`=$record->finalFightId, ";
+				$update .= "`group_num`=$record->group_num";
+			}
+			if ($insertRecord == true)
+			{
+				$string = "INSERT INTO `$this->prefix" . "entrant` SET ";
+				$string .= "`id`=$record->id, ";
+				$string .= "`eventId`=$record->eventId, ";
+				$string .= "`robotId`=$record->robotId, ";
+				$string .= "`status`=$record->status, ";
+				$string .= "`finalFightId`=$record->finalFightId, ";
+				$string .= "`group_num`=$record->group_num";
+				$string .= $update . ";\n";
+				fwrite($this->exportFile, $string);
+			}
+		}
+		fclose($this->exportFile);
 	}
 
 	public function exportFights()
@@ -186,6 +353,73 @@ class Db extends ActiveRecord
 		// Export all fights - to prevent changes to robots that are in previous results
 		// For local:
 		// Export all fights (created since last import?)
+		$this->exportFile = fopen($this->exportFilename, 'a');
+		$model = new Fights;
+		$query = $model->find();
+		if (ANTLOG_ENV == 'local')
+		{
+			//$query = $query->where(['...' => ...]);
+		}
+	    $records = $query->all();
+		$numRecords = $query->count();
+		if (ANTLOG_ENV == 'web')
+		{
+			fwrite($this->exportFile, "DROP TABLE IF EXISTS `$this->prefix" . "fights`;\n");
+			fwrite($this->exportFile, "CREATE TABLE IF NOT EXISTS `$this->prefix" . "fights` (\n");
+			fwrite($this->exportFile, " `id` int(10) NOT NULL AUTO_INCREMENT,\n");
+			fwrite($this->exportFile, " `eventId` int(11) NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (eventId) REFERENCES aws_event(id)',\n");
+			fwrite($this->exportFile, " `fightGroup` int(11) NOT NULL,\n");
+			fwrite($this->exportFile, " `fightRound` int(11) NOT NULL,\n");
+			fwrite($this->exportFile, " `fightBracket` set('W','L','F') NOT NULL,\n");
+			fwrite($this->exportFile, " `fightNo` int(11) NOT NULL,\n");
+			fwrite($this->exportFile, " `robot1Id` int(11) NOT NULL DEFAULT '-1' COMMENT 'CONSTRAINT FOREIGN KEY (robot1Id) REFERENCES aws_entrant(id)',\n");
+			fwrite($this->exportFile, " `robot2Id` int(11) NOT NULL DEFAULT '-1' COMMENT 'CONSTRAINT FOREIGN KEY (robot2Id) REFERENCES aws_entrant(id)',\n");
+			fwrite($this->exportFile, " `winnerId` int(11) NOT NULL DEFAULT '-1' COMMENT 'CONSTRAINT FOREIGN KEY (winnerId) REFERENCES aws_entrant(id)',\n");
+			fwrite($this->exportFile, " `loserId` int(11) NOT NULL DEFAULT '-1' COMMENT 'CONSTRAINT FOREIGN KEY (loserId) REFERENCES aws_entrant(id)',\n");
+			fwrite($this->exportFile, " `winnerNextFight` int(10) unsigned NOT NULL,");
+			fwrite($this->exportFile, " `loserNextFight` int(10) unsigned NOT NULL,");
+			fwrite($this->exportFile, " `sequence` int(11) NOT NULL DEFAULT '-1',");
+			fwrite($this->exportFile, " PRIMARY KEY (`id`),\n");
+			fwrite($this->exportFile, " UNIQUE KEY `FightID` (`id`)\n");
+			fwrite($this->exportFile, ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;\n");
+		}
+		foreach ($records as $record)
+		{
+			$insertRecord = true;
+			if (ANTLOG_ENV == 'web')
+			{
+				$update = '';
+			}
+			else
+			{
+				$update = " ON DUPLICATE KEY UPDATE ";
+				$update .= "`robot1Id`=$record->robot1Id, ";
+				$update .= "`robot2Id`=$record->robot2Id, ";
+				$update .= "`winnerId`=$record->winnerId, ";
+				$update .= "`loserId`=$record->loserId, ";
+				$update .= "`sequence`=$record->sequence";
+			}
+			if ($insertRecord == true)
+			{
+				$string = "INSERT INTO `$this->prefix" . "fights` SET ";
+				$string .= "`id`=$record->id, ";
+				$string .= "`eventId`=$record->eventId, ";
+				$string .= "`fightGroup`=$record->fightGroup, ";
+				$string .= "`fightRound`=$record->fightRound, ";
+				$string .= "`fightBracket`='$record->fightBracket', ";
+				$string .= "`fightNo`=$record->fightNo, ";
+				$string .= "`robot1Id`=$record->robot1Id, ";
+				$string .= "`robot2Id`=$record->robot2Id, ";
+				$string .= "`winnerId`=$record->winnerId, ";
+				$string .= "`loserId`=$record->loserId, ";
+				$string .= "`winnerNextFight`=$record->winnerNextFight, ";
+				$string .= "`loserNextFight`=$record->loserNextFight, ";
+				$string .= "`sequence`=$record->sequence";
+				$string .= $update . ";\n";
+				fwrite($this->exportFile, $string);
+			}
+		}
+		fclose($this->exportFile);
 	}
 
 	public function importUsers()
@@ -210,7 +444,7 @@ class Db extends ActiveRecord
 	public function importEvents()
 	{
 		// For web:
-		// If event id exists, ignore
+		// If event id exists, update state, num_groups, offset
 		// If event id does not exist, create event (copy from import data, don't create as new event)
 		// For local:
 		// Drop existing event table, create new event table from import data
