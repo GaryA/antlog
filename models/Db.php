@@ -33,32 +33,6 @@ class Db extends ActiveRecord
 	    $this->database = $matches[1];
 	    $this->prefix = Yii::$app->db->tablePrefix;
 	    $this->exportFilename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . $this->database . '_' . date("Y-m-d-H-i-s") . '.sql';
-
-/*
-	    $tables =
-	    	$this->prefix . 'user' . ' ' .
-	    	$this->prefix . 'robot' . ' ' .
-	    	$this->prefix . 'event' . ' ' .
-	    	$this->prefix . 'entrant' . ' ' .
-	    	$this->prefix . 'fights';
-
-	    if ($this->password == '')
-	    {
-	    	$cmd = 'c:\xampp\mysql\bin\mysqldump.exe -u ' . $this->username . ' ' . $this->database . ' ' . $tables . ' > ' . $this->filename;
-	    }
-	    else
-	    {
-	    	$cmd = 'c:\xampp\mysql\bin\mysqldump.exe -u ' . $this->username . ' -p' . $this->password . ' ' . $this->database . ' ' . $tables . ' > ' . $this->filename;
-	    }
-	    if (PHP_OS == 'WINNT' || PHP_OS == 'WIN32')
-	    {
-	    	pclose(popen('start /b ' . $cmd, 'r'));
-	    }
-	    else
-	    {
-	    	pclose(popen($cmd, 'r'));
-	    }
-*/
 	}
 
 	public function exportUsers()
@@ -266,7 +240,10 @@ class Db extends ActiveRecord
 			else
 			{
 				$update = " ON DUPLICATE KEY UPDATE ";
+				$update .= "`name`='$record->name', ";
+				$update .= "`eventDate`='$record->eventDate', ";
 				$update .= "`state`='$record->state', ";
+				$update .= "`eventType`=$record->eventType, ";
 				$update .= "`num_groups`=$record->num_groups, ";
 				$update .= "`offset`=$record->offset";
 			}
@@ -275,7 +252,7 @@ class Db extends ActiveRecord
 				$string = "INSERT INTO `$this->prefix" . "event` SET ";
 				$string .= "`id`=$record->id, ";
 				$string .= "`name`='$record->name', ";
-				$string .= "`eventDate`=$record->eventDate, ";
+				$string .= "`eventDate`='$record->eventDate', ";
 				$string .= "`state`='$record->state', ";
 				$string .= "`classId`=$record->classId, ";
 				$string .= "`eventType`=$record->eventType, ";
