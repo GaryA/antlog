@@ -5,6 +5,8 @@ namespace app\controllers;
 use Yii;
 use app\models\Db;
 use app\models\User;
+use app\models\UploadForm;
+use yii\web\UploadedFile;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\AccessControl;
@@ -40,14 +42,25 @@ class DbController extends Controller
 	 */
 	public function actionImport()
 	{
-		$db = new Db;
-		$db->importUsers();
-		$db->importRobots();
-		$db->importEvents();
-		$db->importEntrants();
-		$db->importFights();
-		Yii::$app->getSession()->setFlash('error', 'Import of data is not yet implemented!');
-	    return $this->redirect(Yii::$app->urlManager->createUrl('/site/index'));
+        $model = new UploadForm();
+
+        if (Yii::$app->request->isPost)
+        {
+            $model->uploadFile = UploadedFile::getInstance($model, 'uploadFile');
+            if ($model->upload())
+            {
+				$db = new Db;
+				$db->fileUpload();
+				$db->importUsers();
+				$db->importRobots();
+				$db->importEvents();
+				$db->importEntrants();
+				$db->importFights();
+				Yii::$app->getSession()->setFlash('error', 'Import of data is not yet implemented!');
+			    return $this->redirect(Yii::$app->urlManager->createUrl('/site/index'));
+            }
+        }
+        return $this->render(Yii::$app->urlManager->createUrl('/site/upload'), ['model' => $model]);
 	}
 
 	/**
@@ -62,6 +75,7 @@ class DbController extends Controller
 		$db->exportEvents();
 		$db->exportEntrants();
 		$db->exportFights();
+		$db->fileDownload();
 
 	    Yii::$app->getSession()->setFlash('success', 'User, Robot, Event, Entrant and Fights tables dumped to ' . Yii::getAlias('@runtime') . ' folder.');
 	    return $this->redirect(Yii::$app->urlManager->createUrl('/site/index'));
