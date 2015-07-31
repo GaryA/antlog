@@ -5,7 +5,7 @@ jQuery(".do_draw").on('click', function()
 	{
 		type: "post",
 		dataType: 'json',
-		url: 'index.php?r=' + target + '&eventId=' + $('#event_id').val(),
+		url: target + '?eventId=' + $('#event_id').val(),
 		data: $('#event_button_form').serializeArray()
 	})
 	.done(function(response)

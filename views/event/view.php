@@ -47,15 +47,15 @@ $this->params['breadcrumbs'][] = $this->title;
 		{
 			echo Html::a('Update', ['update', 'id' => $model->id],
 				['class' => 'btn btn-primary']);
-			echo Html::a('Do Draw', false, ['data-target' => 'event/draw', 'class' => 'do_draw btn btn-primary']);
+			echo Html::a('Do Draw', false, ['data-target' => '../event/draw', 'class' => 'do_draw btn btn-primary']);
 		}
 		else if ($model->state == 'Setup')
 		{
-			echo Html::a('Re-Do Draw', false, ['data-target' => 'event/setup', 'class' => 'do_draw btn btn-primary']);
+			echo Html::a('Re-Do Draw', false, ['data-target' => '../event/setup', 'class' => 'do_draw btn btn-primary']);
 		}
 		else if ($model->state == 'Running')
 		{
-			echo Html::a('Run Fights', false, ['data-target' => 'event/run', 'class' => 'do_draw btn btn-primary']);
+			echo Html::a('Run Fights', false, ['data-target' => '../event/run', 'class' => 'do_draw btn btn-primary']);
 		}
 		echo Html::hiddenInput('progress_key', uniqid(), ['id'=>'progress_key']);
 		echo Html::hiddenInput('id', $model->id, ['id' => 'event_id']);

@@ -61,7 +61,7 @@ AppAsset::register($this);
             	{
             		$menuItems[] = ['label' => 'Import', 'url' => ['db/import']];
             	}
-            	if (!Yii::$app->user->isGuest)
+            	if ((!Yii::$app->user->isGuest && Yii::$app->params['antlog_env'] == 'web') || User::isUserAdmin())
             	{
             		$menuItems[] = ['label' => 'Export', 'url' => ['db/export']];
             	}

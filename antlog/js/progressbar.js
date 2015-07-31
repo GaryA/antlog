@@ -6,9 +6,9 @@ function open_progress_bar()
 
 function show_progress()
 {
-	var url = 'index.php?r=event/get-progress-bar-data';
+	var url = '../event/get-progress-bar-data';
 	var progress_key = $('#progress_key').val();
-	$.getJSON(url + "&key=" + progress_key, function(data)
+	$.getJSON(url + "?key=" + progress_key, function(data)
 	{
 		var done = parseInt(data.done);
 		var total = parseInt(data.total);

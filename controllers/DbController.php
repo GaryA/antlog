@@ -36,6 +36,10 @@ class DbController extends Controller
                         'actions' => ['export'],
                         'allow' => true,
                         'roles' => ['@'],
+						'matchCallback' => function($rule, $action)
+						{
+							return (User::isUserAdmin() || Yii::$app->params['antlog_env'] == 'web');
+						}
                     ],
 				],
 			]
