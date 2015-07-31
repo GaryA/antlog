@@ -35,6 +35,13 @@ class Db extends ActiveRecord
 	    $this->filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . $this->database . '_' . date("Y-m-d-H-i-s") . '.sql';
 	}
 
+	public function exportEnd()
+	{
+		$this->fileHandle = fopen($this->filename, 'a');
+		fwrite($this->fileHandle, "SELECT '<COMPLETE>' AS ' ';\n");
+		fclose($this->fileHandle);
+	}
+
 	public function exportUsers()
 	{
 		// For web:
@@ -47,7 +54,7 @@ class Db extends ActiveRecord
 		$this->fileHandle = fopen($this->filename, 'a');
 		$model = new User;
 		$query = $model->find();
-		if (ANTLOG_ENV == 'local')
+		if (Yii::$app->params['antlog_env'] == 'local')
 		{
 			$query = $query->where(['user_group' => User::ROLE_TEAM]);
 		}
@@ -56,7 +63,7 @@ class Db extends ActiveRecord
 		$passwordHash = Yii::$app->security->generatePasswordHash('password');
 		$userPassword = "`password_hash`='$passwordHash', "; /* dummy password_hash */
 		$email = "`email`='email@example.com', "; /* dummy email */
-		if (ANTLOG_ENV == 'web')
+		if (Yii::$app->params['antlog_env'] == 'web')
 		{
 			fwrite($this->fileHandle, "DROP TABLE IF EXISTS `$this->prefix" . "user`;\n");
 			fwrite($this->fileHandle, "CREATE TABLE IF NOT EXISTS `$this->prefix" . "user` (\n");
@@ -78,7 +85,7 @@ class Db extends ActiveRecord
 		foreach ($records as $record)
 		{
 			$insertRecord = true;
-			if (ANTLOG_ENV == 'web')
+			if (Yii::$app->params['antlog_env'] == 'web')
 			{
 				// INSERT INTO table SET col1=val1, col2=val2;
 				if ($record->user_group == User::ROLE_ADMIN)
@@ -114,6 +121,14 @@ class Db extends ActiveRecord
 					$update .= "`email`='$record->email', ";
 				}
 				$update .= "`team_name`='$record->team_name'";
+				if ($record->created_at != 0)
+				{
+					$update .= ", `created_at`=$record->created_at";
+				}
+				if ($record->updated_at != 0)
+				{
+					$update .= ", `updated_at`=$record->updated_at";
+				}
 			}
 
 			if ($insertRecord == true)
@@ -146,13 +161,13 @@ class Db extends ActiveRecord
 		$this->fileHandle = fopen($this->filename, 'a');
 		$model = new Robot;
 		$query = $model->find();
-		if (ANTLOG_ENV == 'local')
+		if (Yii::$app->params['antlog_env'] == 'local')
 		{
 			//$query = $query->where(['...' => ...]);
 		}
 	    $records = $query->all();
 		$numRecords = $query->count();
-		if (ANTLOG_ENV == 'web')
+		if (Yii::$app->params['antlog_env'] == 'web')
 		{
 			fwrite($this->fileHandle, "DROP TABLE IF EXISTS `$this->prefix" . "robot`;\n");
 			fwrite($this->fileHandle, "CREATE TABLE IF NOT EXISTS `$this->prefix" . "robot` (\n");
@@ -170,7 +185,7 @@ class Db extends ActiveRecord
 		foreach ($records as $record)
 		{
 			$insertRecord = true;
-			if (ANTLOG_ENV == 'web')
+			if (Yii::$app->params['antlog_env'] == 'web')
 			{
 				$update = '';
 			}
@@ -208,13 +223,13 @@ class Db extends ActiveRecord
 		$this->fileHandle = fopen($this->filename, 'a');
 		$model = new Event;
 		$query = $model->find();
-		if (ANTLOG_ENV == 'local')
+		if (Yii::$app->params['antlog_env'] == 'local')
 		{
 			//$query = $query->where(['...' => ...]);
 		}
 	    $records = $query->all();
 		$numRecords = $query->count();
-		if (ANTLOG_ENV == 'web')
+		if (Yii::$app->params['antlog_env'] == 'web')
 		{
 			fwrite($this->fileHandle, "DROP TABLE IF EXISTS `$this->prefix" . "event`;\n");
 			fwrite($this->fileHandle, "CREATE TABLE IF NOT EXISTS `$this->prefix" . "event` (\n");
@@ -233,7 +248,7 @@ class Db extends ActiveRecord
 		foreach ($records as $record)
 		{
 			$insertRecord = true;
-			if (ANTLOG_ENV == 'web')
+			if (Yii::$app->params['antlog_env'] == 'web')
 			{
 				$update = '';
 			}
@@ -245,7 +260,14 @@ class Db extends ActiveRecord
 				$update .= "`state`='$record->state', ";
 				$update .= "`eventType`=$record->eventType, ";
 				$update .= "`num_groups`=$record->num_groups, ";
-				$update .= "`offset`=$record->offset";
+				if ($record->offset == NULL)
+				{
+					$update .= "`offset`=NULL";
+				}
+				else
+				{
+					$update .= "`offset`=$record->offset";
+				}
 			}
 			if ($insertRecord == true)
 			{
@@ -257,7 +279,14 @@ class Db extends ActiveRecord
 				$string .= "`classId`=$record->classId, ";
 				$string .= "`eventType`=$record->eventType, ";
 				$string .= "`num_groups`=$record->num_groups, ";
-				$string .= "`offset`=$record->offset";
+				if ($record->offset == NULL)
+				{
+					$string .= "`offset`=NULL";
+				}
+				else
+				{
+					$string .= "`offset`=$record->offset";
+				}
 				$string .= $update . ";\n";
 				fwrite($this->fileHandle, $string);
 			}
@@ -274,13 +303,13 @@ class Db extends ActiveRecord
 		$this->fileHandle = fopen($this->filename, 'a');
 		$model = new Entrant;
 		$query = $model->find();
-		if (ANTLOG_ENV == 'local')
+		if (Yii::$app->params['antlog_env'] == 'local')
 		{
 			//$query = $query->where(['...' => ...]);
 		}
 	    $records = $query->all();
 		$numRecords = $query->count();
-		if (ANTLOG_ENV == 'web')
+		if (Yii::$app->params['antlog_env'] == 'web')
 		{
 			fwrite($this->fileHandle, "DROP TABLE IF EXISTS `$this->prefix" . "entrant`;\n");
 			fwrite($this->fileHandle, "CREATE TABLE IF NOT EXISTS `$this->prefix" . "entrant` (\n");
@@ -297,7 +326,7 @@ class Db extends ActiveRecord
 		foreach ($records as $record)
 		{
 			$insertRecord = true;
-			if (ANTLOG_ENV == 'web')
+			if (Yii::$app->params['antlog_env'] == 'web')
 			{
 				$update = '';
 			}
@@ -306,7 +335,14 @@ class Db extends ActiveRecord
 				$update = " ON DUPLICATE KEY UPDATE ";
 				$update .= "`status`=$record->status, ";
 				$update .= "`finalFightId`=$record->finalFightId, ";
-				$update .= "`group_num`=$record->group_num";
+				if ($record->group_num == NULL)
+				{
+					$update .= "`group_num`=NULL";
+				}
+				else
+				{
+					$update .= "`group_num`=$record->group_num";
+				}
 			}
 			if ($insertRecord == true)
 			{
@@ -316,7 +352,14 @@ class Db extends ActiveRecord
 				$string .= "`robotId`=$record->robotId, ";
 				$string .= "`status`=$record->status, ";
 				$string .= "`finalFightId`=$record->finalFightId, ";
-				$string .= "`group_num`=$record->group_num";
+				if ($record->group_num == NULL)
+				{
+					$string .= "`group_num`=NULL";
+				}
+				else
+				{
+					$string .= "`group_num`=$record->group_num";
+				}
 				$string .= $update . ";\n";
 				fwrite($this->fileHandle, $string);
 			}
@@ -333,13 +376,13 @@ class Db extends ActiveRecord
 		$this->fileHandle = fopen($this->filename, 'a');
 		$model = new Fights;
 		$query = $model->find();
-		if (ANTLOG_ENV == 'local')
+		if (Yii::$app->params['antlog_env'] == 'local')
 		{
 			//$query = $query->where(['...' => ...]);
 		}
 	    $records = $query->all();
 		$numRecords = $query->count();
-		if (ANTLOG_ENV == 'web')
+		if (Yii::$app->params['antlog_env'] == 'web')
 		{
 			fwrite($this->fileHandle, "DROP TABLE IF EXISTS `$this->prefix" . "fights`;\n");
 			fwrite($this->fileHandle, "CREATE TABLE IF NOT EXISTS `$this->prefix" . "fights` (\n");
@@ -363,7 +406,7 @@ class Db extends ActiveRecord
 		foreach ($records as $record)
 		{
 			$insertRecord = true;
-			if (ANTLOG_ENV == 'web')
+			if (Yii::$app->params['antlog_env'] == 'web')
 			{
 				$update = '';
 			}
@@ -399,53 +442,26 @@ class Db extends ActiveRecord
 		fclose($this->fileHandle);
 	}
 
-	public function importUsers()
+	public function importFile($fileName)
 	{
-		// For web:
-		// If user id exists, update username if different, update team_name if different, update email if not dummy value
-		// If user id does not exist, create user
-		// For local:
-		// Drop existing user table, create new user table from import data
-
-	}
-	public function importRobots()
-	{
-		// For web:
-		// If robot id exists, update name, team, status etc if allowable - should always be OK
-		// If robot id does not exist, create robot
-		// For local:
-		// Drop existing robot table, create new robot table from import data
-
-	}
-
-	public function importEvents()
-	{
-		// For web:
-		// If event id exists, update state, num_groups, offset
-		// If event id does not exist, create event (copy from import data, don't create as new event)
-		// For local:
-		// Drop existing event table, create new event table from import data
-
-	}
-
-	public function importEntrants()
-	{
-		// For web:
-		// If entrant id exists, ignore
-		// If entrant id does not exist, create entrant
-		// For local:
-		// Drop existing entrant table, create new entrant table from import data
-
-	}
-
-	public function importFights()
-	{
-		// For web:
-		// If fight id exists, ignore
-		// If fight id does not exist, create fight
-		// For local:
-		// Drop existing fights table, create new fights table from import data
-
+		// run mysql with $fileName as input
+		if ($this->password !== '')
+		{
+			$cmd = "-h localhost -u $this->username -p $this->password $this->database < \"$fileName\"";
+		}
+		else
+		{
+			$cmd = "-h localhost -u $this->username $this->database < \"$fileName\"";
+		}
+		if (PHP_OS == 'WINNT' || PHP_OS == 'WIN32')
+		{
+			exec("start /b c:\\xampp\\mysql\\bin\\mysql.exe $cmd");
+		}
+		else
+		{
+			pclose(popen('mysql ' . $cmd . '> /dev/null &', 'r'));
+		}
+		//unlink($fileName);
 	}
 
 	public function fileDownload()
@@ -484,8 +500,21 @@ class Db extends ActiveRecord
 		}
 	}
 
-	public function fileUpload()
+	private function validateQuery($query)
 	{
+		// Users:
+		// Check that users are not administrators before processing insert/update
+		// Robots:
+		// check that team exists before processing insert/update
+		// Events:
+		// If event id exists, update state, num_groups, offset
+		// If event id does not exist, create event (copy from import data, don't create as new event)
+		// Entrants:
+		// If entrant id exists, ignore
+		// If entrant id does not exist, create entrant
+		// Fights:
+		// If fight id exists, ignore
+		// If fight id does not exist, create fight
 
 	}
 }

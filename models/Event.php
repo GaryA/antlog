@@ -47,7 +47,7 @@ class Event extends \yii\db\ActiveRecord
 			[['state'], 'string'],
 			['state', 'default', 'value' => 'Registration'],
 			['state', 'validateState'],
-			[['name'], 'string', 'max' => 20]
+			[['name'], 'string', 'max' => 100]
 		];
 	}
 

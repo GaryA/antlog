@@ -163,7 +163,7 @@ class Robot extends \yii\db\ActiveRecord
             [['teamId', 'classId', 'typeId'], 'integer'],
 			[['active'],'boolean'],
 			[['active'], 'default', 'value' => 1],
-            [['name'], 'string', 'max' => 50],
+            [['name'], 'string', 'max' => 100],
 			[['name'], 'unique', 'message' => 'Robot name "{value}" is already taken.'],
         ];
     }

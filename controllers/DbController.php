@@ -24,6 +24,7 @@ class DbController extends Controller
 				'rules' =>
 				[
 					[
+						'actions' => ['import'],
 						'allow' => true,
 						'roles' => ['@'],
 						'matchCallback' => function($rule, $action)
@@ -31,6 +32,11 @@ class DbController extends Controller
 							return User::isUserAdmin();
 						}
 					],
+					[
+                        'actions' => ['export'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
 				],
 			]
 		];
@@ -50,13 +56,8 @@ class DbController extends Controller
             if ($model->upload())
             {
 				$db = new Db;
-				$db->fileUpload();
-				$db->importUsers();
-				$db->importRobots();
-				$db->importEvents();
-				$db->importEntrants();
-				$db->importFights();
-				Yii::$app->getSession()->setFlash('error', 'Import of data is not yet implemented!');
+				$db->importFile($model->savedFile);
+				Yii::$app->getSession()->setFlash('success', 'Database updates imported.');
 			    return $this->redirect(Yii::$app->urlManager->createUrl('/site/index'));
             }
         }
@@ -75,9 +76,10 @@ class DbController extends Controller
 		$db->exportEvents();
 		$db->exportEntrants();
 		$db->exportFights();
+		$db->exportEnd();
 		$db->fileDownload();
 
-	    Yii::$app->getSession()->setFlash('success', 'User, Robot, Event, Entrant and Fights tables dumped to ' . Yii::getAlias('@runtime') . ' folder.');
+	    Yii::$app->getSession()->setFlash('success', 'User, Robot, Event, Entrant and Fights tables exported.');
 	    return $this->redirect(Yii::$app->urlManager->createUrl('/site/index'));
 	}
 }

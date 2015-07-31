@@ -27,8 +27,20 @@ AppAsset::register($this);
 <?php $this->beginBody() ?>
     <div class="wrap">
         <?php
+        	if (Yii::$app->params['antlog_env'] == 'local')
+        	{
+        		$host = gethostname();
+        		$ip = gethostbyname($host);
+        		$ipMessage = "($ip)";
+        	}
+        	else
+        	{
+        		$ipMessage = '';
+        	}
             NavBar::begin([
-                'brandLabel' => '<img src = "' . Yii::getAlias('@web') . '/awslogo-sm-xprnt.png" style = "float: left; margin-top: -15px; margin-right: 5px;">AntLog 3.0',
+                'brandLabel' => '<img src = "' . Yii::getAlias('@web') .
+            	'/awslogo-sm-xprnt.png" style = "float: left; margin-top: -15px; margin-right: 5px;">AntLog 3.0 ' .
+            	'<small>' . $ipMessage . '</small>',
                 'brandUrl' => Yii::$app->homeUrl,
                 'options' => [
                     'class' => 'navbar-inverse navbar-fixed-top',
@@ -48,6 +60,9 @@ AppAsset::register($this);
             	if (User::isUserAdmin())
             	{
             		$menuItems[] = ['label' => 'Import', 'url' => ['db/import']];
+            	}
+            	if (!Yii::$app->user->isGuest)
+            	{
             		$menuItems[] = ['label' => 'Export', 'url' => ['db/export']];
             	}
                 $menuItems[] =
