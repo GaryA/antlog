@@ -83,7 +83,9 @@ class DbController extends Controller
 		$db->exportEnd();
 		$db->fileDownload();
 
-	    Yii::$app->getSession()->setFlash('success', 'User, Robot, Event, Entrant and Fights tables exported.');
-	    return $this->redirect(Yii::$app->urlManager->createUrl('/site/index'));
+		return;
+		// Setting a flash and redirecting doesn't work with an inline file download.
+	    // Yii::$app->getSession()->setFlash('success', 'User, Robot, Event, Entrant and Fights tables exported.');
+	    // return $this->redirect(Yii::$app->urlManager->createUrl('/site/index'));
 	}
 }
