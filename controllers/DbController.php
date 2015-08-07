@@ -65,7 +65,7 @@ class DbController extends Controller
 			    return $this->redirect(Yii::$app->urlManager->createUrl('/site/index'));
             }
         }
-        return $this->render(Yii::$app->urlManager->createUrl('/site/upload'), ['model' => $model]);
+        return $this->render('/site/upload', ['model' => $model]);
 	}
 
 	/**
