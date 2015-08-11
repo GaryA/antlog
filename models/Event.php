@@ -3,6 +3,7 @@ namespace app\models;
 
 use Yii;
 use yii\helpers\VarDumper;
+use yii\behaviors\TimestampBehavior;
 use app\models\Robot;
 use app\models\Entrant;
 use app\models\Fights;
@@ -48,6 +49,17 @@ class Event extends \yii\db\ActiveRecord
 			['state', 'default', 'value' => 'Registration'],
 			['state', 'validateState'],
 			[['name'], 'string', 'max' => 100]
+		];
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function behaviors()
+	{
+		return
+		[
+			TimestampBehavior::className(),
 		];
 	}
 

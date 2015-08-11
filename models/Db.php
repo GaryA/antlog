@@ -177,6 +177,8 @@ class Db extends ActiveRecord
 			fwrite($this->fileHandle, " `classId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (classId) REFERENCES aws_robot_class(id)',\n");
 			fwrite($this->fileHandle, " `typeId` smallint(6) NOT NULL DEFAULT '0' COMMENT 'CONSTRAINT FOREIGN KEY (typeId) REFERENCES aws_robot_type(id)',\n");
 			fwrite($this->fileHandle, " `active` tinyint(1) NOT NULL,\n");
+			fwrite($this->fileHandle, " `created_at` int(11) NOT NULL,\n");
+			fwrite($this->fileHandle, " `updated_at` int(11) NOT NULL,\n");
 			fwrite($this->fileHandle, " PRIMARY KEY (`id`),\n");
 			fwrite($this->fileHandle, " UNIQUE KEY `RobotID_2` (`id`),\n");
 			fwrite($this->fileHandle, " KEY `RobotID` (`id`)\n");
@@ -187,15 +189,31 @@ class Db extends ActiveRecord
 			$insertRecord = true;
 			if (Yii::$app->params['antlog_env'] == 'web')
 			{
+				$createdAt = "`created_at`=0, ";
+				$updatedAt = "`updated_at`=0, ";
 				$update = '';
 			}
 			else
 			{
+				$createdAt = "`created_at`=$record->created_at, ";
+				$updatedAt = "`updated_at`=$record->updated_at, ";
+				if (($record->created_at == 0) && ($record->updated_at == 0))
+				{
+					$insertRecord = false;
+				}
 				$update = " ON DUPLICATE KEY UPDATE ";
 				$update .= "`name`='$record->name', ";
 				$update .= "`classId`=$record->classId, ";
 				$update .= "`typeId`=$record->typeId, ";
 				$update .= "`active`=$record->active";
+				if ($record->created_at != 0)
+				{
+					$update .= ", `created_at`=$record->created_at";
+				}
+				if ($record->updated_at != 0)
+				{
+					$update .= ", `updated_at`=$record->updated_at";
+				}
 			}
 			if ($insertRecord == true)
 			{
@@ -205,6 +223,8 @@ class Db extends ActiveRecord
 				$string .= "`teamId`=$record->teamId, ";
 				$string .= "`classId`=$record->classId, ";
 				$string .= "`typeId`=$record->typeId, ";
+				$string .= $createdAt;
+				$string .= $updatedAt;
 				$string .= "`active`=$record->active";
 				$string .= $update . ";\n";
 				fwrite($this->fileHandle, $string);
@@ -241,6 +261,8 @@ class Db extends ActiveRecord
 			fwrite($this->fileHandle, " `eventType` tinyint(4) NOT NULL DEFAULT '1' COMMENT 'CONSTRAINT FOREIGN KEY (eventType) REFERENCES aws_event_type(id)',\n");
 			fwrite($this->fileHandle, " `num_groups` tinyint(4) NOT NULL DEFAULT '0',\n");
 			fwrite($this->fileHandle, " `offset` int(11) DEFAULT NULL,\n");
+			fwrite($this->fileHandle, " `created_at` int(11) NOT NULL,\n");
+			fwrite($this->fileHandle, " `updated_at` int(11) NOT NULL,\n");
 			fwrite($this->fileHandle, " PRIMARY KEY (`id`),\n");
 			fwrite($this->fileHandle, " UNIQUE KEY `id` (`id`)\n");
 			fwrite($this->fileHandle, ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;\n");
@@ -250,10 +272,18 @@ class Db extends ActiveRecord
 			$insertRecord = true;
 			if (Yii::$app->params['antlog_env'] == 'web')
 			{
+				$createdAt = "`created_at`=0, ";
+				$updatedAt = "`updated_at`=0, ";
 				$update = '';
 			}
 			else
 			{
+				$createdAt = "`created_at`=$record->created_at, ";
+				$updatedAt = "`updated_at`=$record->updated_at, ";
+				if (($record->created_at == 0) && ($record->updated_at == 0))
+				{
+					$insertRecord = false;
+				}
 				$update = " ON DUPLICATE KEY UPDATE ";
 				$update .= "`name`='$record->name', ";
 				$update .= "`eventDate`='$record->eventDate', ";
@@ -268,6 +298,14 @@ class Db extends ActiveRecord
 				{
 					$update .= "`offset`=$record->offset";
 				}
+				if ($record->created_at != 0)
+				{
+					$update .= ", `created_at`=$record->created_at";
+				}
+				if ($record->updated_at != 0)
+				{
+					$update .= ", `updated_at`=$record->updated_at";
+				}
 			}
 			if ($insertRecord == true)
 			{
@@ -279,6 +317,8 @@ class Db extends ActiveRecord
 				$string .= "`classId`=$record->classId, ";
 				$string .= "`eventType`=$record->eventType, ";
 				$string .= "`num_groups`=$record->num_groups, ";
+				$string .= $createdAt;
+				$string .= $updatedAt;
 				if ($record->offset == NULL)
 				{
 					$string .= "`offset`=NULL";
@@ -319,6 +359,8 @@ class Db extends ActiveRecord
 			fwrite($this->fileHandle, " `status` int(11) DEFAULT '-1',\n");
 			fwrite($this->fileHandle, " `finalFightId` int(11) NOT NULL DEFAULT '0' COMMENT 'CONSTRAINT FOREIGN KEY (finalFightId) REFERENCES aws_fights(id)',\n");
 			fwrite($this->fileHandle, " `group_num` int(11) DEFAULT NULL,\n");
+			fwrite($this->fileHandle, " `created_at` int(11) NOT NULL,\n");
+			fwrite($this->fileHandle, " `updated_at` int(11) NOT NULL,\n");
 			fwrite($this->fileHandle, " PRIMARY KEY (`id`),\n");
 			fwrite($this->fileHandle, " UNIQUE KEY `EntrantID` (`id`)\n");
 			fwrite($this->fileHandle, ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;\n");
@@ -328,10 +370,18 @@ class Db extends ActiveRecord
 			$insertRecord = true;
 			if (Yii::$app->params['antlog_env'] == 'web')
 			{
+				$createdAt = "`created_at`=0, ";
+				$updatedAt = "`updated_at`=0, ";
 				$update = '';
 			}
 			else
 			{
+				$createdAt = "`created_at`=$record->created_at, ";
+				$updatedAt = "`updated_at`=$record->updated_at, ";
+				if (($record->created_at == 0) && ($record->updated_at == 0))
+				{
+					$insertRecord = false;
+				}
 				$update = " ON DUPLICATE KEY UPDATE ";
 				$update .= "`status`=$record->status, ";
 				$update .= "`finalFightId`=$record->finalFightId, ";
@@ -343,6 +393,14 @@ class Db extends ActiveRecord
 				{
 					$update .= "`group_num`=$record->group_num";
 				}
+				if ($record->created_at != 0)
+				{
+					$update .= ", `created_at`=$record->created_at";
+				}
+				if ($record->updated_at != 0)
+				{
+					$update .= ", `updated_at`=$record->updated_at";
+				}
 			}
 			if ($insertRecord == true)
 			{
@@ -352,6 +410,8 @@ class Db extends ActiveRecord
 				$string .= "`robotId`=$record->robotId, ";
 				$string .= "`status`=$record->status, ";
 				$string .= "`finalFightId`=$record->finalFightId, ";
+				$string .= $createdAt;
+				$string .= $updatedAt;
 				if ($record->group_num == NULL)
 				{
 					$string .= "`group_num`=NULL";
@@ -399,6 +459,8 @@ class Db extends ActiveRecord
 			fwrite($this->fileHandle, " `winnerNextFight` int(10) unsigned NOT NULL,");
 			fwrite($this->fileHandle, " `loserNextFight` int(10) unsigned NOT NULL,");
 			fwrite($this->fileHandle, " `sequence` int(11) NOT NULL DEFAULT '-1',");
+			fwrite($this->fileHandle, " `created_at` int(11) NOT NULL,\n");
+			fwrite($this->fileHandle, " `updated_at` int(11) NOT NULL,\n");
 			fwrite($this->fileHandle, " PRIMARY KEY (`id`),\n");
 			fwrite($this->fileHandle, " UNIQUE KEY `FightID` (`id`)\n");
 			fwrite($this->fileHandle, ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;\n");
@@ -408,16 +470,32 @@ class Db extends ActiveRecord
 			$insertRecord = true;
 			if (Yii::$app->params['antlog_env'] == 'web')
 			{
+				$createdAt = "`created_at`=0, ";
+				$updatedAt = "`updated_at`=0, ";
 				$update = '';
 			}
 			else
 			{
+				$createdAt = "`created_at`=$record->created_at, ";
+				$updatedAt = "`updated_at`=$record->updated_at, ";
+				if (($record->created_at == 0) && ($record->updated_at == 0))
+				{
+					$insertRecord = false;
+				}
 				$update = " ON DUPLICATE KEY UPDATE ";
 				$update .= "`robot1Id`=$record->robot1Id, ";
 				$update .= "`robot2Id`=$record->robot2Id, ";
 				$update .= "`winnerId`=$record->winnerId, ";
 				$update .= "`loserId`=$record->loserId, ";
 				$update .= "`sequence`=$record->sequence";
+				if ($record->created_at != 0)
+				{
+					$update .= ", `created_at`=$record->created_at";
+				}
+				if ($record->updated_at != 0)
+				{
+					$update .= ", `updated_at`=$record->updated_at";
+				}
 			}
 			if ($insertRecord == true)
 			{
@@ -434,6 +512,8 @@ class Db extends ActiveRecord
 				$string .= "`loserId`=$record->loserId, ";
 				$string .= "`winnerNextFight`=$record->winnerNextFight, ";
 				$string .= "`loserNextFight`=$record->loserNextFight, ";
+				$string .= $createdAt;
+				$string .= $updatedAt;
 				$string .= "`sequence`=$record->sequence";
 				$string .= $update . ";\n";
 				fwrite($this->fileHandle, $string);

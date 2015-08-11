@@ -322,6 +322,8 @@ CREATE TABLE IF NOT EXISTS `aws_entrant` (
   `status` int(11) DEFAULT '-1',
   `finalFightId` int(11) NOT NULL DEFAULT '0' COMMENT 'CONSTRAINT FOREIGN KEY (finalFightId) REFERENCES aws_fights(id)',
   `group_num` int(11) DEFAULT NULL,
+  `created_at` int(11) NOT NULL,
+  `updated_at` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `EntrantID` (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=56 ;
@@ -340,6 +342,8 @@ CREATE TABLE IF NOT EXISTS `aws_event` (
   `eventType` tinyint(4) NOT NULL DEFAULT '1' COMMENT 'CONSTRAINT FOREIGN KEY (eventType) REFERENCES aws_event_type(id)',
   `num_groups` tinyint(4) NOT NULL DEFAULT '0',
   `offset` int(11) DEFAULT NULL,
+  `created_at` int(11) NOT NULL,
+  `updated_at` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
@@ -383,6 +387,8 @@ CREATE TABLE IF NOT EXISTS `aws_fights` (
   `winnerNextFight` int(10) unsigned NOT NULL,
   `loserNextFight` int(10) unsigned NOT NULL,
   `sequence` int(11) NOT NULL DEFAULT '-1',
+  `created_at` int(11) NOT NULL,
+  `updated_at` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `FightID` (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Double elimination template' AUTO_INCREMENT=766 ;
@@ -399,6 +405,8 @@ CREATE TABLE IF NOT EXISTS `aws_robot` (
   `classId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (classId) REFERENCES aws_robot_class(id)',
   `typeId` smallint(6) NOT NULL DEFAULT '0' COMMENT 'CONSTRAINT FOREIGN KEY (typeId) REFERENCES aws_robot_type(id)',
   `active` tinyint(1) NOT NULL,
+  `created_at` int(11) NOT NULL,
+  `updated_at` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `RobotID_2` (`id`),
   KEY `RobotID` (`id`)

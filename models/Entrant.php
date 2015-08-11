@@ -3,6 +3,8 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "{{%entrant}}".
@@ -19,8 +21,19 @@ use Yii;
  * @property Robot $robot
  * @property Team $team
  */
-class Entrant extends \yii\db\ActiveRecord
+class Entrant extends ActiveRecord
 {
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return
+		[
+            TimestampBehavior::className(),
+        ];
+    }
+
 	public function beforeSave($insert)
 	{
 		if ($insert)
