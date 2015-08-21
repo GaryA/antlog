@@ -54,18 +54,33 @@ class DbController extends Controller
 	{
         $model = new UploadForm();
 
-        if (Yii::$app->request->isPost)
+        if (Yii::$app->request->isAjax)
         {
             $model->uploadFile = UploadedFile::getInstance($model, 'uploadFile');
             if ($model->upload())
             {
-				$db = new Db;
-				$db->importFile($model->savedFile);
-				Yii::$app->getSession()->setFlash('success', 'Database updates imported.');
-			    return $this->redirect(Yii::$app->urlManager->createUrl('/site/index'));
+            	$html = <<< END_OF_TEXT
+
+END_OF_TEXT;
+				return json_encode(['fileName' => $model->savedFile, 'html' => $html, 'status' => 'OK']);
             }
+            return '{"status": "Error"}';
         }
         return $this->render('/site/upload', ['model' => $model]);
+	}
+
+	public function actionProcess()
+	{
+		if (Yii::$app->request->isAjax)
+		{
+			$filename = Yii::$app->request->post('filename');
+			/* redirect to home page when complete */
+			$redirect = "../index.php";
+			$postId = $this->createPostFile();
+			Yii::$app->consoleRunner->run("db/import $postId \"$filename\" $redirect");
+			return '{"status":"OK"}';
+		}
+		//return $this->render('/db/process', ['fileName' => $fileName]);
 	}
 
 	/**
@@ -87,5 +102,18 @@ class DbController extends Controller
 		// Setting a flash and redirecting doesn't work with an inline file download.
 	    // Yii::$app->getSession()->setFlash('success', 'User, Robot, Event, Entrant and Fights tables exported.');
 	    // return $this->redirect(Yii::$app->urlManager->createUrl('/site/index'));
+	}
+
+	/**
+	 * Creates a file containing the post data, for use by the CLI script
+	 * @return string The post file ID
+	 */
+	protected function createPostFile()
+	{
+		$post = Yii::$app->request->post();
+		$postId = uniqid();
+		$filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . "{$postId}";
+		file_put_contents($filename, json_encode($post));
+		return $postId;
 	}
 }

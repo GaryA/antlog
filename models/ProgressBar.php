@@ -62,6 +62,12 @@ class ProgressBar
 		$this->put();
 	}
 
+	public function set($done)
+	{
+		$this->data['done'] = $done;
+		$this->put();
+	}
+
 	public function put()
 	{
 		if (self::$useFile)

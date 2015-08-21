@@ -11,7 +11,7 @@ jQuery(".do_draw").on('click', function()
 	.done(function(response)
 	{
 		//$('#progress_key').val(uniqid());
-		open_progress_bar();
+		open_progress_bar(true);
 		return true;
 	})
 	.fail(function (jqXHr, textStatus, errorThrown)

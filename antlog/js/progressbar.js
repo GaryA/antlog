@@ -1,10 +1,10 @@
-function open_progress_bar()
+function open_progress_bar(dynamic)
 {
 	$("#progress-wrapper").css('display', 'block');
-	show_progress();
+	show_progress(dynamic);
 }
 
-function show_progress()
+function show_progress(dynamic)
 {
 	var url = '../event/get-progress-bar-data';
 	var progress_key = $('#progress_key').val();
@@ -17,8 +17,15 @@ function show_progress()
 		{
 			percentage = 100;
 		}
-		var percentage_txt = percentage + "%" + " [" + done + "/" + total + "]";
-		$('.progress-bar').css('width', percentage + '%').attr('aria-valuenow', percentage).html(percentage + '% Complete');
+		if (dynamic == true)
+		{
+			$('.progress-bar').css('width', percentage + '%').attr('aria-valuenow', percentage).html(percentage + '% Complete');			
+		}
+		else
+		{
+			$('.progress-bar').css('width', 100 + '%').attr('aria-valuenow', 100).html('');
+			$('span.sr-only').html('');
+		}
 		if (parseInt(data.error) == 1)
 		{
 			// redirect via an error handler to provide an error message to the user
@@ -36,7 +43,7 @@ function show_progress()
 		}
 		else
 		{
-			setTimeout(function(){show_progress()}, 500); // update twice per second
+			setTimeout(function(){show_progress(dynamic)}, 500); // update twice per second
 		}
 	});
 }
