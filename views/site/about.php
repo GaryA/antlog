@@ -7,7 +7,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="site-about">
     <h1><?= Html::encode($this->title) ?></h1>
-
     <h2>Version 3.0.0beta3</h2>
     <p>
         AntLog 3.0 is a web application written in PHP using the Yii framework. It runs on any

@@ -3,6 +3,6 @@
 <?= yii\bootstrap\Progress::widget([
 	'percent' => 0,
 	'barOptions' => ['id' => 'progress-bar', 'class' => 'progress-bar-success'],
-	'options' => ['id' => 'progress', 'class' => 'active progress-striped']
+	'options' => ['id' => 'progress', 'class' => 'active']
 ])?>
 </div>

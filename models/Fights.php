@@ -3,6 +3,8 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
 use app\models\Event;
 use app\models\Entrant;
 
@@ -28,7 +30,7 @@ use app\models\Entrant;
  * @property Robot $winner
  * @property Robot $loser
  */
-class Fights extends \yii\db\ActiveRecord
+class Fights extends ActiveRecord
 {
 	protected $_startMap = [
 		[1, 9, 17, 25, 33, 41, 49, 57, 'robot1Id'],
@@ -55,6 +57,17 @@ class Fights extends \yii\db\ActiveRecord
     public static function tableName()
     {
         return '{{%fights}}';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+    	return
+    	[
+    		TimestampBehavior::className(),
+    	];
     }
 
     /**

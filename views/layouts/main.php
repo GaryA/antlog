@@ -5,6 +5,7 @@ use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
 use app\widgets\Alert;
+use app\models\User;
 
 /* @var $this \yii\web\View */
 /* @var $content string */
@@ -26,8 +27,21 @@ AppAsset::register($this);
 <?php $this->beginBody() ?>
     <div class="wrap">
         <?php
+        	if (Yii::$app->params['antlog_env'] == 'local')
+        	{
+        		$host = gethostname();
+        		$ip = gethostbyname($host);
+        		$ipMessage = "($ip)";
+        	}
+        	else
+        	{
+        		$ipMessage = '';
+        	}
             NavBar::begin([
-                'brandLabel' => '<img src = "awslogo-sm-xprnt.png" style = "float: left; margin-top: -15px; margin-right: 5px;">AntLog 3.0',
+                'brandLabel' => '<img src = "' . Yii::getAlias('@web') .
+            	'/awslogo-sm-xprnt.png" style = "float: left; margin-top: -15px; margin-right: 5px;">AntLog 3.0 (' .
+            	Yii::$app->params['antlog_env'] .
+            	') <small>' . $ipMessage . '</small>',
                 'brandUrl' => Yii::$app->homeUrl,
                 'options' => [
                     'class' => 'navbar-inverse navbar-fixed-top',
@@ -44,6 +58,14 @@ AppAsset::register($this);
             }
             else
             {
+            	if (User::isUserAdmin())
+            	{
+            		$menuItems[] = ['label' => 'Import', 'url' => ['db/import']];
+            	}
+            	if ((!Yii::$app->user->isGuest && Yii::$app->params['antlog_env'] == 'web') || User::isUserAdmin())
+            	{
+            		$menuItems[] = ['label' => 'Export', 'url' => ['db/export']];
+            	}
                 $menuItems[] =
                 [
                 	'label' => 'Logout (' . Yii::$app->user->identity->username . ')',

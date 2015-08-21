@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\helpers\ArrayHelper;
+use yii\behaviors\TimestampBehavior;
 use app\models\Event;
 use app\models\Entrant;
 use app\models\Fights;
@@ -25,6 +26,17 @@ use app\models\Fights;
  */
 class Robot extends \yii\db\ActiveRecord
 {
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return
+		[
+            TimestampBehavior::className(),
+        ];
+    }
+
 	/**
 	 * Generate array to populate dropdown list in forms
 	 * @param boolean $active
@@ -163,7 +175,7 @@ class Robot extends \yii\db\ActiveRecord
             [['teamId', 'classId', 'typeId'], 'integer'],
 			[['active'],'boolean'],
 			[['active'], 'default', 'value' => 1],
-            [['name'], 'string', 'max' => 50],
+            [['name'], 'string', 'max' => 100],
 			[['name'], 'unique', 'message' => 'Robot name "{value}" is already taken.'],
         ];
     }

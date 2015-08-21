@@ -5,13 +5,13 @@ jQuery(".do_draw").on('click', function()
 	{
 		type: "post",
 		dataType: 'json',
-		url: 'index.php?r=' + target + '&eventId=' + $('#event_id').val(),
+		url: target + '?eventId=' + $('#event_id').val(),
 		data: $('#event_button_form').serializeArray()
 	})
 	.done(function(response)
 	{
 		//$('#progress_key').val(uniqid());
-		open_progress_bar();
+		open_progress_bar(true);
 		return true;
 	})
 	.fail(function (jqXHr, textStatus, errorThrown)
