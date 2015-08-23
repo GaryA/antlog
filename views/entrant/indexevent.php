@@ -22,7 +22,14 @@ $this->params['breadcrumbs'][] = 'Entrants';
 	<?php
 	if ($event->state == 'Registration')
 	{
-		echo Html::a('Add Entrant', ['create', 'eventId' => $event->id], ['class' => 'btn btn-success']);
+		if (User::isUserAdmin())
+		{
+			echo Html::a('Add Entrant', ['create', 'eventId' => $event->id], ['class' => 'btn btn-success']);
+		}
+		else
+		{
+			echo Html::a('Sign Up', ['signup', 'eventId' => $event->id], ['class' => 'btn btn-success']);
+		}
 	}
 	?>
     </p>
@@ -57,19 +64,33 @@ $this->params['breadcrumbs'][] = 'Entrants';
             [
             	'attribute' => 'status',
             	'enableSorting' => false,
-            	'value' => function($model, $index, $dataColumn) {
-            		if ($model->status == 0)
+            	'value' => function($model, $index, $dataColumn) use ($event) {
+            		if ($event->state == 'Registration')
             		{
-            			$value = 'Out';
-            		}
-            		else if ($model->status == 1)
-            		{
-            			$value = "Losers' Bracket";
+            			if ($model->status == 0)
+            			{
+            				$value = 'Signed Up';
+            			}
+            			else
+            			{
+            				$value = 'Entered';
+            			}
             		}
             		else
             		{
-            			$value = "Winners' Bracket";
-            		}
+            			if ($model->status == 0)
+            			{
+            				$value = 'Out';
+            			}
+            			else if ($model->status == 1)
+            			{
+            				$value = "Losers' Bracket";
+            			}
+            			else
+            			{
+            				$value = "Winners' Bracket";
+            			}
+             		}
             		return $value;
             	},
             ],

@@ -14,18 +14,19 @@ use app\models\Event;
 
 <div class="entrant-form">
 
-    <?php $form = ActiveForm::begin(); ?>
-
     <?php
-		$event = Event::findOne($eventId);
-    	$eventField = $form->field($model, 'eventId');
-		echo $eventField->dropDownList([$event->id => $event->name]);
+    $form = ActiveForm::begin();
+
+	$event = Event::findOne($eventId);
+    $eventField = $form->field($model, 'eventId');
+	echo $eventField->dropDownList([$event->id => $event->name]);
+	echo $form->field($model, 'status')->hiddenInput(['value' => $status]);
+	echo $form->field($model, 'robotId')->dropDownList(Robot::dropdown(true, $eventId));
 	?>
 
-    <?= $form->field($model, 'robotId')->dropDownList(Robot::dropdown(true, $eventId)) ?>
-
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update',
+        	['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

@@ -34,15 +34,6 @@ class Entrant extends ActiveRecord
         ];
     }
 
-	public function beforeSave($insert)
-	{
-		if ($insert)
-		{
-			$this->status = 2;
-		}
-		return parent::beforeSave($insert);
-	}
-
 	/**
      * @inheritdoc
      */

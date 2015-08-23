@@ -23,16 +23,22 @@ class EntrantController extends Controller
 			'access' =>
 			[
 				'class' => AccessControl::className(),
-				'only' => ['delete', 'update', 'create'],
+				'only' => ['delete', 'update', 'create', 'signup'],
 				'rules' =>
 				[
 					[
+						'actions' => ['delete', 'update', 'create'],
 						'allow' => true,
 						'roles' => ['@'],
 						'matchCallback' => function($rule, $action)
 						{
 							return User::isUserAdmin();
 						}
+					],
+					[
+						'actions' => ['signup'],
+						'allow' => true,
+						'roles' => ['@'],
 					],
 				],
 			],
@@ -46,14 +52,22 @@ class EntrantController extends Controller
     }
 
     /**
-     * Render the signup view (not implemented)
+     * Render the signup view
      * @return mixed
      */
-	public function actionSignup()
+	public function actionSignup($eventId)
 	{
-		return $this->render('signup', [
-            'dataProvider' => $dataProvider,
-        ]);
+		$model = new Entrant;
+		if ($model->load(Yii::$app->request->post()) && $model->save()) {
+			return $this->redirect(['index', 'eventId' => $eventId]);
+		}
+		else
+		{
+			return $this->render('signup', [
+				'model' => $model,
+				'event' => Event::findOne($eventId),
+			]);
+		}
 	}
 
     /**
