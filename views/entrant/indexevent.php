@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use dosamigos\grid\GroupGridView;
 use app\models\User;
+use app\models\EntrantSearch;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -22,6 +23,9 @@ $this->params['breadcrumbs'][] = 'Entrants';
 	<?php
 	if ($event->state == 'Registration')
 	{
+		$searchModel = New EntrantSearch();
+		$entrantProvider = $searchModel->search(Yii::$app->request->queryParams);
+
 		if (User::isUserAdmin())
 		{
 			echo Html::a('Add Entrant', ['create', 'eventId' => $event->id], ['class' => 'btn btn-success']);
@@ -58,18 +62,29 @@ $this->params['breadcrumbs'][] = 'Entrants';
             	}
     		],
 			[
-				'attribute' => 'robot.team.team_name',
+				//'attribute' => 'robot.team.team_name',
+				'attribute' => 'teamName',
 				'label' => 'Team',
     		],
             [
             	'attribute' => 'status',
             	'enableSorting' => false,
+            	'format' => 'raw',
             	'value' => function($model, $index, $dataColumn) use ($event) {
             		if ($event->state == 'Registration')
             		{
             			if ($model->status == 0)
             			{
-            				$value = 'Signed Up';
+            				$value = 'Signed Up ';
+            				$value .= Html::a('Enter', ['enter', 'eventId' => $event->id, 'id' => $index],
+            					['class' => 'btn btn-sm btn-success',
+            					'data' => ['method' => 'post',]]);
+            				$value .= ' ';
+            				$value .= Html::a('Delete', ['delete', 'eventId' => $event->id, 'id' => $index],
+            					['class' => 'btn btn-sm btn-danger',
+            						'data' => ['method' => 'post',
+            						'confirm' => 'Are you sure you want to delete this entry?'],
+            				]);
             			}
             			else
             			{

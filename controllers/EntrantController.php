@@ -23,11 +23,11 @@ class EntrantController extends Controller
 			'access' =>
 			[
 				'class' => AccessControl::className(),
-				'only' => ['delete', 'update', 'create', 'signup'],
+				'only' => ['delete', 'update', 'create', 'enter', 'signup'],
 				'rules' =>
 				[
 					[
-						'actions' => ['delete', 'update', 'create'],
+						'actions' => ['delete', 'update', 'create', 'enter'],
 						'allow' => true,
 						'roles' => ['@'],
 						'matchCallback' => function($rule, $action)
@@ -152,14 +152,36 @@ class EntrantController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post()) && $model->save())
+        {
             return $this->redirect(['index', 'eventId' => $eventId]);
-        } else {
+        }
+        else
+        {
             return $this->render('update', [
                 'model' => $model,
             	'event' => Event::findOne($eventId),
             ]);
         }
+    }
+
+    /**
+     * Enters an entrant that has been signed up.
+     * If update is successful, the browser will be redirected to the entrants list for the current event.
+     * @param string $id
+     * @param integer $eventId
+     * @return mixed
+     */
+    public function actionEnter($id, $eventId)
+    {
+    	$model = $this->findModel($id);
+
+    	$model->status = 2;
+    	if (!$model->save(true, ['status']))
+    	{
+    		Yii::$app->getSession()->setFlash('error', 'Entrant status could not be saved to model.');
+    	}
+    	return $this->redirect(['index', 'eventId' => $eventId]);
     }
 
     /**

@@ -4,14 +4,15 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Event;
+use app\models\Fights;
+use app\models\User;
+use app\models\ProgressBar;
+use app\models\Entrant;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
-use app\models\Fights;
-use app\models\User;
-use app\models\ProgressBar;
 
 /**
  * EventController implements the CRUD actions for Event model.
@@ -156,11 +157,16 @@ class EventController extends Controller
 			/* get the teams array */
 			$event = $this->findModel($eventId);
 			$teams = $event->getTeams($eventId);
+			$entrantsOK = Entrant::checkEntries($eventId);
 			/* calculate number of entrants for this event */
 			$numEntrants = $event->getEntrants()->count();
 			if ($numEntrants < 8 || $numEntrants > 128)
 			{
 				Yii::$app->getSession()->setFlash('error', 'Number of entrants outside allowed range.');
+			}
+			else if ($entrantsOK == false)
+			{
+				Yii::$app->getSession()->setFlash('error', 'Some robots that are signed up have not been entered.<br>They must be entered or deleted before the draw can be done.');
 			}
 			else
 			{
@@ -177,6 +183,7 @@ class EventController extends Controller
 					return '{"status":"OK"}';
 				}
 			}
+			return '{"status":"Error"}';
 		}
 		else
 		{

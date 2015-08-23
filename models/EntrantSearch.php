@@ -14,11 +14,13 @@ use app\models\Robot;
  */
 class EntrantSearch extends Entrant
 {
+	public $teamName;
+
 	public function attributes()
 	{
-		return array_merge(parent::attributes(), ['event.name', 'robot.team.name']);
+		return array_merge(parent::attributes(), ['event.name', 'robot.team.name', 'robot.name']);
 	}
-		
+
     /**
      * @inheritdoc
      */
@@ -26,7 +28,7 @@ class EntrantSearch extends Entrant
     {
         return [
             [['id', 'eventId', 'robotId'], 'integer'],
-            [['event.name', 'robot.team.name'], 'safe'],
+            [['event.name', 'teamName', 'robot.name', 'status'], 'safe'],
         ];
     }
 
@@ -49,20 +51,34 @@ class EntrantSearch extends Entrant
     public function search($params)
     {
         $query = Entrant::find();
-		
+        $query->joinWith(['event', 'robot']);
+        if ($params['eventId'] !== NULL)
+        {
+        	$query->andFilterWhere([
+        		'eventId' => $params['eventId'],
+        	]);
+        }
+
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
 
-		$dataProvider->sort->attributes['robot.teamId'] = [
-			'asc' => ['{{%robot}}.teamId' => SORT_ASC],
-			'desc' => ['{{%robot}}.teamId' => SORT_DESC],
-		];
-		$dataProvider->sort->attributes['robot.name'] = [
-			'asc' => ['{{%robot}}.name' => SORT_ASC],
-			'desc' => ['{{%robot}}.name' => SORT_DESC],
-		];
-		$query->joinWith(['event', 'robot']);
+		$dataProvider->setSort(
+		['attributes' =>
+//			['teamName' =>
+//				[
+//					'asc' => ['{{%robot}}.team.team_name' => SORT_ASC],
+//					'desc' => ['{{%robot}}.team.team_name' => SORT_DESC],
+//				],
+//			],
+			['robot.name' =>
+				[
+					'asc' => ['{{%robot}}.name' => SORT_ASC],
+					'desc' => ['{{%robot}}.name' => SORT_DESC],
+				],
+			],
+//			'status',
+		]);
 
         $this->load($params);
 

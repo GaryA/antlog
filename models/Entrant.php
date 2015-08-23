@@ -83,6 +83,11 @@ class Entrant extends ActiveRecord
         return $this->hasOne(Robot::className(), ['id' => 'robotId']);
     }
 
+    public function getTeamName()
+    {
+    	return $this->robot->team->team_name;
+    }
+
 	/**
 	 * Return true if entrant may be edited/deleted (event is in Registration state)
 	 * @param integer $id
@@ -129,4 +134,16 @@ class Entrant extends ActiveRecord
 		}
 	}
 
+	/**
+	 * function to check that all signed-up robots have been entered by the admin
+	 * e.g. passed tech checks
+	 */
+	public static function checkEntries($eventId)
+	{
+		if (Entrant::find()->andWhere(['eventId' => $eventId])
+			->andWhere(['status' => 0])
+			->count() > 0)
+		{
+		}
+	}
 }

@@ -10,9 +10,15 @@ jQuery(".do_draw").on('click', function()
 	})
 	.done(function(response)
 	{
-		//$('#progress_key').val(uniqid());
-		open_progress_bar(true);
-		return true;
+		if (response.status == 'Error')
+		{
+			$(location).attr('href', ''); // redirect to current page to show flash set by controller
+		}
+		else if (response.status == 'OK')
+		{
+			open_progress_bar(true);
+			return true;
+		}
 	})
 	.fail(function (jqXHr, textStatus, errorThrown)
 	{

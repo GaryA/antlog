@@ -40,14 +40,20 @@ class Robot extends \yii\db\ActiveRecord
 	/**
 	 * Generate array to populate dropdown list in forms
 	 * @param boolean $active
+	 * @param integer $eventId
+	 * @param integer $teamId
 	 * @return array
 	 */
-	public static function dropdown($active = NULL, $eventId = NULL)
+	public static function dropdown($active = NULL, $eventId = NULL, $teamId = NULL)
 	{
 		$query = static::find();
 		if (isset($active))
 		{
 			$query->andWhere(['active' => $active]);
+		}
+		if (isset($teamId))
+		{
+			$query->andWhere(['teamId' => $teamId]);
 		}
 		if (isset($eventId))
 		{

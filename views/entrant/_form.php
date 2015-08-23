@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use yii\widgets\ActiveForm;
-use app\models\Team;
+use app\models\User;
 use app\models\Robot;
 use app\models\Event;
 
@@ -21,7 +21,15 @@ use app\models\Event;
     $eventField = $form->field($model, 'eventId');
 	echo $eventField->dropDownList([$event->id => $event->name]);
 	echo $form->field($model, 'status')->hiddenInput(['value' => $status]);
-	echo $form->field($model, 'robotId')->dropDownList(Robot::dropdown(true, $eventId));
+	if (!User::isUserAdmin())
+	{
+		$teamId = Yii::$app->user->identity->id;
+	}
+	else
+	{
+		$teamId = NULL;
+	}
+	echo $form->field($model, 'robotId')->dropDownList(Robot::dropdown(true, $eventId, $teamId));
 	?>
 
     <div class="form-group">
