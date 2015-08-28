@@ -5,7 +5,9 @@ use yii\grid\GridView;
 use app\models\Robot;
 use app\models\Event;
 use app\models\User;
+use yii\widgets\ActiveForm;
 use dosamigos\grid\GroupGridView;
+use yii\bootstrap\Modal;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\FightsSearch */
@@ -21,9 +23,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title . ' - ' . $event->name) ?></h1>
     <p>Winners shown in <b>bold</b></p>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <?= GroupGridView::widget([
+    <?php
+    ActiveForm::begin(['id' => 'fight_button_form']);
+
+    echo GroupGridView::widget([
         'dataProvider' => $fightsProvider,
     	'mergeColumns' => ['fightRound', 'fightBracket', 'fightGroup'],
     	'type' => GroupGridView::MERGE_SIMPLE,
@@ -53,13 +57,6 @@ $this->params['breadcrumbs'][] = $this->title;
 			return $retVal;
 		},
         'columns' => [
-            // ['class' => 'yii\grid\SerialColumn'],
-
-            // 'id',
-            //'fightRound',
-            //'fightBracket',
-            //'fightGroup',
-            //'fightNo',
 			[
 				'attribute' => 'robot1.robot.team.team_name',
 				'contentOptions' => ['class' => 'groupview-right-align'],
@@ -75,21 +72,14 @@ $this->params['breadcrumbs'][] = $this->title;
 				{
 					if ($model->robot1Id > 0)
 					{
-						if (($model->winnerId == -1) && (User::isUserAdmin()))
+						$prefix = '';
+						$suffix = '';
+						if ($model->robot1Id == $model->winnerId)
 						{
-							return Html::a($model->robot1->robot->name, ['/fights/update', 'id' => $index, 'winner' => $model->robot1->id]);
+							$prefix = '<b>';
+							$suffix = '</b>';
 						}
-						else
-						{
-							$prefix = '';
-							$suffix = '';
-							if ($model->robot1Id == $model->winnerId)
-							{
-								$prefix = '<b>';
-								$suffix = '</b>';
-							}
-							return $prefix . $model->robot1->robot->name . $suffix;
-						}
+						return $prefix . $model->robot1->robot->name . $suffix;
 					}
 					else if ($model->robot1Id == 0)
 					{
@@ -106,7 +96,35 @@ $this->params['breadcrumbs'][] = $this->title;
 				'contentOptions' => ['class' => 'groupview-center-align'],
 				'headerOptions' => ['class' => 'groupview-center-align'],
 				'format' => 'html',
-				'content' => function($model, $index, $dataColumn){return 'vs';},
+				'content' => function($model, $index, $dataColumn)
+				{
+					if (($model->winnerId == -1) && (User::isUserAdmin()))
+					{
+						$team1 = $model->robot1->robot->team->team_name;
+						$robot1name = $model->robot1->robot->name;
+						$entrant1 = $model->robot1->id;
+						$team2 = $model->robot2->robot->team->team_name;
+						$robot2name= $model->robot2->robot->name;
+						$entrant2 = $model->robot2->id;
+						return Html::button('vs', [
+							'class' => 'btn btn-primary',
+							'data-toggle' => 'modal',
+							'data-target' => '#run-fight-modal',
+							'data-button-target' => '/fights/update',
+							'data-pjax' => '0',
+							'data-team1' => $team1,
+							'data-robot1name'=> $robot1name,
+							'data-entrant1' => $entrant1,
+							'data-team2' => $team2,
+							'data-robot2name'=> $robot2name,
+							'data-entrant2' => $entrant2,
+							'data-id' => $index]);
+					}
+					else
+					{
+						return 'vs';
+					}
+				},
 			],
 			[
 				'attribute' => 'robot2.robot.name',
@@ -115,21 +133,14 @@ $this->params['breadcrumbs'][] = $this->title;
 				{
 					if ($model->robot2Id > 0)
 					{
-						if (($model->winnerId == -1) && (User::isUserAdmin()))
+						$prefix = '';
+						$suffix = '';
+						if ($model->robot2Id == $model->winnerId)
 						{
-							return Html::a($model->robot2->robot->name, ['/fights/update', 'id' => $index, 'winner' => $model->robot2->id]);
+							$prefix = '<b>';
+							$suffix = '</b>';
 						}
-						else
-						{
-							$prefix = '';
-							$suffix = '';
-							if ($model->robot2Id == $model->winnerId)
-							{
-								$prefix = '<b>';
-								$suffix = '</b>';
-							}
-							return $prefix . $model->robot2->robot->name . $suffix;
-						}
+						return $prefix . $model->robot2->robot->name . $suffix;
 					}
 					else if ($model->robot2Id == 0)
 					{
@@ -145,14 +156,38 @@ $this->params['breadcrumbs'][] = $this->title;
 				'attribute' => 'robot2.robot.team.team_name',
 				'label' => 'Team',
 			],
-			// 'winnerId',
-            // 'loserId',
-            // 'winnerNextFight',
-            // 'loserNextFight',
-            // 'sequence',
-
-            // ['class' => 'yii\grid\ActionColumn'],
         ],
-    ]); ?>
+    ]);
+	ActiveForm::end();
+	?>
 
 </div>
+<?php Modal::begin([
+    'id' => 'run-fight-modal',
+    'header' => '<h4 class="modal-title">Current Fight</h4>',
+    'footer' => '<a href="#" class="btn btn-default" data-dismiss="modal">Close</a>',
+
+]); ?>
+
+<div class="modal-center">
+<?php
+$form = ActiveForm::begin(['id' => 'fight-form']);
+echo Html::hiddenInput('target', NULL, ['id' => 'target']);
+echo Html::hiddenInput('fight', NULL, ['id' => 'fight']);
+echo Html::hiddenInput('entrant1', NULL, ['id' => 'entrant1']);
+echo Html::hiddenInput('entrant2', NULL, ['id' => 'entrant2']);
+ActiveForm::end();
+echo Html::button('', ['class' => 'btn btn-primary btn-fight', 'id' => 'button1']);
+echo ' vs ';
+echo Html::button('', ['class' => 'btn btn-primary btn-fight', 'id' => 'button2']);
+?>
+</div>
+
+<?php Modal::end(); ?>
+
+<?php
+$this->registerJsFile(
+	Yii::getAlias('@web') . '/js/run_fight_button.js',
+	['depends' => 'yii\web\YiiAsset'],
+	__CLASS__.'#'.'fight_button_form');
+?>

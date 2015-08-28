@@ -74,13 +74,6 @@ $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         ],
     ]);
 
-	if (isset(Yii::$app->request->queryParams['RobotSearch']['teamId']))
-	{
-		$param = Yii::$app->request->queryParams['RobotSearch']['teamId'];
-		echo '<p>';
-		echo Html::a('Sign Up Robots', ['entrant/index', 'EntrantSearch[robot.teamId]' => $param], ['class' => 'btn btn-success']);
-		echo '</p>';
-	}
 	?>
 
 </div>

@@ -75,16 +75,21 @@ $this->params['breadcrumbs'][] = 'Entrants';
             		{
             			if ($model->status == 0)
             			{
-            				$value = 'Signed Up ';
-            				$value .= Html::a('Enter', ['enter', 'eventId' => $event->id, 'id' => $index],
+            				$value = 'Signed Up';
+            				if (User::isUserAdmin())
+            				{
+            					$value .= ' ' . Html::a('Enter', ['enter', 'eventId' => $event->id, 'id' => $index],
             					['class' => 'btn btn-sm btn-success',
             					'data' => ['method' => 'post',]]);
-            				$value .= ' ';
-            				$value .= Html::a('Delete', ['delete', 'eventId' => $event->id, 'id' => $index],
-            					['class' => 'btn btn-sm btn-danger',
-            						'data' => ['method' => 'post',
-            						'confirm' => 'Are you sure you want to delete this entry?'],
-            				]);
+            				}
+            				if (User::isUserAdmin() || User::isCurrentUser($model->robot->teamId))
+            				{
+            					$value .= ' ' . Html::a('Delete', ['delete', 'eventId' => $event->id, 'id' => $index],
+            						['class' => 'btn btn-sm btn-danger',
+            							'data' => ['method' => 'post',
+            							'confirm' => 'Are you sure you want to delete this entry?'],
+            					]);
+            				}
             			}
             			else
             			{

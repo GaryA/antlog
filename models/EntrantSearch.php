@@ -77,7 +77,6 @@ class EntrantSearch extends Entrant
 					'desc' => ['{{%robot}}.name' => SORT_DESC],
 				],
 			],
-//			'status',
 		]);
 
         $this->load($params);
