@@ -82,23 +82,40 @@ class Robot extends \yii\db\ActiveRecord
 	}
 
 	/**
-	 * Return checked if robot is entrant to any event which is not complete
+	 * Return checked if robot is entrant to any event which is not complete (or selected event)
 	 * Return value is checked attribute of checkbox
 	 * @param integer $target
+	 * @param integer $eventId (optional)
 	 * @return string
 	 */
-	public static function isSignedUp($target)
+	public static function isSignedUp($target, $eventId = NULL)
 	{
-		if ($event = Event::find()->andWhere(['not',['state' => 'Complete']])->one())
+		if ($eventId == NULL)
+		{
+			if ($events = Event::find()->andWhere(['not',['state' => 'Complete']])->all())
+			{
+				$robots = 0;
+				foreach ($events as $event)
+				{
+					$robots += static::find()
+						->joinWith('entrants')
+						->andWhere(['{{%entrant}}.`robotId`' => $target])
+						->andWhere(['{{%entrant}}.`eventId`' => $event->id])
+						->count();
+				}
+				return ($robots > 0) ? 'checked' : '';
+			}
+			return '';
+		}
+		else
 		{
 			$robots = static::find()
-				->joinWith('entrants')
-				->andWhere(['{{%entrant}}.`robotId`' => $target])
-				->andWhere(['{{%entrant}}.`eventId`' => $event->id])
-				->count();
+			->joinWith('entrants')
+			->andWhere(['{{%entrant}}.`robotId`' => $target])
+			->andWhere(['{{%entrant}}.`eventId`' => $eventId])
+			->count();
 			return ($robots > 0) ? 'checked' : '';
 		}
-		return '';
 	}
 
 	/**

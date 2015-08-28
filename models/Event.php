@@ -47,7 +47,6 @@ class Event extends \yii\db\ActiveRecord
 			[['eventDate'], 'date', 'format' => 'yyyy-mm-dd'],
 			[['state'], 'string'],
 			['state', 'default', 'value' => 'Registration'],
-			['state', 'validateState'],
 			[['name'], 'string', 'max' => 100]
 		];
 	}
@@ -283,21 +282,6 @@ class Event extends \yii\db\ActiveRecord
 		return Entrant::find()->where([
 			'eventId' => $id
 		])->count() > 0 ? false : true;
-	}
-
-	/**
-	 * function to ensure only one event per weight class can be open at a time
-	 */
-	public function validateState($attribute, $params)
-	{
-		if (Event::find()->andWhere(['classId' => $this->classId])
-			->andWhere(['not', ['state' => 'Complete']])
-			->andWhere(['not', ['state' => 'Future']])
-			->andWhere(['not', ['id' => $this->id]])
-			->count() > 0)
-		{
-			$this->addError($attribute, 'There can be only one open event per weight class');
-		}
 	}
 
 	public static function getPosition($finalFight, $eventId)

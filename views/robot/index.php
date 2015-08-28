@@ -62,15 +62,6 @@ $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 					return $classDropdown[$model->classId];
 				},
 			],
-			[
-				'format' => 'raw',
-				'label' => 'Signed Up',
-				'value' => function($model, $index, $dataColumn) {
-					/* figure out if robot is signed up */
-					$checked = Robot::isSignedUp($model->id);
-					return '<div><input type="checkbox" name="signup" value="true" disabled ' . $checked . '></div>';
-				},
-			],
         ],
     ]);
 
