@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php
 		if ((User::isCurrentUser($model->teamId)) || User::isUserAdmin())
 		{
-			if ($model->isOKToEdit($model->id))
+			if ($model->isOKToDelete($model->id) || $model->isOKToEdit($model->id) || $model->isOKToRetire($model->id))
 			{
 				echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
 			}

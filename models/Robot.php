@@ -154,7 +154,7 @@ class Robot extends \yii\db\ActiveRecord
 		foreach ($entrants as $entrant)
 		{
 			if (Event::find()->where(['id' => $entrant->eventId])
-				->andWhere(['not', ['state' => 'Complete']]))
+				->andWhere(['not', ['state' => 'Complete']])->count() > 0)
 			{
 				return false;
 			}
@@ -199,7 +199,9 @@ class Robot extends \yii\db\ActiveRecord
 			[['active'],'boolean'],
 			[['active'], 'default', 'value' => 1],
             [['name'], 'string', 'max' => 100],
-			[['name'], 'unique', 'message' => 'Robot name "{value}" is already taken.'],
+			[['name'], 'unique',
+				'targetAttribute' => ['name', 'teamId'],
+				'message' => 'Team already contains a robot named "{value}".'],
         ];
     }
 

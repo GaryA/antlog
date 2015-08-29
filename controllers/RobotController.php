@@ -32,7 +32,6 @@ class RobotController extends Controller
 						'matchCallback' => function($rule, $action)
 						{
 							return (!Yii::$app->user->isGuest);
-							// return User::isUserAdmin();
 						}
 					],
 					[
@@ -43,7 +42,8 @@ class RobotController extends Controller
 						{
 							$id = Yii::$app->request->get('id');
 							$model = $this->findModel($id);
-							return ((User::isUserAdmin() || $model->isUser($model)) && $model->isOKToEdit($id));
+							return ((User::isUserAdmin() || $model->isUser($model)) &&
+								($model->isOKToDelete($id) || $model->isOKToEdit($id) || $model->isOKToRetire($id)));
 						}
 					],
 					[
@@ -113,7 +113,7 @@ class RobotController extends Controller
             	'changeTeam' => true,
             	'changeClass' => true,
             	'changeType' => true,
-            	'retire' => true,
+            	'changeActive' => true,
             ]);
         }
     }
@@ -137,7 +137,7 @@ class RobotController extends Controller
             	'changeTeam' => $model->isOKToEdit($id),
             	'changeClass' => $model->isOKToDelete($id),
             	'changeType' => $model->isOKToDelete($id),
-            	'retire' => $model->isOKToRetire($id),
+            	'changeActive' => $model->isOKToRetire($id),
             ]);
         }
     }

@@ -31,7 +31,16 @@ use app\models\User;
 	}
 	else
 	{
-		echo $form->field($model, 'teamId')->dropDownList(User::teamDropdown(Yii::$app->user->identity->id));
+		if ($model->isNewRecord) // and user is team not admin
+		{
+			echo $form->field($model, 'teamId')->dropDownList(User::teamDropdown(Yii::$app->user->id), ['disabled' => 'disabled']);
+			echo Html::activeHiddenInput($model, 'teamId', ['value' => Yii::$app->user->id]);
+		}
+		else // existing record so get team from model
+		{
+			echo $form->field($model, 'teamId')->dropDownList(User::teamDropdown($model->teamId), ['disabled' => 'disabled']);
+			echo Html::activeHiddenInput($model, 'teamId', ['value' => $model->teamId]);
+		}
 	}
 
 	if ($changeClass == true)
@@ -44,7 +53,7 @@ use app\models\User;
 	{
 		echo $form->field($model, 'classId')->dropDownList(ArrayHelper::map(RobotClass::find()
 			->where(['id' => $model->classId])
-			->all(), 'id', 'name'));
+			->all(), 'id', 'name'), ['disabled' => 'disabled']);
 	}
 
 	if ($changeType == true)
@@ -55,17 +64,17 @@ use app\models\User;
 	{
 		echo $form->field($model, 'typeId')->dropDownList(ArrayHelper::map(RobotType::find()
 			->where(['id' => $model->typeId])
-			->all(), 'id', 'name'));
+			->all(), 'id', 'name'), ['disabled' => 'disabled']);
 	}
 
-	if ($retire == true)
+	if ($changeActive == true)
 	{
     	echo $form->field($model, 'active')->dropDownList([1 => 'Yes', 0 => 'No']);
 	}
 	else
 	{
 		$active = ($model->active == 1) ? [1 => 'Yes'] : [0 => 'No'];
-		echo $form->field($model, 'active')->dropDownList($active);
+		echo $form->field($model, 'active')->dropDownList($active, ['disabled' => 'disabled']);
 	}
     ?>
 

@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `aws_double_elim` (
   `sequence` int(11) NOT NULL DEFAULT '-1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `FightID` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Double elimination template' AUTO_INCREMENT=256 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Double elimination template' ;
 
 --
 -- Dumping data for table `aws_double_elim`
@@ -326,7 +326,7 @@ CREATE TABLE IF NOT EXISTS `aws_entrant` (
   `updated_at` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `EntrantID` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=56 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 ;
 
 --
 -- Table structure for table `aws_event`
@@ -346,7 +346,7 @@ CREATE TABLE IF NOT EXISTS `aws_event` (
   `updated_at` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 ;
 
 --
 -- Table structure for table `aws_event_type`
@@ -357,7 +357,7 @@ CREATE TABLE IF NOT EXISTS `aws_event_type` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 ;
 
 --
 -- Dumping data for table `aws_event_type`
@@ -391,7 +391,7 @@ CREATE TABLE IF NOT EXISTS `aws_fights` (
   `updated_at` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `FightID` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Double elimination template' AUTO_INCREMENT=766 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Double elimination template' ;
 
 --
 -- Table structure for table `aws_robot`
@@ -410,7 +410,7 @@ CREATE TABLE IF NOT EXISTS `aws_robot` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `RobotID_2` (`id`),
   KEY `RobotID` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=175 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 ;
 
 --
 -- Table structure for table `aws_robot_class`
@@ -422,7 +422,7 @@ CREATE TABLE IF NOT EXISTS `aws_robot_class` (
   `name` varchar(20) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='List of robot weight classes' AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='List of robot weight classes' ;
 
 --
 -- Dumping data for table `aws_robot_class`
@@ -476,7 +476,7 @@ CREATE TABLE IF NOT EXISTS `aws_user` (
   `team_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=58 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 ;
 
 --
 -- Dumping data for table `aws_user`

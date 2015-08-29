@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		'changeTeam' => $changeTeam,
 		'changeClass' => $changeClass,
 		'changeType' => $changeType,
-    	'retire' => $retire,
+    	'changeActive' => $changeActive,
     ]) ?>
 
 </div>
