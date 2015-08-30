@@ -1,6 +1,7 @@
 <?php
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\widgets\Pjax;
 use yii\grid\GridView;
 use app\models\Robot;
 use app\models\RobotSearch;
@@ -34,6 +35,7 @@ $eventData->pagination =
 	'defaultPageSize' => 5,
 	'pageParam' => 'event-page'
 ];
+Pjax::begin();
 echo GridView::widget (
 [
 	'summary' => '',
@@ -81,6 +83,7 @@ echo GridView::widget (
 		],
 	]
 ] );
+Pjax::end();
 ?>
 			</div>
 			<div class="col-lg-6 col-md-6">
@@ -93,6 +96,7 @@ $robotData->pagination =
 	'defaultPageSize' => 5,
 	'pageParam' => 'robot-page'
 ];
+Pjax::begin();
 echo GridView::widget (
 [
 	'summary' => '',
@@ -129,6 +133,7 @@ echo GridView::widget (
 		]
 	]
 ] );
+Pjax::end();
 ?>
             </div>
 			<div class="col-lg-3 col-md-6">
@@ -141,6 +146,7 @@ $teamData->pagination =
 	'defaultPageSize' => 5,
 	'pageParam' => 'team-page'
 ];
+Pjax::begin();
 echo GridView::widget (
 [
 	'summary' => '',
@@ -166,6 +172,7 @@ echo GridView::widget (
 		]
 	]
 ] );
+Pjax::end();
 ?>
 			</div>
 		</div>
