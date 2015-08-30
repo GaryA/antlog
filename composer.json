@@ -15,7 +15,7 @@
 	"repositories": [
 		{
 			"type": "composer",
-			"url": "http://antlog.garya.org.uk/"
+			"url": "http://satis.garya.org.uk/"
 		},
 		{
 			"type": "git",
