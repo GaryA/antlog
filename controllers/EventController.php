@@ -31,13 +31,18 @@ class EventController extends Controller
 				'rules' =>
 				[
 					[
-						'actions' => ['draw', 'setup', 'run', 'create'],
+						'actions' => ['draw', 'setup', 'run'],
 						'allow' => true,
 						'roles' => ['@'],
 						'matchCallback' => function($rule, $action)
 						{
 							return User::isUserAdmin();
 						}
+					],
+					[
+						'actions' => ['create'],
+						'allow' => true,
+						'roles' => ['@'],
 					],
 					[
 						'actions' => ['delete'],
@@ -48,7 +53,7 @@ class EventController extends Controller
 							$id = Yii::$app->request->get('id');
 							$model = $this->findModel($id);
 							return (User::isUserAdmin() && $model->isOKToDelete($id));
-						}
+						},
 					],
 					[
 						'actions' => ['update'],
@@ -58,7 +63,9 @@ class EventController extends Controller
 						{
 							$id = Yii::$app->request->get('id');
 							$model = $this->findModel($id);
-							return (User::isUserAdmin() && $model->state == 'Registration');
+							$validState = $model->state == 'Registration' || $model->state =='Future';
+							$validUser = User::isUserAdmin() || $model->organiserId == Yii::$app->user->id;
+							return ($validUser && $validState);
 						}
 					],
 				],
@@ -316,6 +323,7 @@ class EventController extends Controller
 		return $this->render('create',
 		[
 			'model' => $model,
+			'userId' => Yii::$app->user->id,
 		]);
     }
 
@@ -350,7 +358,7 @@ class EventController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+    	$this->findModel($id)->delete();
 
         return $this->redirect(['index']);
     }

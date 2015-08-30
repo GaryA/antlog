@@ -20,13 +20,10 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="event-view">
 
-	<h1><?= Html::encode($this->title) ?></h1>
-
-	<p>
+<h1><?= Html::encode($this->title) ?></h1>
+<p>
 <?php
-	$form = ActiveForm::begin(['id' => 'event_button_form']);
-
-	if (User::isUserAdmin())
+	if (User::isUserAdmin() || Yii::$app->user->id == $model->organiserId)
 	{
 		if ($model->isOKToDelete($model->id))
 		{
@@ -38,15 +35,21 @@ $this->params['breadcrumbs'][] = $this->title;
 					]
 				]);
 		}
+		if ($model->state == 'Future' || $model->state == 'Registration')
+		{
+			echo Html::a('Update', ['update', 'id' => $model->id],
+				['class' => 'btn btn-primary']);
+		}
 		if ($model->state == 'Future')
 		{
 			echo Html::a('Open', ['open', 'id' => $model->id],
 				['class' => 'btn btn-primary']);
 		}
-		else if ($model->state == 'Registration')
+	}
+	if (User::isUserAdmin())
+	{
+		if ($model->state == 'Registration')
 		{
-			echo Html::a('Update', ['update', 'id' => $model->id],
-				['class' => 'btn btn-primary']);
 			echo Html::a('Do Draw', false, ['data-target' => '../event/draw', 'class' => 'do_draw btn btn-primary']);
 		}
 		else if ($model->state == 'Setup')
@@ -72,10 +75,8 @@ $this->params['breadcrumbs'][] = $this->title;
 		echo Html::a('Results', ['result', 'id' => $model->id],
 			['class' => 'btn btn-info']);
 	}
-
-	ActiveForm::end();
 ?>
-    </p>
+</p>
 <p>
 <?= $this->render('_progressbar')?>
 
@@ -87,6 +88,12 @@ $this->params['breadcrumbs'][] = $this->title;
     		'attributes' =>
     		[
     			'name',
+    			'venue',
+    			[
+    				//'attribute' => 'organiser.username',
+    				'label' => 'Organiser',
+    				'value' =>  $model->organiser->username . ' (' . $model->organiser->team_name . ')',
+    			],
     			[
     				'attribute' => 'eventDate',
     				'format' =>

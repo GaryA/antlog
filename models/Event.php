@@ -7,6 +7,7 @@ use yii\behaviors\TimestampBehavior;
 use app\models\Robot;
 use app\models\Entrant;
 use app\models\Fights;
+use app\models\User;
 use app\models\ProgressBar;
 
 /**
@@ -14,12 +15,16 @@ use app\models\ProgressBar;
  *
  * @property string $id
  * @property string $name
- * @property string $eventDate
+ * @property integer $eventDate
  * @property string $state
  * @property integer $classId
  * @property integer $offset
  * @property integer $eventType
  * @property integer $num_groups
+ * @property integer $created_at
+ * @property integer $updated_at
+ * @property integer $organiserId
+ * @property string $venue
  *
  * @property Entrant[] $entrants
  * @property RobotClass $class
@@ -42,12 +47,13 @@ class Event extends \yii\db\ActiveRecord
 	{
 		return
 		[
-			[['name', 'classId', 'eventDate'], 'required'],
-			[['classId'], 'integer'],
+			[['name', 'classId', 'eventDate', 'organiserId'], 'required'],
+			[['classId', 'organiserId'], 'integer'],
 			[['eventDate'], 'date', 'format' => 'yyyy-mm-dd'],
 			[['state'], 'string'],
 			['state', 'default', 'value' => 'Registration'],
-			[['name'], 'string', 'max' => 100]
+			[['name'], 'string', 'max' => 100],
+			[['venue'], 'string', 'max' => 65535],
 		];
 	}
 
@@ -335,6 +341,17 @@ class Event extends \yii\db\ActiveRecord
 	{
 		return $this->hasOne(RobotClass::className(), [
 			'id' => 'classId'
+		]);
+	}
+
+	/**
+	 *
+	 * @return \yii\db\ActiveQuery
+	 */
+	public function getOrganiser()
+	{
+		return $this->hasOne(User::className(), [
+			'id' => 'organiserId'
 		]);
 	}
 
