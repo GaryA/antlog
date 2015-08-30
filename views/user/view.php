@@ -2,7 +2,9 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use yii\widgets\Pjax;
 use app\models\User;
+use dosamigos\grid\GroupGridView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\User */
@@ -20,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		if ((User::isCurrentUser($model->id)) || User::isUserAdmin())
 		{
 			echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
-			
+
 			if ($model->isTeamEmpty($model->id))
 			{
 				echo Html::a('Delete', ['delete', 'id' => $model->id],
@@ -37,14 +39,34 @@ $this->params['breadcrumbs'][] = $this->title;
 		?>
     </p>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            //'id',
-            'username',
-        	'email',
-        	'team_name'
-        ],
-    ]) ?>
+<?php
+echo DetailView::widget([
+    'model' => $model,
+    'attributes' => [
+        'username',
+    ],
+]);
+Pjax::begin();
+echo GroupGridView::widget([
+	'dataProvider' => $robots,
+	'mergeColumns' => ['classId'],
+	'type' => GroupGridView::MERGE_SIMPLE,
+	'extraRowColumns' => ['classId'],
+	'extraRowValue' => function($model, $index, $totals)
+	{
+		return '<b>' . $model->class->name . '</b>';
+	},
+	'columns' =>
+	[
+       	'name',
+		'type.name',
+       	[
+			'attribute' => 'active',
+       		'format' => 'boolean',
+ 		]
+	],
+]);
+Pjax::end();
+?>
 
 </div>

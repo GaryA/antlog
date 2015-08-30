@@ -5,11 +5,13 @@ namespace app\controllers;
 use Yii;
 use app\models\UpdateForm;
 use app\models\User;
+use app\models\Robot;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use yii\data\yii\data;
 
 /**
  * UserController implements the CRUD actions for User model.
@@ -79,8 +81,13 @@ class UserController extends Controller
      */
     public function actionView($id)
     {
+    	$dataProvider = new ActiveDataProvider([
+    		'query' => Robot::find()->where(['teamId' => $id])->orderBy(['classId' => SORT_DESC]),
+    	]);
+
         return $this->render('view', [
             'model' => $this->findModel($id),
+        	'robots' => $dataProvider,
         ]);
     }
 
@@ -101,7 +108,7 @@ class UserController extends Controller
         	'email' => $userModel->email,
         	'team_name' => $userModel->team_name,
         ], false);
-        
+
         if ($updateModel->load(Yii::$app->request->post()))
         {
         	//$model->username = Yii::$app->request->post('User')['username'];
@@ -134,7 +141,7 @@ class UserController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
-		
+
         return $this->redirect(['index']);
     }
 
@@ -148,7 +155,7 @@ class UserController extends Controller
     public function actionDebug($id, $debugName, $debugValue)
     {
         $model = $this->findModel($id);
-		
+
 		return $this->render('debug', [
             'model' => $model,
 			'debugName' => $debugName,
