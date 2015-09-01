@@ -3,6 +3,7 @@ namespace app\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use yii\db\QueryBuilder;
 use app\models\Robot;
 use app\models\User;
 use app\models\Event;
@@ -24,10 +25,12 @@ class Db extends ActiveRecord
 	private $prefix;
 	private $filename;
 	private $fileHandle;
+	private $queryBuilder;
 
 	public function __construct()
 	{
-	    $this->username = Yii::$app->db->username;
+	    $this->queryBuilder = new QueryBuilder(Yii::$app->db);
+		$this->username = Yii::$app->db->username;
 	    $this->password = Yii::$app->db->password;
 	    preg_match('/dbname=(.+)/', Yii::$app->db->dsn, $matches);
 	    $this->database = $matches[1];
@@ -108,19 +111,19 @@ class Db extends ActiveRecord
 				{
 					// INSERT INTO table SET col1=val1, col2=val2 ON DUPLICATE KEY UPDATE col1=val1, col2=val2;
 					$password = "`password_hash`='$record->password_hash', "; /* export actual password hash */
-					$email = "`email`='$record->email', "; /* real email */
+					$email = "`email`='" . $this->escapeString($record->email) . "', "; /* real email */
 				}
 				else
 				{
 					$insertRecord = false;
 				}
 				$update = " ON DUPLICATE KEY UPDATE ";
-				$update .= "`username`='$record->username', ";
+				$update .= "`username`='" . $this->escapeString($record->username) . "', ";
 				if ($record->email != 'email@example.com')
 				{
-					$update .= "`email`='$record->email', ";
+					$update .= "`email`='" . $this-escapeString($record->email) . "', ";
 				}
-				$update .= "`team_name`='$record->team_name'";
+				$update .= "`team_name`='" . $this->escapeString($record->team_name) . "'";
 				if ($record->created_at != 0)
 				{
 					$update .= ", `created_at`=$record->created_at";
@@ -135,7 +138,7 @@ class Db extends ActiveRecord
 			{
 				$string = "INSERT INTO `$this->prefix" . "user` SET ";
 				$string .= "`id`=$record->id, ";
-				$string .= "`username`='$record->username', ";
+				$string .= "`username`='" . $this->escapeString($record->username) . "', ";
 				$string .= $password;
 				$string .= "`auth_key`='$record->auth_key', "; /* used for "remember me" */
 				$string .= "`password_reset_token`=NULL, "; /* null password_reset_token */
@@ -144,7 +147,7 @@ class Db extends ActiveRecord
 				$string .= $createdAt;
 				$string .= $updatedAt;
 				$string .= "`user_group`=$record->user_group, ";
-				$string .= "`team_name`='$record->team_name'";
+				$string .= "`team_name`='" . $this->escapeString($record->team_name) . "'";
 				$string .= $update . ";\n";
 				fwrite($this->fileHandle, $string);
 			}
@@ -202,7 +205,7 @@ class Db extends ActiveRecord
 					$insertRecord = false;
 				}
 				$update = " ON DUPLICATE KEY UPDATE ";
-				$update .= "`name`='$record->name', ";
+				$update .= "`name`='" . $this->escapeString($record->name) . "', ";
 				$update .= "`classId`=$record->classId, ";
 				$update .= "`typeId`=$record->typeId, ";
 				$update .= "`active`=$record->active";
@@ -219,7 +222,7 @@ class Db extends ActiveRecord
 			{
 				$string = "INSERT INTO `$this->prefix" . "robot` SET ";
 				$string .= "`id`=$record->id, ";
-				$string .= "`name`='$record->name', ";
+				$string .= "`name`='" . $this->escapeString($record->name) . "', ";
 				$string .= "`teamId`=$record->teamId, ";
 				$string .= "`classId`=$record->classId, ";
 				$string .= "`typeId`=$record->typeId, ";
@@ -263,6 +266,8 @@ class Db extends ActiveRecord
 			fwrite($this->fileHandle, " `offset` int(11) DEFAULT NULL,\n");
 			fwrite($this->fileHandle, " `created_at` int(11) NOT NULL,\n");
 			fwrite($this->fileHandle, " `updated_at` int(11) NOT NULL,\n");
+			fwrite($this->fileHandle, " `organiserId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (organiserId) REFERENCES aws_user(id)',\n");
+			fwrite($this->fileHandle, " `venue` text NOT NULL,\n");
 			fwrite($this->fileHandle, " PRIMARY KEY (`id`),\n");
 			fwrite($this->fileHandle, " UNIQUE KEY `id` (`id`)\n");
 			fwrite($this->fileHandle, ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;\n");
@@ -285,7 +290,7 @@ class Db extends ActiveRecord
 					$insertRecord = false;
 				}
 				$update = " ON DUPLICATE KEY UPDATE ";
-				$update .= "`name`='$record->name', ";
+				$update .= "`name`='" . $this->escapeString($record->name) . "', ";
 				$update .= "`eventDate`='$record->eventDate', ";
 				$update .= "`state`='$record->state', ";
 				$update .= "`eventType`=$record->eventType, ";
@@ -306,12 +311,14 @@ class Db extends ActiveRecord
 				{
 					$update .= ", `updated_at`=$record->updated_at";
 				}
+				$update .= ", `organiserId`=$record->organiserId";
+				$update .= ", `venue`='" . $this->escapeString($this->venue) . "'";
 			}
 			if ($insertRecord == true)
 			{
 				$string = "INSERT INTO `$this->prefix" . "event` SET ";
 				$string .= "`id`=$record->id, ";
-				$string .= "`name`='$record->name', ";
+				$string .= "`name`='" . $this->escapeString($record->name) . "', ";
 				$string .= "`eventDate`='$record->eventDate', ";
 				$string .= "`state`='$record->state', ";
 				$string .= "`classId`=$record->classId, ";
@@ -319,6 +326,8 @@ class Db extends ActiveRecord
 				$string .= "`num_groups`=$record->num_groups, ";
 				$string .= $createdAt;
 				$string .= $updatedAt;
+				$string .= "`organiserId`=$record->organiserId, ";
+				$string .= "`venue`='" . $this->escapeString($record->venue) . "', ";
 				if ($record->offset == NULL)
 				{
 					$string .= "`offset`=NULL";
@@ -580,6 +589,16 @@ class Db extends ActiveRecord
 		}
 	}
 
+	/**
+	 * Function to escape string so that is can be used in SQL query
+	 * @param string $string
+	 * @return string
+	 */
+	private function escapeString($string)
+	{
+		$retVal = str_replace(["'", '\\'], ["''", '\\\\'], $string);
+		return $retVal;
+	}
 	private function validateQuery($query)
 	{
 		// Users:
