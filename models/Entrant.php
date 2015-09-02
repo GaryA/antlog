@@ -61,8 +61,8 @@ class Entrant extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'eventId' => 'Event ID',
-            'robotId' => 'Robot ID',
+            'eventId' => 'Event',
+            'robotId' => 'Robot',
             'status' => 'Status',
         ];
     }

@@ -78,12 +78,7 @@ class EntrantController extends Controller
     {
    		if ($eventId == NULL)
    		{
-    	$dataProvider = new ActiveDataProvider([
-           	'query' => Entrant::find(),
-       	]);
-        return $this->render('index', [
-            'dataProvider' => NULL,
-        ]);
+			throw new NotFoundHttpException('The requested page does not exist.');
    		}
    		else
    		{

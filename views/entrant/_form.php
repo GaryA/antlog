@@ -20,7 +20,7 @@ use app\models\Event;
 	$event = Event::findOne($eventId);
     $eventField = $form->field($model, 'eventId');
 	echo $eventField->dropDownList([$event->id => $event->name]);
-	echo $form->field($model, 'status')->hiddenInput(['value' => $status]);
+	echo Html::activeHiddenInput($model, 'status', ['value' => $status]);
 	if (!User::isUserAdmin())
 	{
 		$teamId = Yii::$app->user->identity->id;
