@@ -23,6 +23,11 @@ $this->params['breadcrumbs'][] = $this->title;
 <h1><?= Html::encode($this->title) ?></h1>
 <p>
 <?php
+	$form = ActiveForm::begin(['id' => 'event_button_form']);
+	echo Html::hiddenInput('progress_key', uniqid(), ['id'=>'progress_key']);
+	echo Html::hiddenInput('id', $model->id, ['id' => 'event_id']);
+	ActiveForm::end();
+
 	if (User::isUserAdmin() || Yii::$app->user->id == $model->organiserId)
 	{
 		if ($model->isOKToDelete($model->id))
@@ -60,8 +65,6 @@ $this->params['breadcrumbs'][] = $this->title;
 		{
 			echo Html::a('Run Fights', false, ['data-target' => '../event/run', 'class' => 'do_draw btn btn-primary']);
 		}
-		echo Html::hiddenInput('progress_key', uniqid(), ['id'=>'progress_key']);
-		echo Html::hiddenInput('id', $model->id, ['id' => 'event_id']);
 	}
 	echo Html::a('Entrants', ['/entrant', 'eventId' => $model->id],
 		['class' => 'btn btn-primary']);

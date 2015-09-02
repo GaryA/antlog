@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\widgets\Pjax;
 use dosamigos\grid\GroupGridView;
 use app\models\User;
 use app\models\EntrantSearch;
@@ -38,7 +39,9 @@ $this->params['breadcrumbs'][] = 'Entrants';
 	?>
     </p>
 
-    <?= GroupGridView::widget([
+    <?php
+    Pjax::begin();
+    echo GroupGridView::widget([
         'dataProvider' => $entrantProvider,
     	'mergeColumns' => ['group_num'],
     	'extraRowColumns' => ['group_num'],
@@ -117,7 +120,7 @@ $this->params['breadcrumbs'][] = 'Entrants';
 
         ],
     ]);
-
+	Pjax::end();
 	?>
 
 </div>
