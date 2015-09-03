@@ -70,7 +70,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		['class' => 'btn btn-primary']);
 	if (($model->state == 'Running') || ($model->state == 'Complete'))
 	{
-		echo Html::a('Fights', ['/fights', 'eventId' => $model->id],
+		echo Html::a('Fights', ['/fights/index', 'eventId' => $model->id],
 			['class' => 'btn btn-primary']);
 	}
 	if ($model->state == 'Complete')
