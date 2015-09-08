@@ -98,7 +98,7 @@ $this->params['breadcrumbs'][] = $this->title;
 				'format' => 'html',
 				'content' => function($model, $index, $dataColumn)
 				{
-					if (($model->winnerId == -1) && (User::isUserAdmin()))
+					if (User::isUserAdmin())
 					{
 						$team1 = $model->robot1->robot->team->team_name;
 						$robot1name = $model->robot1->robot->name;
@@ -106,19 +106,41 @@ $this->params['breadcrumbs'][] = $this->title;
 						$team2 = $model->robot2->robot->team->team_name;
 						$robot2name= $model->robot2->robot->name;
 						$entrant2 = $model->robot2->id;
-						return Html::button('vs', [
-							'class' => 'btn btn-primary',
-							'data-toggle' => 'modal',
-							'data-target' => '#run-fight-modal',
-							'data-button-target' => '../fights/update',
-							'data-pjax' => '0',
-							'data-team1' => $team1,
-							'data-robot1name'=> $robot1name,
-							'data-entrant1' => $entrant1,
-							'data-team2' => $team2,
-							'data-robot2name'=> $robot2name,
-							'data-entrant2' => $entrant2,
-							'data-id' => $index]);
+						if ($model->winnerId == -1)
+						{
+							return Html::button('vs', [
+								'class' => 'btn btn-primary',
+								'data-toggle' => 'modal',
+								'data-target' => '#run-fight-modal',
+								'data-button-target' => '../fights/update',
+								'data-pjax' => '0',
+								'data-team1' => $team1,
+								'data-robot1name'=> $robot1name,
+								'data-entrant1' => $entrant1,
+								'data-team2' => $team2,
+								'data-robot2name'=> $robot2name,
+								'data-entrant2' => $entrant2,
+								'data-id' => $index,
+							]);
+						}
+						else
+						{
+							return Html::button('change', [
+								'class' => 'btn btn-danger',
+								'data-toggle' => 'modal',
+								'data-target' => '#change-result',
+								'data-button-target' => '../fights/change',
+								'data-pjax' => '0',
+								'data-team1' => $team1,
+								'data-robot1name'=> $robot1name,
+								'data-entrant1' => $entrant1,
+								'data-team2' => $team2,
+								'data-robot2name'=> $robot2name,
+								'data-entrant2' => $entrant2,
+								'data-winner-id' => $model->winnerId,
+								'data-id' => $index,
+							]);
+						}
 					}
 					else
 					{
@@ -183,6 +205,25 @@ echo Html::button('', ['class' => 'btn btn-primary btn-fight', 'id' => 'button2'
 ?>
 </div>
 
+<?php Modal::end(); ?>
+
+<?php Modal::begin([
+	'id' => 'change-result',
+	'header' => '<h4 class="modal-title">Change Result</h4>',
+	'footer' => '<a href="#" class="btn btn-default" data-dismiss="modal">Close</a>',
+]); ?>
+<div class="modal-center">
+<?php
+$form = ActiveForm::begin(['id' => 'change-form']);
+echo Html::hiddenInput('target', NULL, ['id' => 'change-target']);
+echo Html::hiddenInput('fight', NULL, ['id' => 'change-fight']);
+echo Html::hiddenInput('entrant1', NULL, ['id' => 'change-entrant1']);
+echo Html::hiddenInput('entrant2', NULL, ['id' => 'change-entrant2']);
+
+ActiveForm::end();
+echo Html::button('', ['class' => 'btn btn-danger btn-fight', 'id' => 'change-button']);
+?>
+</div>
 <?php Modal::end(); ?>
 
 <?php

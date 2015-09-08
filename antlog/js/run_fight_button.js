@@ -41,3 +41,45 @@ $('#button2').click(function()
 	$('#run-fight-modal').modal('hide');
 	$(location).attr('href',target + '/' + id + '?winner=' + entrant);
 });
+
+$('#change-result').on('show.bs.modal', function (event) {
+	var winner;
+	var button = $(event.relatedTarget);
+	var target = button.data('button-target');
+	var id = button.data('id');
+	var team1 = button.data('team1');
+	var robot1name = button.data('robot1name');
+	var entrant1 = button.data('entrant1');
+	var team2 = button.data('team2');
+	var robot2name = button.data('robot2name');
+	var entrant2 = button.data('entrant2');
+	var winnerId = button.data('winner-id');
+	if (winnerId == entrant1)
+	{
+		winner = robot1name + ' (' + team1 + ')';
+	}
+	else if (winnerId == entrant2)
+	{
+		winner = robot2name + ' (' + team2 + ')';
+	}
+	else
+	{
+		winner = 'Unknown! winnerId = ' + winnerId
+	}
+	var modal = $(this);
+	modal.find('.modal-title').text('Winner = ' + winner);
+	modal.find('.modal-body #change-button').html('Change result');
+	modal.find('.modal-body #change-fight').val(id);
+	modal.find('.modal-body #change-target').val(target);
+	modal.find('.modal-body #change-entrant1').val(entrant1);
+	modal.find('.modal-body #change-entrant2').val(entrant2);
+});
+
+$('#change-button').click(function()
+{
+	target = $('#change-target').val();
+	id = $('#change-fight').val();
+	entrant = $('#change-entrant1').val();
+	$('#change-result').modal('hide');
+	$(location).attr('href',target + '/' + id + '?winner=' + entrant);
+});
