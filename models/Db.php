@@ -312,7 +312,7 @@ class Db extends ActiveRecord
 					$update .= ", `updated_at`=$record->updated_at";
 				}
 				$update .= ", `organiserId`=$record->organiserId";
-				$update .= ", `venue`='" . $this->escapeString($this->venue) . "'";
+				$update .= ", `venue`='" . $this->escapeString($record->venue) . "'";
 			}
 			if ($insertRecord == true)
 			{

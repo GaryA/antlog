@@ -104,6 +104,59 @@ class Fights extends ActiveRecord
         ];
     }
 
+    /**
+     * Check whether it is OK to change the result of a fight
+     * @param string $id
+     * @return boolean
+     */
+    public function isOKToChange($id)
+    {
+    	$record = $this->findOne($id);
+    	$winnerNext = $record->winnerNextFight + $id;
+    	$loserNext = $record->loserNextFight + $id;
+    	$retVal = $this->checkRecord($winnerNext);
+    	if (strpos($retVal, 'OK') === 0)
+    	{
+    		if ($record->loserNextFight != 0)
+    		{
+    			$retVal = $this->checkRecord($loserNext);
+    		}
+    	}
+   		return $retVal . ' ' . $winnerNext . ' ' . $loserNext;
+	}
+
+    public function checkRecord($id)
+    {
+    	$record = $this->findOne($id);
+    	if ($record->winnerId == -1)
+    	{
+    		// next fight is OK
+    		return 'OK ' . $id . ' ' . $record->winnerId . ' ' . $record->loserId;
+    	}
+    	else if ($record->loserId == 0)
+    	{
+    		// next fight is a bye so go on to the next fight
+
+    		/*
+    		 * This needs to be a recursive function to traverse an arbitrary number of byes (for small events!)
+    		 * But for some reason a 500 error is returned...
+    		 * Try running on antlog.localso that debug is turned on and maybe some more useful error message
+    		 * will be forthcoming...
+    		 */
+
+    		return $this->checkRecord($record->winnerNextFight + $id);
+    		//$id += $record->winnerNextFight;
+    		//$record = $this->findOne($id);
+    		//if ($record->winnerId == -1)return 'OK ' . $id . ' ' . $record->winnerId . ' ' . $record->loserId;
+    		//return 'Bad ' . $id . ' ' . $record->winnerId . ' ' . $record->loserId;
+    	}
+    	else
+    	{
+    		// next fight is not OK so can't change result
+    		return 'Bad ' . $id . ' ' . $record->winnerId . ' ' . $record->loserId;
+    	}
+    }
+
     public function updateCurrent($id, $winner)
     {
     	$record = $this->findOne($id);
@@ -123,7 +176,13 @@ class Fights extends ActiveRecord
 
     	$record->winnerId = $winner;
     	$record->loserId = $loser;
-    	$record->save(false, ['winnerId', 'loserId']);
+    	// Calculate and insert sequence number
+		$sequence = $this->find()
+		   ->where(['eventId' => $record->eventId])
+		   ->andWhere(['>=', 'sequence', 0])
+		   ->count();
+    	$record->sequence = $sequence;
+    	$record->update();
 
     	$fightLoser = Entrant::findOne($loser);
 
@@ -165,15 +224,18 @@ class Fights extends ActiveRecord
     		{
     			$fightLoser->finalFightId = $record->id - $event->offset;
     		}
-    		$fightLoser->save(false, ['status', 'finalFightId']);
+    		$fightLoser->update();
+    		//$fightLoser->save(false, ['status', 'finalFightId']);
     		if ($finished)
     		{
     			$entrant = Entrant::findOne($winner);
     			$entrant->finalFightId = 256;
-    			$entrant->save(false, ['finalFightId']);
+    			$entrant->update();
+    			//$entrant->save(false, ['finalFightId']);
     			/* update event state */
     			$event->state = 'Complete';
-    			$event->save(false, ['state']);
+    			$event->update();
+    			//$event->save(false, ['state']);
     			/* announce results! */
     			return ['event/result', 'id' => $record->eventId];
     		}
@@ -223,7 +285,13 @@ class Fights extends ActiveRecord
 		{
 			$record->winnerId = $winner;
 			$record->loserId = $loser;
-			$record->save(false, ['winnerId', 'loserId']);
+			// Calculate and insert sequence number
+			$sequence = $this->find()
+			   ->where(['eventId' => $id])
+		   		->andWhere(['>=', 'sequence', 0])
+			   ->count();
+			$record->sequence = $sequence;
+			$record->update();
 			$status = $this->updateNext($record->id, $record->winnerNextFight, $record->winnerId);
 			if ($status == true)
 			{
@@ -248,13 +316,13 @@ class Fights extends ActiveRecord
 				if ($nextRecord->robot1Id == -1)
 				{
 					$nextRecord->robot1Id = $robotId;
-					$nextRecord->save(false, ['robot1Id']);
+					$nextRecord->update();
 					$status = true;
 				}
 				else if (($nextRecord->robot2Id == -1) && (($nextRecord->robot1Id != $robotId) || ($nextRecord->robot1Id == 0)))
 				{
 					$nextRecord->robot2Id = $robotId;
-					$nextRecord->save(false, ['robot2Id']);
+					$nextRecord->update();
 					$status = true;
 				}
 			}
@@ -281,6 +349,7 @@ class Fights extends ActiveRecord
 			->orderBy('id')
 			->one();
 		$offset = $record->id - 1;
+		$sequence = 0;
 		foreach ($groupList as $groupNum => $group)
 		{
 			/* shuffle robots within groups */
@@ -291,9 +360,10 @@ class Fights extends ActiveRecord
 				$fightId = $this->_startMap[$index][$groupNum] + $offset;
 				$column = $this->_startMap[$index][8];
 				Yii::$app->db->createCommand("UPDATE {{%fights}}
-				   SET `$column` = $robot
+				   SET `$column` = $robot, `sequence` = $sequence
 				   WHERE `id` = $fightId")
 				   ->execute();
+				$sequence++;
 			}
 		}
 		return $offset;

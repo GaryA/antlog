@@ -227,9 +227,8 @@ class Event extends \yii\db\ActiveRecord
 	{
 		$event = static::findOne($id);
 		$event->state = 'Setup';
-		return ($event->save(false, [
-			'state'
-		]));
+		return $event->update();
+		//return ($event->save(false, ['state']));
 	}
 
 	/**
@@ -241,9 +240,8 @@ class Event extends \yii\db\ActiveRecord
 		$event->state = 'Running';
 		$event->offset = $offset;
 		$event->num_groups = $numGroups;
-		return ($event->save(false, [
-			'state', 'offset', 'num_groups'
-		]));
+		return $event->update();
+		//return ($event->save(false, ['state', 'offset', 'num_groups']));
 	}
 
 	/**
@@ -253,9 +251,8 @@ class Event extends \yii\db\ActiveRecord
 	{
 		$event = static::findOne($id);
 		$event->state = 'Registration';
-		return ($event->save(false, [
-			'state'
-		]));
+		return $event->update();
+		//return ($event->save(false, ['state']));
 	}
 
 	/**

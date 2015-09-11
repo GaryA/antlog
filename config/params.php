@@ -8,6 +8,6 @@ return
 	// Define environment
 	// 'web' for online "master" installation
 	// 'local' for event "slave" installation
-	'antlog_env' => 'web',
+	'antlog_env' => 'local',
 
 ];

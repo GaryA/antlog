@@ -2,7 +2,7 @@
 
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=antlog',
+    'dsn' => 'mysql:host=localhost;dbname=antlog_local',
     'username' => 'root',
     'password' => '',
     'charset' => 'utf8',

@@ -172,6 +172,34 @@ class FightsController extends Controller
     }
 
     /**
+     * Checks whether a fight can be undone (or the result changed)
+     * @param string $id
+     * @return mixed JSON
+     */
+    public function actionCheck($id)
+    {
+    	if(Yii::$app->request->isAjax)
+    	{
+    		$model = $this->findModel($id);
+    		$retVal = $model->isOKToChange($id);
+    		$pos = strpos($retVal, 'OK');
+    		if ($pos === 0)
+    		{
+    			return '{"status":"true", "string":"' . $retVal . '"}';
+    		}
+    		else
+    		{
+    			if ($pos === false) $pos = 'false';
+    			return '{"status":"false", "string":"' . $retVal . '"}';
+    		}
+    	}
+    	else
+    	{
+    		return $this->redirect(['index']);
+    	}
+    }
+
+    /**
      * Finds the Fights model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param string $id

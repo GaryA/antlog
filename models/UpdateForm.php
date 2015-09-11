@@ -60,7 +60,8 @@ class UpdateForm extends Model
             $user->username = $this->username;
             $user->email = $this->email;
             $user->team_name = $this->team_name;
-            $user->save(false);
+            $user->update();
+            //$user->save(false);
 
 			return $user;
         }

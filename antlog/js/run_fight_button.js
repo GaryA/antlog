@@ -68,11 +68,34 @@ $('#change-result').on('show.bs.modal', function (event) {
 	}
 	var modal = $(this);
 	modal.find('.modal-title').text('Winner = ' + winner);
-	modal.find('.modal-body #change-button').html('Change result');
-	modal.find('.modal-body #change-fight').val(id);
-	modal.find('.modal-body #change-target').val(target);
-	modal.find('.modal-body #change-entrant1').val(entrant1);
-	modal.find('.modal-body #change-entrant2').val(entrant2);
+
+	$.ajax(
+	{
+		type: "post",
+		dataType: 'json',
+		url: target + '?id=' + id,
+	})
+	.done(function(response)
+	{
+		if (response.status == 'false')
+		{
+			modal.find('.modal-body #change-button').html('Cannot change result');
+		}
+		else if (response.status == 'true')
+		{
+			modal.find('.modal-body #change-button').html('Change result');
+		}
+		modal.find('.modal-body #change-fight').val(id);
+		modal.find('.modal-body #change-target').val(target);
+		modal.find('.modal-body #change-entrant1').val(entrant1);
+		modal.find('.modal-body #change-entrant2').val(entrant2);
+	})
+	.fail(function (jqXHr, textStatus, errorThrown)
+	{
+		console.debug(jqXHr.responseText);
+		console.log(textStatus);
+		console.log(errorThrown);
+	});
 });
 
 $('#change-button').click(function()
