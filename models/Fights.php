@@ -224,14 +224,14 @@ class Fights extends ActiveRecord
     		{
     			$fightLoser->finalFightId = $record->id - $event->offset;
     		}
-    		$fightLoser->update();
-    		//$fightLoser->save(false, ['status', 'finalFightId']);
+    		$fightLoser->touch('updated_at');
+    		$fightLoser->save(false, ['status', 'finalFightId']);
     		if ($finished)
     		{
     			$entrant = Entrant::findOne($winner);
     			$entrant->finalFightId = 256;
-    			$entrant->update();
-    			//$entrant->save(false, ['finalFightId']);
+    			$entrant->touch('updated_at');
+    			$entrant->save(false, ['finalFightId']);
     			/* update event state */
     			$event->state = 'Complete';
     			$event->update();

@@ -172,6 +172,7 @@ class EntrantController extends Controller
     	$model = $this->findModel($id);
 
     	$model->status = 2;
+    	$model->touch('updated_at');
     	if (!$model->save(true, ['status']))
     	{
     		Yii::$app->getSession()->setFlash('error', 'Entrant status could not be saved to model.');
