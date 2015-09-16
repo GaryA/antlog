@@ -96,9 +96,9 @@ $this->params['breadcrumbs'][] = $this->title;
 				'contentOptions' => ['class' => 'groupview-center-align'],
 				'headerOptions' => ['class' => 'groupview-center-align'],
 				'format' => 'html',
-				'content' => function($model, $index, $dataColumn)
+				'content' => function($model, $index, $dataColumn) use ($event)
 				{
-					if (User::isUserAdmin())
+					if (User::isUserAdmin() && ($event->state !== 'Complete'))
 					{
 						$team1 = $model->robot1->robot->team->team_name;
 						$robot1name = $model->robot1->robot->name;
@@ -138,6 +138,7 @@ $this->params['breadcrumbs'][] = $this->title;
 								'data-robot2name'=> $robot2name,
 								'data-entrant2' => $entrant2,
 								'data-winner-id' => $model->winnerId,
+								'data-button-update' => '../fights/update',
 								'data-id' => $index,
 							]);
 						}
@@ -221,7 +222,7 @@ echo Html::hiddenInput('entrant1', NULL, ['id' => 'change-entrant1']);
 echo Html::hiddenInput('entrant2', NULL, ['id' => 'change-entrant2']);
 
 ActiveForm::end();
-echo Html::button('', ['class' => 'btn btn-danger btn-fight', 'id' => 'change-button']);
+echo Html::button('', ['class' => 'btn btn-fight', 'id' => 'change-button']);
 ?>
 </div>
 <?php Modal::end(); ?>

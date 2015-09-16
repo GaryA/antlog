@@ -44,8 +44,10 @@ $('#button2').click(function()
 
 $('#change-result').on('show.bs.modal', function (event) {
 	var winner;
+	var loserId;
 	var button = $(event.relatedTarget);
 	var target = button.data('button-target');
+	var update = button.data('button-update');
 	var id = button.data('id');
 	var team1 = button.data('team1');
 	var robot1name = button.data('robot1name');
@@ -57,10 +59,12 @@ $('#change-result').on('show.bs.modal', function (event) {
 	if (winnerId == entrant1)
 	{
 		winner = robot1name + ' (' + team1 + ')';
+		loserId = entrant2;
 	}
 	else if (winnerId == entrant2)
 	{
 		winner = robot2name + ' (' + team2 + ')';
+		loserId = entrant1;
 	}
 	else
 	{
@@ -80,15 +84,17 @@ $('#change-result').on('show.bs.modal', function (event) {
 		if (response.status == 'false')
 		{
 			modal.find('.modal-body #change-button').html('Cannot change result');
+			modal.find('.modal-body #change-button').removeClass('btn-success').addClass('btn-danger disabled');
 		}
 		else if (response.status == 'true')
 		{
 			modal.find('.modal-body #change-button').html('Change result');
+			modal.find('.modal-body #change-button').removeClass('btn-danger disabled').addClass('btn-success');
 		}
 		modal.find('.modal-body #change-fight').val(id);
-		modal.find('.modal-body #change-target').val(target);
-		modal.find('.modal-body #change-entrant1').val(entrant1);
-		modal.find('.modal-body #change-entrant2').val(entrant2);
+		modal.find('.modal-body #change-target').val(update);
+		modal.find('.modal-body #change-entrant1').val(winnerId);
+		modal.find('.modal-body #change-entrant2').val(loserId);
 	})
 	.fail(function (jqXHr, textStatus, errorThrown)
 	{
@@ -102,7 +108,7 @@ $('#change-button').click(function()
 {
 	target = $('#change-target').val();
 	id = $('#change-fight').val();
-	entrant = $('#change-entrant1').val();
+	entrant = $('#change-entrant2').val();
 	$('#change-result').modal('hide');
-	$(location).attr('href',target + '/' + id + '?winner=' + entrant);
+	$(location).attr('href',target + '?id=' + id + '&winner=' + entrant);
 });
