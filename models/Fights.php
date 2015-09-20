@@ -157,23 +157,38 @@ class Fights extends ActiveRecord
     	}
     }
 
-    public function updateCurrent($id, $winner)
+    /**
+     * function to update the current fight, then call further functions to
+     * update subsequent fights and run byes
+     * @param unknown $id
+     * @param unknown $winner
+     * @param string $change - optional, if true change existing result
+     * @return multitype:string unknown |multitype:string NULL |multitype:string number NULL
+     */
+    public function updateCurrent($id, $winner, $change = false, $replacement = 0)
     {
     	$record = $this->findOne($id);
-    	if ($winner == $record->robot1->id)
+    	if ($change === true)
     	{
-    		$loser = $record->robot2->id;
-    	}
-    	else if ($winner == $record->robot2->id)
-    	{
-    		$loser = $record->robot1->id;
+    		$loser = $winner;
+    		$winner = $replacement;
     	}
     	else
     	{
-    		$error = "Winner = $winner but does not match Robot1 $record->robot1->id or Robot2 $record->robot2->id";
-    		return ['debug', 'id' => $id, 'name' => 'Error', 'value' => $error];
+    		if ($winner == $record->robot1->id)
+    		{
+    			$loser = $record->robot2->id;
+    		}
+    		else if ($winner == $record->robot2->id)
+    		{
+    			$loser = $record->robot1->id;
+    		}
+    		else
+    		{
+    			$error = "Winner = $winner but does not match Robot1 $record->robot1->id or Robot2 $record->robot2->id";
+    			return ['debug', 'id' => $id, 'name' => 'Error', 'value' => $error];
+    		}
     	}
-
     	$record->winnerId = $winner;
     	$record->loserId = $loser;
     	// Calculate and insert sequence number
@@ -189,32 +204,33 @@ class Fights extends ActiveRecord
     	$finished = true;
     	if ($record->winnerNextFight > 0)
     	{
-    		if ($record->fightBracket == 'F')
+    		if (($record->fightBracket == 'F') && ($fightLoser->status == 1))
     		{
-    			if ($fightLoser->status == 1)
-    			{
-    				/* first final fight, no need for a rematch, make the second final a bye */
-    				$this->updateNext($record->id, $record->winnerNextFight, $record->winnerId);
-    				$this->updateNext($record->id, $record->loserNextFight, 0);
-    			}
-    			else
-    			{
-    				/* first final fight but need a rematch */
-    				$finished = false;
-    				$this->updateNext($record->id, $record->winnerNextFight, $record->winnerId);
-    				$this->updateNext($record->id, $record->loserNextFight, $record->loserId);
-    			}
+    			/* first final fight, no need for a rematch, make the second final a bye */
+    			$this->updateNext($record->id, $record->winnerNextFight, $record->winnerId, $change, 0);
+    			$this->updateNext($record->id, $record->loserNextFight, 0, $change, $record->loserId);
     		}
     		else
     		{
     			$finished = false;
-    			$this->updateNext($record->id, $record->winnerNextFight, $record->winnerId);
-    			$this->updateNext($record->id, $record->loserNextFight, $record->loserId);
+    			$this->updateNext($record->id, $record->winnerNextFight, $record->winnerId, $change, $record->loserId);
+    			$this->updateNext($record->id, $record->loserNextFight, $record->loserId, $change, $record->winnerId);
     		}
-    		do
+     		if ($change === false)
     		{
-    			$status = $this->runByes($record->eventId);
-    		} while ($status == true);
+    			do
+    			{
+    				$status = $this->runByes($record->eventId);
+    			} while ($status == true);
+    		}
+    		else
+    		{
+    			$id = $record->id;
+    			do
+    			{
+    				$id = $this->changeByes($record->eventId, $record->winnerId, $record->loserId, $id);
+    			} while ($id > 0);
+       		}
     	}
     	if ($record->save())
     	{
@@ -226,6 +242,14 @@ class Fights extends ActiveRecord
     		}
     		$fightLoser->touch('updated_at');
     		$fightLoser->save(false, ['status', 'finalFightId']);
+    		if ($change === true)
+    		{
+    			$fightWinner = Entrant::findOne($winner);
+    			$fightWinner->status += 1;
+    			$fightWinner->finalFightId = 0;
+    			$fightWinner->touch('updated_at');
+    			$fightWinner->save(false, ['status', 'finalFightId']);
+    		}
     		if ($finished)
     		{
     			$entrant = Entrant::findOne($winner);
@@ -273,6 +297,7 @@ class Fights extends ActiveRecord
 			$record = $this->find()
 				->where(['eventId' => $id, 'robot2Id' => 0, 'winnerId' => -1])
 				->andWhere(['>=', 'robot1Id', 0])
+				->andWhere(['>=', 'id', $id])
 				->orderBy('id')
 				->one();
 			if ($record != NULL)
@@ -288,9 +313,9 @@ class Fights extends ActiveRecord
 			// Calculate and insert sequence number
 			$sequence = $this->find()
 			   ->where(['eventId' => $id])
-		   		->andWhere(['>=', 'sequence', 0])
+	   			->andWhere(['>=', 'sequence', 0])
 			   ->count();
-			$record->sequence = $sequence;
+			$record->sequence = $sequence++;
 			$record->update();
 			$status = $this->updateNext($record->id, $record->winnerNextFight, $record->winnerId);
 			if ($status == true)
@@ -302,29 +327,89 @@ class Fights extends ActiveRecord
 	}
 
 	/**
+	 * function to change byes
+	 * @param $eventId integer
+	 * @param $winnerId integer
+	 * @param $loserId integer
+	 * @param $fightId integer
+	 */
+	public function changeByes($eventId, $winnerId, $loserId, $fightId)
+	{
+		// function needs to find fights where id > $record->id
+		// and ((robot1Id = 0 and robot2Id is in [winner_Id, loser_Id])
+		// or (robot2Id = 0 and robot1Id is in [winner_Id, loser_Id]))
+		// The and/or logic needs to be organised correctly...
+		$record = $this->find()
+			->where(['eventId' => $eventId])
+			->andWhere(['>', 'id', $fightId])
+			->andWhere(['or',
+				['robot1Id' => 0, 'robot2Id' => [$winnerId, $loserId]],
+				['robot2Id' => 0, 'robot1Id' => [$winnerId, $loserId]]])
+			->orderBy('id')
+			->one();
+		if ($record != NULL)
+		{
+			if (($record->robot1Id == $winnerId) || ($record->robot2Id == $winnerId))
+			{
+				$record->winnerId = $winnerId;
+				$replacement = $winnerId;
+				$original = $loserId;
+			}
+			else if (($record->robot1Id == $loserId) || ($record->robot2Id == $loserId))
+			{
+				$record->winnerId = $loserId;
+				$replacement = $loserId;
+				$original = $winnerId;
+			}
+			$record->update();
+			$status = $this->updateNext($record->id, $record->winnerNextFight, $replacement, true, $original);
+			if ($status == true)
+			{
+				$status = $this->updateNext($record->id, $record->loserNextFight, $replacement, true, $original);
+			}
+			return $record->id;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+	/**
 	 * update record for winner's or loser's next fight
 	 */
-	public function updateNext($id, $nextFight, $robotId)
+	public function updateNext($id, $nextFight, $robotId, $change = false, $original = 0)
 	{
 		$status = false;
 		if ($nextFight != 0)
 		{
 			$nextRecord = $this->findOne($id + $nextFight);
-
 			if ($nextRecord != NULL)
 			{
-				if ($nextRecord->robot1Id == -1)
+				if ($change === false)
 				{
-					$nextRecord->robot1Id = $robotId;
-					$nextRecord->update();
-					$status = true;
+					if ($nextRecord->robot1Id == -1)
+					{
+						$nextRecord->robot1Id = $robotId;
+					}
+					else if (($nextRecord->robot2Id == -1) && (($nextRecord->robot1Id != $robotId) || ($nextRecord->robot1Id == 0)))
+					{
+						$nextRecord->robot2Id = $robotId;
+					}
 				}
-				else if (($nextRecord->robot2Id == -1) && (($nextRecord->robot1Id != $robotId) || ($nextRecord->robot1Id == 0)))
+				else
 				{
-					$nextRecord->robot2Id = $robotId;
-					$nextRecord->update();
-					$status = true;
+					if ($nextRecord->robot1Id == $original)
+					{
+						$nextRecord->robot1Id = $robotId;
+					}
+					else if ($nextRecord->robot2Id == $original)
+					{
+						$nextRecord->robot2Id = $robotId;
+					}
 				}
+				$nextRecord->update();
+				$status = true;
 			}
 		}
 		else

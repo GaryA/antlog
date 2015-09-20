@@ -108,7 +108,8 @@ $('#change-button').click(function()
 {
 	target = $('#change-target').val();
 	id = $('#change-fight').val();
-	entrant = $('#change-entrant2').val();
+	winner = $('#change-entrant1').val();
+	replacement = $('#change-entrant2').val();
 	$('#change-result').modal('hide');
-	$(location).attr('href',target + '?id=' + id + '&winner=' + entrant);
+	$(location).attr('href',target + '?id=' + id + '&winner=' + winner + '&change=true&replacement=' + replacement);
 });

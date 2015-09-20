@@ -151,9 +151,11 @@ class FightsController extends Controller
     {
 		$request = Yii::$app->request;
 		$winner = $request->get('winner');
-
+		$change = $request->get('change', false);
+		$change = filter_var($change, FILTER_VALIDATE_BOOLEAN); // set value to proper boolean type
+		$replacement = $request->get('replacement', 0);
 		$model = $this->findModel($id);
-		$result = $model->updateCurrent($id, $winner);
+		$result = $model->updateCurrent($id, $winner, $change, $replacement);
 		return $this->redirect($result);
 
     }
