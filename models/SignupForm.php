@@ -70,8 +70,7 @@ class SignupForm extends Model
             $user->team_name = $this->team_name;
             $user->setPassword($this->password);
             $user->generateAuthKey();
-            $user->update();
-            //$user->save(false);
+            $user->save(false);
 			return $user;
         }
 
