@@ -27,7 +27,7 @@ class EntrantController extends Controller
 				'rules' =>
 				[
 					[
-						'actions' => ['delete', 'update', 'create', 'enter'],
+						'actions' => ['update', 'create', 'enter'],
 						'allow' => true,
 						'roles' => ['@'],
 						'matchCallback' => function($rule, $action)
@@ -36,7 +36,7 @@ class EntrantController extends Controller
 						}
 					],
 					[
-						'actions' => ['signup'],
+						'actions' => ['signup', 'delete'],
 						'allow' => true,
 						'roles' => ['@'],
 					],
@@ -177,7 +177,7 @@ class EntrantController extends Controller
     	{
     		Yii::$app->getSession()->setFlash('error', 'Entrant status could not be saved to model.');
     	}
-    	return $this->redirect(['index', 'eventId' => $eventId]);
+    	return $this->render('indexevent', ['event' => Event::findOne($eventId)]);
     }
 
     /**
@@ -191,7 +191,7 @@ class EntrantController extends Controller
     {
         $this->findModel($id)->delete();
 
-        return $this->redirect(['index', 'eventId' => $eventId]);
+        return $this->render('indexevent', ['event' => Event::findOne($eventId)]);
     }
 
     /**
@@ -203,9 +203,12 @@ class EntrantController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Entrant::findOne($id)) !== null) {
+        if (($model = Entrant::findOne($id)) !== null)
+        {
             return $model;
-        } else {
+        }
+        else
+        {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }

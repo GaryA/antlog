@@ -76,7 +76,7 @@ $this->params['breadcrumbs'][] = 'Entrants';
             	'value' => function($model, $index, $dataColumn) use ($event) {
             		if ($event->state == 'Registration')
             		{
-            			if ($model->status == 0)
+            			if ($model->status == -1)
             			{
             				$value = 'Signed Up';
             				if (User::isUserAdmin())

@@ -551,6 +551,18 @@ class Db extends ActiveRecord
 			pclose(popen('mysql ' . $cmd . '> /dev/null &', 'r'));
 		}
 		//unlink($fileName);
+		// SELECT * FROM `aws_entrant`
+		// LEFT JOIN (`aws_event`) ON `eventId` = `aws_event`.`id`
+		// WHERE `status` = -1 AND `state` LIKE "Complete"
+		$entrants = Entrant::find()
+			->joinWith('event')
+			->where(['status' => -1])
+			->andWhere(['like', 'state', 'Complete'])
+			->all();
+		foreach ($entrants as $entrant)
+		{
+			$entrant->delete();
+		}
 	}
 
 	public function fileDownload()
