@@ -9,7 +9,8 @@ use app\models\Robot;
 /* @var $this yii\web\View */
 /* @var $model app\models\Event */
 
-$this->title = $module;
+$this->title = $function;
+$this->params['breadcrumbs'][] = $class;
 $this->params['breadcrumbs'][] = $this->title;
 $this->params['breadcrumbs'][] = 'Debug';
 ?>

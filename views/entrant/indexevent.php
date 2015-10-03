@@ -6,6 +6,8 @@ use yii\widgets\Pjax;
 use dosamigos\grid\GroupGridView;
 use app\models\User;
 use app\models\EntrantSearch;
+use yii\grid\ActionColumn;
+use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -40,7 +42,8 @@ $this->params['breadcrumbs'][] = 'Entrants';
     </p>
 
     <?php
-    Pjax::begin();
+    ActiveForm::begin(['id' => 'entrants_form']);
+    //Pjax::begin();
     echo GroupGridView::widget([
         'dataProvider' => $entrantProvider,
     	'mergeColumns' => ['group_num'],
@@ -81,19 +84,21 @@ $this->params['breadcrumbs'][] = 'Entrants';
             				$value = 'Signed Up';
             				if (User::isUserAdmin())
             				{
-            					$value .= ' ' . Html::a('Enter', ['enter', 'eventId' => $event->id, 'id' => $index],
-            					['class' => 'btn btn-sm btn-success',
-            					'data' => ['method' => 'post',]]);
-            				}
+           					$value .= ' ' . Html::button('Enter',
+            					[
+            						'class' => 'btn btn-sm btn-success enter-btn',
+            						'data-target' => Url::to(['enter', 'id' => $index]),
+            					]);
+             				}
             				if (User::isUserAdmin() || User::isCurrentUser($model->robot->teamId))
             				{
-            					$value .= ' ' . Html::a('Delete', ['delete', 'eventId' => $event->id, 'id' => $index],
-            						['class' => 'btn btn-sm btn-danger',
-            							'data' => ['method' => 'post',
-            							'confirm' => 'Are you sure you want to delete this entry?'],
+            					$value .= ' ' . Html::button('Delete',
+            					[
+            						'class' => 'btn btn-sm btn-danger delete-btn',
+            						'data-target' => Url::to(['delete', 'eventId' => $event->id, 'id' => $index]),
             					]);
             				}
-            			}
+             			}
             			else
             			{
             				$value = 'Entered';
@@ -117,10 +122,16 @@ $this->params['breadcrumbs'][] = 'Entrants';
             		return $value;
             	},
             ],
-
         ],
     ]);
-	Pjax::end();
+	//Pjax::end();
+	ActiveForm::end();
 	?>
+<?php
+$this->registerJsFile(
+	Yii::getAlias('@web') . '/js/entrants_buttons.js',
+	['depends' => 'yii\web\YiiAsset'],
+	__CLASS__.'#'.'entrants_form');
+?>
 
 </div>

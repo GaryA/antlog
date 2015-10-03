@@ -164,10 +164,9 @@ class EntrantController extends Controller
      * Enters an entrant that has been signed up.
      * If update is successful, the browser will be redirected to the entrants list for the current event.
      * @param string $id
-     * @param integer $eventId
      * @return mixed
      */
-    public function actionEnter($id, $eventId)
+    public function actionEnter($id)
     {
     	$model = $this->findModel($id);
 
@@ -176,22 +175,34 @@ class EntrantController extends Controller
     	if (!$model->save(true, ['status']))
     	{
     		Yii::$app->getSession()->setFlash('error', 'Entrant status could not be saved to model.');
+    		$return = '{"status":"Error","newhtml":""}';
     	}
-    	return $this->render('indexevent', ['event' => Event::findOne($eventId)]);
+    	else
+    	{
+    		$return = '{"status":"OK","newhtml":"Entered"}';
+    	}
+    	if (Yii::$app->request->isAjax)
+    	{
+    		return $return;
+    	}
+    	return $this->render('indexevent', ['event' => Event::findOne($model->eventId)]);
     }
 
     /**
      * Deletes an existing Entrant model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param string $id
-     * @param integer $eventId
      * @return mixed
      */
-    public function actionDelete($id, $eventId)
+    public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
-        return $this->render('indexevent', ['event' => Event::findOne($eventId)]);
+        $model = $this->findModel($id);
+    	$model->delete();
+    	if (Yii::$app->request->isAjax)
+    	{
+    		return '{"status":"OK"}';
+    	}
+        return $this->render('indexevent', ['event' => Event::findOne($model->eventId)]);
     }
 
     /**

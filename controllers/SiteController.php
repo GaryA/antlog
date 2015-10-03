@@ -230,4 +230,27 @@ class SiteController extends Controller
             'model' => $model,
         ]);
     }
+    /**
+     * Render debug view to dump variable name & value
+     * @param string $class Class name
+     * @param string $function Function name
+     * @return mixed
+     *
+     * Call from any controller using:
+	 * this->redirect(['/site/debug', 'class' => __CLASS__, 'function' => __FUNCTION__, 'name' => '$variable', 'value' => $variable]);
+	 *
+     * query params are name (label for variable), value (value of variable to dump)
+     */
+    public function actionDebug($class, $function)
+    {
+    	$params = Yii::$app->request->queryParams;
+
+    	return $this->render('debug', [
+    		'class' => $class,
+    		'function' => $function,
+    		'debugName' => $params['name'],
+    		'debugValue' => $params['value'],
+    	]);
+    }
+
 }
