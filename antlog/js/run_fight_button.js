@@ -22,6 +22,13 @@ $('#run-fight-modal').on('show.bs.modal', function (event) {
 	modal.find('.modal-body #target').val(target);
 	modal.find('.modal-body #entrant1').val(entrant1);
 	modal.find('.modal-body #entrant2').val(entrant2);
+	$.ajax(
+	{
+		type: "post",
+		dataType: 'json',
+		url: 'create-files',
+		data: {robot1: robot1name, robot2: robot2name},
+	})
 });
 
 $('#button1').click(function()
@@ -40,6 +47,16 @@ $('#button2').click(function()
 	entrant = $('#entrant2').val();
 	$('#run-fight-modal').modal('hide');
 	$(location).attr('href',target + '/' + id + '?winner=' + entrant);
+});
+
+$('#run-fight-modal').on('hide.bs.modal', function (event)
+{
+	$.ajax(
+	{
+		type: "post",
+		dataType: 'json',
+		url: 'delete-files',
+	})
 });
 
 $('#change-result').on('show.bs.modal', function (event) {

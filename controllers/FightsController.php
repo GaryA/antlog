@@ -202,6 +202,53 @@ class FightsController extends Controller
     }
 
     /**
+     * Creates files to show robot names for current fights
+     */
+    public function actionCreateFiles()
+    {
+    	if(Yii::$app->request->isAjax)
+    	{
+    		$robot1 = Yii::$app->request->post('robot1');
+    		$filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . 'robot1.txt';
+    		$file = fopen($filename, 'w');
+    		fwrite($file, $robot1);
+    		fclose($file);
+    		$robot2 = Yii::$app->request->post('robot2');
+    		$filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . 'robot2.txt';
+    		$file = fopen($filename, 'w');
+    		fwrite($file, $robot2);
+    		fclose($file);
+    	}
+       	else
+    	{
+    		return $this->redirect(['index']);
+    	}
+    }
+
+    /**
+     * Doesn't actually delete files used to show robot names for current fights
+     * just replaces the content with nothing. Avoids having to repeatedly create and delete files.
+     */
+    public function actionDeleteFiles()
+    {
+    	if(Yii::$app->request->isAjax)
+    	{
+    		$filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . 'robot1.txt';
+    	  	$file = fopen($filename, 'w');
+    		fwrite($file, '');
+    		fclose($file);
+    		$filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . 'robot2.txt';
+    		$file = fopen($filename, 'w');
+    		fwrite($file, '');
+    		fclose($file);
+    	}
+       	else
+    	{
+    		return $this->redirect(['index']);
+    	}
+    }
+
+    /**
      * Finds the Fights model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param string $id
