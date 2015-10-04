@@ -68,13 +68,15 @@ $this->params['breadcrumbs'][] = $this->title;
 	}
 	echo Html::a('Entrants', ['/entrant', 'eventId' => $model->id],
 		['class' => 'btn btn-primary']);
-	if (($model->state == 'Running') || ($model->state == 'Complete'))
+	if ($model->state == 'Running')
 	{
-		echo Html::a('Fights', ['/fights/index', 'eventId' => $model->id],
+		echo Html::a('Fights', ['/fights/index', 'eventId' => $model->id, 'byes' => 1, 'complete' => 0],
 			['class' => 'btn btn-primary']);
 	}
 	if ($model->state == 'Complete')
 	{
+		echo Html::a('Fights', ['/fights/index', 'eventId' => $model->id, 'byes' => 0, 'complete' => 1],
+			['class' => 'btn btn-primary']);
 		echo Html::a('Results', ['result', 'id' => $model->id],
 			['class' => 'btn btn-info']);
 	}

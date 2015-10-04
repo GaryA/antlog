@@ -5,6 +5,7 @@ use yii\grid\GridView;
 use app\models\Robot;
 use app\models\Event;
 use app\models\User;
+use app\models\Fights;
 use yii\widgets\ActiveForm;
 use dosamigos\grid\GroupGridView;
 use yii\bootstrap\Modal;
@@ -25,6 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>Winners shown in <b>bold</b></p>
 
     <?php
+
     ActiveForm::begin(['id' => 'fight_button_form']);
 
     echo GroupGridView::widget([
@@ -33,29 +35,37 @@ $this->params['breadcrumbs'][] = $this->title;
     	'type' => GroupGridView::MERGE_SIMPLE,
     	'extraRowColumns' => ['fightRound', 'fightBracket', 'fightGroup'],
 		'extraRowValue' => function($model, $index, $totals)
-		{
-			if ($model->fightRound == 15)
-			{
-				$retVal = "Final (replay)";
-			}
-			else if ($model->fightRound == 14)
-			{
-				$retVal = "Final";
-			}
-			else if ($model->fightRound == 13)
-			{
-				$retVal = "Third Place Play-off";
-			}
-			else if ($model->fightGroup == 9)
-			{
-				$retVal = "Finals Round $model->fightRound, $model->fightBracket bracket";
-			}
-			else
-			{
-				$retVal = "Group $model->fightGroup Round $model->fightRound, $model->fightBracket bracket";
-			}
-			return $retVal;
-		},
+    {
+    	if ($model->fightRound == 15)
+    	{
+    		$retVal = "Final (replay)";
+		}
+    	else if ($model->fightRound == 14)
+    	{
+    		$retVal = "Final";
+		}
+    	else if ($model->fightRound == 13)
+    	{
+    		$retVal = "Third Place Play-off";
+		}
+    	else if ($model->fightGroup == 9)
+    	{
+    		$retVal = "Finals Round $model->fightRound, $model->fightBracket bracket";
+    	}
+    	else
+    	{
+    		if ($model->fightBracket == 'W')
+    		{
+    			$bracket = "Winners' bracket";
+    		}
+    		else
+    		{
+    			$bracket = "Losers' bracket";
+    		}
+    		$retVal = "Group $model->fightGroup Round $model->fightRound, $bracket";
+    	}
+    	return $retVal;
+    },
         'columns' => [
 			[
 				'attribute' => 'robot1.robot.team.team_name',
@@ -98,7 +108,7 @@ $this->params['breadcrumbs'][] = $this->title;
 				'format' => 'html',
 				'content' => function($model, $index, $dataColumn) use ($event)
 				{
-					if (User::isUserAdmin() && ($event->state !== 'Complete'))
+					if (User::isUserAdmin() && ($event->state !== 'Complete') && ($model->robot1Id > 0) && ($model->robot2Id > 0))
 					{
 						$team1 = $model->robot1->robot->team->team_name;
 						$robot1name = $model->robot1->robot->name;
@@ -121,6 +131,7 @@ $this->params['breadcrumbs'][] = $this->title;
 								'data-robot2name'=> $robot2name,
 								'data-entrant2' => $entrant2,
 								'data-id' => $index,
+								'data-title' => Fights::labelRound($model),
 							]);
 						}
 						else
@@ -140,6 +151,7 @@ $this->params['breadcrumbs'][] = $this->title;
 								'data-winner-id' => $model->winnerId,
 								'data-button-update' => '../fights/update',
 								'data-id' => $index,
+								'data-title' => Fights::labelRound($model),
 							]);
 						}
 					}

@@ -2,6 +2,7 @@ $('#run-fight-modal').on('show.bs.modal', function (event) {
 	var button = $(event.relatedTarget);
 	var target = button.data('button-target');
 	var id = button.data('id');
+	var title = button.data('title');
 	var team1 = button.data('team1');
 	var robot1name = button.data('robot1name');
 	var entrant1 = button.data('entrant1');
@@ -15,7 +16,7 @@ $('#run-fight-modal').on('show.bs.modal', function (event) {
 	//button2text += '<br><span style="font-size:small">' + target + "/" + id + "?winner=" + entrant2 + '</span>';
 	 
 	var modal = $(this);
-	modal.find('.modal-title').text('Current Fight = ' + id);
+	modal.find('.modal-title').text('Current Fight = ' + title);
 	modal.find('.modal-body #button1').html(button1text);
 	modal.find('.modal-body #button2').html(button2text);
 	modal.find('.modal-body #fight').val(id);

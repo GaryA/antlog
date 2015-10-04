@@ -136,19 +136,7 @@ class Fights extends ActiveRecord
     	else if ($record->loserId == 0)
     	{
     		// next fight is a bye so go on to the next fight
-
-    		/*
-    		 * This needs to be a recursive function to traverse an arbitrary number of byes (for small events!)
-    		 * But for some reason a 500 error is returned...
-    		 * Try running on antlog.localso that debug is turned on and maybe some more useful error message
-    		 * will be forthcoming...
-    		 */
-
     		return $this->checkRecord($record->winnerNextFight + $id);
-    		//$id += $record->winnerNextFight;
-    		//$record = $this->findOne($id);
-    		//if ($record->winnerId == -1)return 'OK ' . $id . ' ' . $record->winnerId . ' ' . $record->loserId;
-    		//return 'Bad ' . $id . ' ' . $record->winnerId . ' ' . $record->loserId;
     	}
     	else
     	{
@@ -265,7 +253,7 @@ class Fights extends ActiveRecord
     		}
     		else
     		{
-    			return ['index', 'eventId' => $record->eventId, 'byes' => 0, 'complete' => 0];
+    			return ['index', 'eventId' => $record->eventId, 'byes' => 1, 'complete' => 0];
     		}
     	}
     	else
@@ -471,6 +459,44 @@ class Fights extends ActiveRecord
 			' WHERE `winnerId` = -1')
 			->execute();
 	}
+
+	/**
+	 * Create text label from round, group and bracket
+	 * @param ActiveRecord $model
+	 * @return string
+	 */
+	public static function labelRound($model)
+    {
+    	if ($model->fightRound == 15)
+    	{
+    		$retVal = "Final (replay)";
+		}
+    	else if ($model->fightRound == 14)
+    	{
+    		$retVal = "Final";
+		}
+    	else if ($model->fightRound == 13)
+    	{
+    		$retVal = "Third Place Play-off";
+		}
+    	else if ($model->fightGroup == 9)
+    	{
+    		$retVal = "Finals Round $model->fightRound, $model->fightBracket bracket";
+    	}
+    	else
+    	{
+    		if ($model->fightBracket == 'W')
+    		{
+    			$bracket = "Winners' bracket";
+    		}
+    		else
+    		{
+    			$bracket = "Losers' bracket";
+    		}
+    		$retVal = "Group $model->fightGroup Round $model->fightRound, $bracket";
+    	}
+    	return $retVal;
+    }
 
     /**
      * @return \yii\db\ActiveQuery

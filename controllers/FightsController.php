@@ -65,7 +65,7 @@ class FightsController extends Controller
      * @param integer $eventId
      * @return mixed
      */
-    public function actionIndex($eventId = NULL, $byes = 0, $complete = 1)
+    public function actionIndex($eventId = NULL, $byes = 0, $complete = 2)
     {
     	if ($eventId == NULL)
     	{
@@ -79,11 +79,23 @@ class FightsController extends Controller
     	}
     	else
     	{
+    		$startId = Fights::find()
+    			->where(['eventId' => $eventId])
+    			->andWhere(['>', 'robot1Id', 0])
+    			->andWhere(['>', 'robot2Id', 0])
+    			->orderBy('id')
+    			->one()
+    			->id;
     		$query = Fights::find()->where(['eventId' => $eventId]);
 			if ($complete == 0)
     		{
     			// don't show completed fights
     			$query->andWhere(['winnerId' => -1]);
+    		}
+    		if ($complete == 1)
+    		{
+    			// skip initial rounds that are all byes
+    			$query->andWhere(['>=', 'id', $startId]);
     		}
     		if ($byes == 0)
     		{
