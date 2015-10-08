@@ -264,14 +264,14 @@ class Fights extends ActiveRecord
     }
 	/**
 	 * function to run byes
-	 * @param integer $id
+	 * @param integer $eventId
 	 * @return boolean true if a bye was found and run
 	 */
-	public function runByes($id)
+	public function runByes($eventId)
 	{
 		$status = false;
 		$record = $this->find()
-			->where(['eventId' => $id, 'robot1Id' => 0, 'winnerId' => -1])
+			->where(['eventId' => $eventId, 'robot1Id' => 0, 'winnerId' => -1])
 			->andWhere(['>=', 'robot2Id', 0])
 			->orderBy('id')
 			->one();
@@ -283,9 +283,8 @@ class Fights extends ActiveRecord
 		else
 		{
 			$record = $this->find()
-				->where(['eventId' => $id, 'robot2Id' => 0, 'winnerId' => -1])
+				->where(['eventId' => $eventId, 'robot2Id' => 0, 'winnerId' => -1])
 				->andWhere(['>=', 'robot1Id', 0])
-				->andWhere(['>=', 'id', $id])
 				->orderBy('id')
 				->one();
 			if ($record != NULL)
@@ -300,7 +299,7 @@ class Fights extends ActiveRecord
 			$record->loserId = $loser;
 			// Calculate and insert sequence number
 			$sequence = $this->find()
-			   ->where(['eventId' => $id])
+			   ->where(['eventId' => $eventId])
 	   			->andWhere(['>=', 'sequence', 0])
 			   ->count();
 			$record->sequence = $sequence++;
