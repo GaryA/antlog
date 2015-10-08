@@ -141,7 +141,7 @@ class Entrant extends ActiveRecord
 	public static function checkEntries($eventId)
 	{
 		return (Entrant::find()->andWhere(['eventId' => $eventId])
-			->andWhere(['status' => 0])
+			->andWhere(['status' => -1])
 			->count() == 0);
 	}
 }

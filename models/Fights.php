@@ -447,16 +447,12 @@ class Fights extends ActiveRecord
 	 */
 	public function insertDoubleElimination($eventId)
 	{
-		Yii::$app->db->createCommand('INSERT INTO {{%fights}} (`fightGroup`,`fightRound`,`fightBracket`,
+		Yii::$app->db->createCommand('INSERT INTO {{%fights}} (`eventId`,`fightGroup`,`fightRound`,`fightBracket`,
 			`fightNo`,`robot1Id`,`robot2Id`,`winnerId`,`loserId`,`winnerNextFight`,`loserNextFight`)
-			SELECT `fightGroup`,`fightRound`,`fightBracket`,`fightNo`,`robot1Id`,`robot2Id`,`winnerId`,
+			SELECT ' . $eventId . ',`fightGroup`,`fightRound`,`fightBracket`,`fightNo`,`robot1Id`,`robot2Id`,`winnerId`,
 			`loserId`,`winnerNextFight`,`loserNextFight`
 			FROM {{%double_elim}}
 			WHERE `winnerId` = -1 ORDER BY `id`')
-			->execute();
-		Yii::$app->db->createCommand('UPDATE {{%fights}}
-			SET `eventId` = ' . $eventId .
-			' WHERE `winnerId` = -1')
 			->execute();
 	}
 
