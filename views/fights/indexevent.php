@@ -211,6 +211,7 @@ echo Html::hiddenInput('target', NULL, ['id' => 'target']);
 echo Html::hiddenInput('fight', NULL, ['id' => 'fight']);
 echo Html::hiddenInput('entrant1', NULL, ['id' => 'entrant1']);
 echo Html::hiddenInput('entrant2', NULL, ['id' => 'entrant2']);
+echo Html::hiddenInput('winner', NULL, ['id' => 'winner']);
 ActiveForm::end();
 echo Html::button('', ['class' => 'btn btn-primary btn-fight', 'id' => 'button1']);
 echo ' vs ';

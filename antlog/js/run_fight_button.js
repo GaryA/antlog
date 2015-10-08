@@ -23,6 +23,7 @@ $('#run-fight-modal').on('show.bs.modal', function (event) {
 	modal.find('.modal-body #target').val(target);
 	modal.find('.modal-body #entrant1').val(entrant1);
 	modal.find('.modal-body #entrant2').val(entrant2);
+	modal.find('.modal-body #winner').val(0);
 	$.ajax(
 	{
 		type: "post",
@@ -36,18 +37,19 @@ $('#button1').click(function()
 {
 	target = $('#target').val();
 	id = $('#fight').val();
-	entrant = $('#entrant1').val();
+	winner = $('#entrant1').val();
+	$('#winner').val(winner);
 	$('#run-fight-modal').modal('hide');
-	$(location).attr('href',target + '/' + id + '?winner=' + entrant);
 });
 
 $('#button2').click(function()
 {
 	target = $('#target').val();
 	id = $('#fight').val();
-	entrant = $('#entrant2').val();
+	winner = $('#entrant2').val();
+	$('#winner').val(winner);
 	$('#run-fight-modal').modal('hide');
-	$(location).attr('href',target + '/' + id + '?winner=' + entrant);
+	
 });
 
 $('#run-fight-modal').on('hide.bs.modal', function (event)
@@ -57,6 +59,20 @@ $('#run-fight-modal').on('hide.bs.modal', function (event)
 		type: "post",
 		dataType: 'json',
 		url: 'delete-files',
+	})
+	.done(function(response)
+	{
+		var winner = $('#winner').val();
+		if (winner > 0)
+		{
+			$(location).attr('href',target + '/' + id + '?winner=' + winner);
+		}
+	})
+	.fail(function (jqXHr, textStatus, errorThrown)
+	{
+		console.debug(jqXHr.responseText);
+		console.log(textStatus);
+		console.log(errorThrown);
 	})
 });
 

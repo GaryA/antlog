@@ -253,6 +253,7 @@ class FightsController extends Controller
     		$file = fopen($filename, 'w');
     		fwrite($file, '');
     		fclose($file);
+    		return '{"status":"OK"}';
     	}
        	else
     	{
