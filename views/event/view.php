@@ -61,7 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		{
 			echo Html::a('Re-Do Draw', false, ['data-target' => '../event/setup', 'class' => 'do_draw btn btn-primary']);
 		}
-		else if ($model->state == 'Running')
+		else if (($model->state == 'Running') || ($model->state == 'Ready'))
 		{
 			echo Html::a('Run Fights', false, ['data-target' => '../event/run', 'class' => 'do_draw btn btn-primary']);
 		}

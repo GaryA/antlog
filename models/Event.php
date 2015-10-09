@@ -144,10 +144,10 @@ class Event extends \yii\db\ActiveRecord
 			$entrantModel->setGroups($id, $groupList);
 			$progress->inc();
 			/* ready to start! */
-			$setupOK = $this->stateRunning($id, $offset, $numGroups);
+			$setupOK = $this->stateReady($id, $offset, $numGroups);
 			if ($setupOK == false)
 			{
-				Yii::$app->getSession()->setFlash('error', 'Failed to save Running state to event model.');
+				Yii::$app->getSession()->setFlash('error', 'Failed to save Ready state to event model.');
 			}
 			$progress->inc();
 			$progress->complete();
@@ -228,7 +228,16 @@ class Event extends \yii\db\ActiveRecord
 		$event = static::findOne($id);
 		$event->state = 'Setup';
 		return $event->update();
-		//return ($event->save(false, ['state']));
+	}
+
+	/**
+	 * function to set event state to "Ready"
+	 */
+	public function stateReady($id)
+	{
+		$event = static::findOne($id);
+		$event->state = 'Ready';
+		return $event->update();
 	}
 
 	/**
@@ -241,7 +250,6 @@ class Event extends \yii\db\ActiveRecord
 		$event->offset = $offset;
 		$event->num_groups = $numGroups;
 		return $event->update();
-		//return ($event->save(false, ['state', 'offset', 'num_groups']));
 	}
 
 	/**
@@ -252,7 +260,6 @@ class Event extends \yii\db\ActiveRecord
 		$event = static::findOne($id);
 		$event->state = 'Registration';
 		return $event->update();
-		//return ($event->save(false, ['state']));
 	}
 
 	/**
