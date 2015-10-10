@@ -42,25 +42,6 @@ class FightsController extends Controller
     }
 
     /**
-     * Render debug view to dump variable name & value
-     * @param integer $id Model ID
-     * @return mixed
-     *
-     * query params are name (label for variable), value (value of variable to dump)
-     */
-    public function actionDebug($id)
-    {
-        $model = $this->findModel($id);
-        $params = Yii::$app->request->queryParams;
-
-		return $this->render('debug', [
-            'model' => $model,
-			'debugName' => $params['name'],
-			'debugValue' => $params['value'],
-        ]);
-    }
-
-    /**
      * Lists all Fights models.
      * @param integer $eventId
      * @return mixed
@@ -79,6 +60,7 @@ class FightsController extends Controller
     	}
     	else
     	{
+    		$event = Event::findOne($eventId);
     		$startId = Fights::find()
     			->where(['eventId' => $eventId])
     			->andWhere(['>', 'robot1Id', 0])
@@ -119,6 +101,9 @@ class FightsController extends Controller
     		return $this->render('indexevent', [
     			'fightsProvider' => $fightsProvider,
     			'eventId' => $eventId,
+    			'state' => $event->state,
+    			'byes' => $byes,
+    			'complete' => $complete,
     		]);
     	}
     }
@@ -163,11 +148,12 @@ class FightsController extends Controller
     {
 		$request = Yii::$app->request;
 		$winner = $request->get('winner');
+		$complete = $request->get('complete');
 		$change = $request->get('change', false);
 		$change = filter_var($change, FILTER_VALIDATE_BOOLEAN); // set value to proper boolean type
 		$replacement = $request->get('replacement', 0);
 		$model = $this->findModel($id);
-		$result = $model->updateCurrent($id, $winner, $change, $replacement);
+		$result = $model->updateCurrent($id, $winner, $complete, $change, $replacement);
 		return $this->redirect($result);
 
     }

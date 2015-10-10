@@ -148,12 +148,13 @@ class Fights extends ActiveRecord
     /**
      * function to update the current fight, then call further functions to
      * update subsequent fights and run byes
-     * @param unknown $id
-     * @param unknown $winner
+     * @param integer $id
+     * @param integer $winner
+     * @param integer $showComplete
      * @param string $change - optional, if true change existing result
      * @return multitype:string unknown |multitype:string NULL |multitype:string number NULL
      */
-    public function updateCurrent($id, $winner, $change = false, $replacement = 0)
+    public function updateCurrent($id, $winner, $showComplete, $change = false, $replacement = 0)
     {
     	$record = $this->findOne($id);
     	if ($change === true)
@@ -174,7 +175,7 @@ class Fights extends ActiveRecord
     		else
     		{
     			$error = "Winner = $winner but does not match Robot1 $record->robot1->id or Robot2 $record->robot2->id";
-    			return ['debug', 'id' => $id, 'name' => 'Error', 'value' => $error];
+    			return ['/site/debug', 'class' => __CLASS__, 'function' => __FUNCTION__, 'name' => 'ERROR', 'value' => $error];
     		}
     	}
     	$record->winnerId = $winner;
@@ -253,13 +254,13 @@ class Fights extends ActiveRecord
     		}
     		else
     		{
-    			return ['index', 'eventId' => $record->eventId, 'byes' => 1, 'complete' => 0];
+    			return ['index', 'eventId' => $record->eventId, 'byes' => 1, 'complete' => $showComplete];
     		}
     	}
     	else
     	{
     		$error = "Failed to save model to database";
-    		return ['debug', 'id' => $id, 'name' => 'Error', 'value' => $error];
+    		return ['/site/debug', 'class' => __CLASS__, 'function' => __FUNCTION__, 'name' => 'ERROR', 'value' => $error];
     	}
     }
 	/**

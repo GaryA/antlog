@@ -233,22 +233,22 @@ class Event extends \yii\db\ActiveRecord
 	/**
 	 * function to set event state to "Ready"
 	 */
-	public function stateReady($id)
+	public function stateReady($id, $offset, $numGroups)
 	{
 		$event = static::findOne($id);
 		$event->state = 'Ready';
+		$event->offset = $offset;
+		$event->num_groups = $numGroups;
 		return $event->update();
 	}
 
 	/**
 	 * function to set event state to "Running"
 	 */
-	private function stateRunning($id, $offset, $numGroups)
+	public function stateRunning($id)
 	{
 		$event = static::findOne($id);
 		$event->state = 'Running';
-		$event->offset = $offset;
-		$event->num_groups = $numGroups;
 		return $event->update();
 	}
 

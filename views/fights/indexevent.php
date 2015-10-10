@@ -23,10 +23,23 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="fights-index">
 
     <h1><?= Html::encode($this->title . ' - ' . $event->name) ?></h1>
-    <p>Winners shown in <b>bold</b></p>
+    <p>Winners shown in <b>bold</b>
+	<?php
+	if ($state != 'Complete')
+	{
+		if ($complete == 1)
+		{
+			echo Html::a('Hide complete fights',['index', 'eventId' => $event->id, 'byes' => $byes, 'complete' => 0]);
+		}
+		elseif ($complete == 0)
+		{
+			echo Html::a('Show complete fights',['index', 'eventId' => $event->id, 'byes' => $byes, 'complete' => 1]);
+		}
+	}
+	?>
+    </p>
 
     <?php
-
     ActiveForm::begin(['id' => 'fight_button_form']);
 
     echo GroupGridView::widget([

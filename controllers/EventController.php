@@ -141,7 +141,7 @@ class EventController extends Controller
 		if(Yii::$app->request->isAjax)
 		{
 			$model = $this->findModel($eventId);
-			$model->stateReady($eventId);
+			$model->stateRunning($eventId);
 			/* redirect to fights page when complete */
 			$redirect = "\"../fights/index?eventId=$eventId&byes=1&complete=0\"";
 			$postId = $this->createPostFile();

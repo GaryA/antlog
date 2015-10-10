@@ -63,9 +63,10 @@ $('#run-fight-modal').on('hide.bs.modal', function (event)
 	.done(function(response)
 	{
 		var winner = $('#winner').val();
+		var complete = location.search.match(/&complete=[0-9]/);
 		if (winner > 0)
 		{
-			$(location).attr('href',target + '/' + id + '?winner=' + winner);
+			$(location).attr('href',target + '/' + id + '?winner=' + winner + complete);
 		}
 	})
 	.fail(function (jqXHr, textStatus, errorThrown)
@@ -145,5 +146,6 @@ $('#change-button').click(function()
 	winner = $('#change-entrant1').val();
 	replacement = $('#change-entrant2').val();
 	$('#change-result').modal('hide');
-	$(location).attr('href',target + '?id=' + id + '&winner=' + winner + '&change=true&replacement=' + replacement);
+	var complete = location.search.match(/&complete=[0-9]/);
+	$(location).attr('href',target + '?id=' + id + '&winner=' + winner + complete + '&change=true&replacement=' + replacement);
 });
