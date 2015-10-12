@@ -121,7 +121,7 @@ class Db extends ActiveRecord
 				$update .= "`username`='" . $this->escapeString($record->username) . "', ";
 				if ($record->email != 'email@example.com')
 				{
-					$update .= "`email`='" . $this-escapeString($record->email) . "', ";
+					$update .= "`email`='" . $this->escapeString($record->email) . "', ";
 				}
 				$update .= "`team_name`='" . $this->escapeString($record->team_name) . "'";
 				if ($record->created_at != 0)

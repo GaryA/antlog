@@ -83,6 +83,11 @@ class Entrant extends ActiveRecord
         return $this->hasOne(Robot::className(), ['id' => 'robotId']);
     }
 
+    public function getUser()
+    {
+    	return $this->hasOne(User::className(), ['id' => 'teamId'])->via('robot');
+    }
+
     public function getTeamName()
     {
     	return $this->robot->team->team_name;
@@ -109,13 +114,13 @@ class Entrant extends ActiveRecord
 		Yii::trace('Entering ' . __METHOD__);
 		foreach ($groupList as $group => $entrants)
 		{
-			$group_num = $group + 1;
+			$groupNum = $group + 1;
 			foreach ($entrants as $entrantId)
 			{
-				Yii::$app->db->createCommand("UPDATE {{%entrant}}
-					SET `group_num` = $group_num
-					WHERE `id` = $entrantId")
-					->execute();
+				$command = Yii::$app->db->createCommand("UPDATE {{%entrant}}
+					SET `group_num` = $groupNum
+					WHERE `id` = $entrantId");
+				$command->execute();
 			}
 		}
 		Yii::trace('Leaving ' . __METHOD__);

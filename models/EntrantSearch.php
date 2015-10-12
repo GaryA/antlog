@@ -18,7 +18,7 @@ class EntrantSearch extends Entrant
 
 	public function attributes()
 	{
-		return array_merge(parent::attributes(), ['event.name', 'robot.team.name', 'robot.name']);
+		return array_merge(parent::attributes(), ['event.name', 'robot.team.team_name', 'robot.name']);
 	}
 
     /**
@@ -51,7 +51,7 @@ class EntrantSearch extends Entrant
     public function search($params)
     {
         $query = Entrant::find();
-        $query->joinWith(['event', 'robot']);
+        $query->joinWith(['event', 'robot', 'user']);
         if ($params['eventId'] !== NULL)
         {
         	$query->andFilterWhere([
@@ -63,37 +63,40 @@ class EntrantSearch extends Entrant
             'query' => $query,
         ]);
 
-		$dataProvider->setSort(
-		['attributes' =>
-//			['teamName' =>
-//				[
-//					'asc' => ['{{%robot}}.team.team_name' => SORT_ASC],
-//					'desc' => ['{{%robot}}.team.team_name' => SORT_DESC],
-//				],
-//			],
-			['robot.name' =>
-				[
-					'asc' => ['{{%robot}}.name' => SORT_ASC],
-					'desc' => ['{{%robot}}.name' => SORT_DESC],
-				],
-			],
-		]);
+		$dataProvider->sort->attributes['teamName'] =
+		[
+			'asc' => ['{{%user}}.team_name' => SORT_ASC],
+			'desc' => ['{{%user}}.team_name' => SORT_DESC],
+		];
+
+		$dataProvider->sort->attributes['robot.name'] =
+		[
+			'asc' => ['{{%robot}}.name' => SORT_ASC],
+			'desc' => ['{{%robot}}.name' => SORT_DESC],
+		];
+
+		$dataProvider->sort->attributes['status'] =
+		[
+			'asc' => ['{{%entrant}}.status' => SORT_ASC],
+			'desc' => ['{{%entrant}}.status' => SORT_DESC],
+		];
 
         $this->load($params);
 
         if (!$this->validate()) {
             // uncomment the following line if you do not want to any records when validation fails
-            // $query->where('0=1');
+             $query->where('0=1');
             return $dataProvider;
         }
 
         $query->andFilterWhere([
             'id' => $this->id,
-			'eventId' => $this->eventId,
+			'robotId' => $this->robotId,
         ]);
 
-		// $query->andFilterWhere(['like', '{{%team}}.name', $this->getAttribute('robot.team.name')]);
-		$query->andFilterWhere(['{{%robot}}.teamId' => $this->getAttribute('robot.teamId')]);
+		$query->andFilterWhere(['{{%user}}.id' => $this->teamName]);
+		$query->andFilterWhere(['like', '{{%robot}}.name', $this->getAttribute('robot.name')]);
+		$query->andFilterWhere(['like', '{{%entrant}}.status', $this->status]);
 
         return $dataProvider;
     }

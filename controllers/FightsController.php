@@ -91,7 +91,7 @@ class FightsController extends Controller
     		}
     		$fightsProvider = new ActiveDataProvider([
     			'query' => $query,
-    			'sort'=> ['defaultOrder' => ['fightRound'=>SORT_ASC, 'fightGroup' => SORT_ASC, 'fightBracket' => SORT_ASC, 'fightNo' => SORT_ASC]]
+    			'sort'=> ['defaultOrder' => ['fightRound'=>SORT_ASC, 'fightBracket' => SORT_DESC, 'fightGroup' => SORT_ASC, 'fightNo' => SORT_ASC]]
     		]);
     		if (!User::isUserAdmin())
     		{

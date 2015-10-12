@@ -17,6 +17,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Events', 'url' => ['event/index']]
 $this->params['breadcrumbs'][] = ['label' => $event->name, 'url' => ['event/view', 'id' => $event->id]];
 $this->params['breadcrumbs'][] = 'Entrants';
 
+$searchModel = NULL;
 ?>
 <div class="entrant-index">
 
@@ -42,10 +43,11 @@ $this->params['breadcrumbs'][] = 'Entrants';
     </p>
 
     <?php
-    ActiveForm::begin(['id' => 'entrants_form']);
+//    ActiveForm::begin(['id' => 'entrants_form']);
     //Pjax::begin();
     echo GroupGridView::widget([
         'dataProvider' => $entrantProvider,
+    	'filterModel' => $searchModel,
     	'mergeColumns' => ['group_num'],
     	'extraRowColumns' => ['group_num'],
     	'extraRowValue' => function ($model, $index, $totals)
@@ -71,6 +73,7 @@ $this->params['breadcrumbs'][] = 'Entrants';
 				//'attribute' => 'robot.team.team_name',
 				'attribute' => 'teamName',
 				'label' => 'Team',
+				'filter' => User::teamDropdown(),
     		],
             [
             	'attribute' => 'status',
@@ -125,7 +128,7 @@ $this->params['breadcrumbs'][] = 'Entrants';
         ],
     ]);
 	//Pjax::end();
-	ActiveForm::end();
+//	ActiveForm::end();
 	?>
 <?php
 $this->registerJsFile(

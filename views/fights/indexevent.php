@@ -45,7 +45,7 @@ $this->params['breadcrumbs'][] = $this->title;
     echo GroupGridView::widget([
         'dataProvider' => $fightsProvider,
     	'mergeColumns' => ['fightRound', 'fightBracket', 'fightGroup'],
-    	'type' => GroupGridView::MERGE_SIMPLE,
+    	'type' => GroupGridView::MERGE_NESTED,
     	'extraRowColumns' => ['fightRound', 'fightBracket', 'fightGroup'],
 		'extraRowValue' => function($model, $index, $totals)
     {
@@ -61,10 +61,6 @@ $this->params['breadcrumbs'][] = $this->title;
     	{
     		$retVal = "Third Place Play-off";
 		}
-    	else if ($model->fightGroup == 9)
-    	{
-    		$retVal = "Finals Round $model->fightRound, $model->fightBracket bracket";
-    	}
     	else
     	{
     		if ($model->fightBracket == 'W')
@@ -75,7 +71,14 @@ $this->params['breadcrumbs'][] = $this->title;
     		{
     			$bracket = "Losers' bracket";
     		}
-    		$retVal = "Group $model->fightGroup Round $model->fightRound, $bracket";
+    	    if ($model->fightGroup == 9)
+    		{
+    			$retVal = "Finals Round $model->fightRound, $bracket";
+    		}
+    		else
+    		{
+    			$retVal = "Group $model->fightGroup Round $model->fightRound, $bracket";
+    		}
     	}
     	return $retVal;
     },

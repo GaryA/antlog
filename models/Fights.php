@@ -428,14 +428,14 @@ class Fights extends ActiveRecord
 			/* shuffle robots within groups */
 			shuffle($group);
 			/* put robot ids into fights table */
-			foreach ($group as $index => $robot)
+			foreach ($group as $index => $robotId)
 			{
 				$fightId = $this->_startMap[$index][$groupNum] + $offset;
 				$column = $this->_startMap[$index][8];
-				Yii::$app->db->createCommand("UPDATE {{%fights}}
-				   SET `$column` = $robot, `sequence` = $sequence
-				   WHERE `id` = $fightId")
-				   ->execute();
+				$command = Yii::$app->db->createCommand("UPDATE {{%fights}}
+				   SET `$column` = $robotId, `sequence` = $sequence
+				   WHERE `id` = $fightId");
+				$command->execute();
 				$sequence++;
 			}
 		}
@@ -447,13 +447,13 @@ class Fights extends ActiveRecord
 	 */
 	public function insertDoubleElimination($eventId)
 	{
-		Yii::$app->db->createCommand('INSERT INTO {{%fights}} (`eventId`,`fightGroup`,`fightRound`,`fightBracket`,
+		$command = Yii::$app->db->createCommand("INSERT INTO {{%fights}} (`eventId`,`fightGroup`,`fightRound`,`fightBracket`,
 			`fightNo`,`robot1Id`,`robot2Id`,`winnerId`,`loserId`,`winnerNextFight`,`loserNextFight`)
-			SELECT ' . $eventId . ',`fightGroup`,`fightRound`,`fightBracket`,`fightNo`,`robot1Id`,`robot2Id`,`winnerId`,
+			SELECT $eventId,`fightGroup`,`fightRound`,`fightBracket`,`fightNo`,`robot1Id`,`robot2Id`,`winnerId`,
 			`loserId`,`winnerNextFight`,`loserNextFight`
 			FROM {{%double_elim}}
-			WHERE `winnerId` = -1 ORDER BY `id`')
-			->execute();
+			WHERE `winnerId` = -1 ORDER BY `id`");
+		$command->execute();
 	}
 
 	/**
