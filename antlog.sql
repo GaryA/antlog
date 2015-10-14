@@ -326,7 +326,7 @@ CREATE TABLE IF NOT EXISTS `aws_entrant` (
   `updated_at` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `EntrantID` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Entrants table' ;
 
 --
 -- Table structure for table `aws_event`
@@ -348,7 +348,7 @@ CREATE TABLE IF NOT EXISTS `aws_event` (
   `venue` text NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Events table' ;
 
 --
 -- Table structure for table `aws_event_type`
@@ -359,7 +359,7 @@ CREATE TABLE IF NOT EXISTS `aws_event_type` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='List of event types' ;
 
 --
 -- Dumping data for table `aws_event_type`
@@ -393,7 +393,7 @@ CREATE TABLE IF NOT EXISTS `aws_fights` (
   `updated_at` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `FightID` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Double elimination template' ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Fights table' ;
 
 --
 -- Table structure for table `aws_robot`
@@ -412,7 +412,7 @@ CREATE TABLE IF NOT EXISTS `aws_robot` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `RobotID_2` (`id`),
   KEY `RobotID` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Robots table' ;
 
 --
 -- Table structure for table `aws_robot_class`
@@ -446,7 +446,7 @@ CREATE TABLE IF NOT EXISTS `aws_robot_type` (
   `id` smallint(6) NOT NULL,
   `name` varchar(32) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='List of robot types' ;
 
 --
 -- Dumping data for table `aws_robot_type`
@@ -478,7 +478,7 @@ CREATE TABLE IF NOT EXISTS `aws_user` (
   `team_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='User table' ;
 
 --
 -- Dumping data for table `aws_user`
