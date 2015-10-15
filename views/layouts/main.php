@@ -39,7 +39,8 @@ AppAsset::register($this);
         	}
             NavBar::begin([
                 'brandLabel' => '<img src = "' . Yii::getAlias('@web') .
-            	'/awslogo-sm-xprnt.png" style = "float: left; margin-top: -15px; margin-right: 5px;">AntLog 3.0 (' .
+            	'/awslogo-sm-xprnt.png" style = "float: left; margin-top: -15px; margin-right: 5px;">' .
+            	Yii::$app->name. ' ' . Yii::$app->version . ' (' .
             	Yii::$app->params['antlog_env'] .
             	') <small>' . $ipMessage . '</small>',
                 'brandUrl' => Yii::$app->homeUrl,

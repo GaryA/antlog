@@ -2,8 +2,8 @@
 
 return
 [
-	'adminEmail' => 'admin@example.com',
-	'supportEmail' => 'gary.aylward@ntlworld.com',
+	'adminEmail' => 'antlog@garya.org.uk',
+	'supportEmail' => 'antlog@garya.org.uk',
 	'user.passwordResetTokenExpire' => 3600,
 	// Define environment
 	// 'web' for online "master" installation

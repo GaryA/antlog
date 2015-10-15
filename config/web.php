@@ -4,6 +4,8 @@ $params = require(__DIR__ . '/params.php');
 
 $config = [
     'id' => 'antlog3',
+	'name' => 'AntLog',
+	'version' => '3.0.0 beta 4',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'components' => [
