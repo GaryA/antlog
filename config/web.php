@@ -43,6 +43,16 @@ $config = [
             // for the mailer to send real emails.
             'useFileTransport' => true,
 			'viewPath' => '@app/mail',
+        	'transport' =>
+        	[
+        		// these settings must be made specifically for the server
+        		'class' => 'Swift_SmtpTransport',
+        		'host' => 'localhost',
+        		'username' => 'username',
+        		'password' => 'password',
+        		'port' => '465',
+        		'encryption' => 'tls',
+        	]
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
