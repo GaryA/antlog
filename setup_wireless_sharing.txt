@@ -1,0 +1,8 @@
+Search for Task Manager
+Run Task Manager application
+File > Run new task
+Open: cmd
+Check: Create this task with administrative privileges
+OK
+netsh wlan set hostednetwork mode=allow ssid=MyNet key=MyPassword
+netsh wlan start hostednetwork
