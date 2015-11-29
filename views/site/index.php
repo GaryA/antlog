@@ -26,7 +26,7 @@ $this->title = 'AntLog 3.0';
 		<div class="row">
 			<div class="col-lg-3 col-md-6">
 				<h2>
-				<?= Html::a('Events', ['/event'], ['class' => 'btn btn-primary btn-block']) ?>
+				<?= Html::a('Events <span class="badge">' . $eventCount . '</span>', ['/event'], ['class' => 'btn btn-primary btn-block']) ?>
 				</h2>
 
 <?php
@@ -88,7 +88,7 @@ Pjax::end();
 			</div>
 			<div class="col-lg-6 col-md-6">
 				<h2>
-				<?= Html::a('Robots', ['/robot'], ['class' => 'btn btn-primary btn-block']) ?>
+				<?= Html::a('Robots <span class="badge">' . $robotCount . '</span>', ['/robot'], ['class' => 'btn btn-primary btn-block']) ?>
 				</h2>
 <?php
 $robotData->pagination =
@@ -138,7 +138,7 @@ Pjax::end();
             </div>
 			<div class="col-lg-3 col-md-6">
 				<h2>
-				<?= Html::a('Teams', ['/user'], ['class' => 'btn btn-primary btn-block']) ?>
+				<?= Html::a('Teams <span class="badge">' . $teamCount . '</span>', ['/user'], ['class' => 'btn btn-primary btn-block']) ?>
 				</h2>
 <?php
 $teamData->pagination =

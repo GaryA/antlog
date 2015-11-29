@@ -82,22 +82,31 @@ class SiteController extends Controller
             'query' => User::find()->where(['user_group' => User::ROLE_TEAM]),
         ]);
 
+        $teamCount = User::find()->where(['user_group' => User::ROLE_TEAM])->count();
+
     	$eventData = new ActiveDataProvider(
 		[
             'query' => Event::find(),
 			'sort'=> ['defaultOrder' => ['eventDate'=>SORT_DESC]]
         ]);
 
+        $eventCount = Event::find()->count();
+
     	$robotData = new ActiveDataProvider(
 		[
             'query' => Robot::find(),
         ]);
 
+    	$robotCount = Robot::find()->count();
+
         return $this->render('index',
 		[
             'robotData' => $robotData,
+			'robotCount' => $robotCount,
 			'eventData' => $eventData,
+			'eventCount' => $eventCount,
 			'teamData' => $teamData,
+			'teamCount' => $teamCount,
         ]);
     }
 
