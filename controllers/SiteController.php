@@ -178,6 +178,15 @@ class SiteController extends Controller
     }
 
     /**
+     * Render the download (export) view
+     * @return mixed
+     */
+    public function actionDownload()
+    {
+    	return $this->render('download');
+    }
+
+    /**
      * Handle the password reset request
      * @return \yii\web\Response|mixed
      */

@@ -59,13 +59,14 @@ AppAsset::register($this);
             }
             else
             {
-            	if (User::isUserAdmin())
+            	if (User::isUserAdmin() && Yii::$app->params['antlog_env'] == 'local')
             	{
             		$menuItems[] = ['label' => 'Import', 'url' => ['db/import']];
             	}
             	if ((!Yii::$app->user->isGuest && Yii::$app->params['antlog_env'] == 'web') || User::isUserAdmin())
             	{
-            		$menuItems[] = ['label' => 'Export', 'url' => ['db/export']];
+            		//$menuItems[] = ['label' => 'Export', 'url' => ['db/export']];
+            		$menuItems[] = ['label' => 'Export', 'url' => ['/site/download']];
             	}
                 $menuItems[] =
                 [

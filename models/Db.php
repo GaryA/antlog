@@ -41,6 +41,14 @@ class Db extends ActiveRecord
 	public function exportEnd()
 	{
 		$this->fileHandle = fopen($this->filename, 'a');
+		// Delete entrants that were not confirmed for completed events
+		fwrite($this->fileHandle, "DELETE `e` from `$this->prefix" . "entrant` `e` ");
+		fwrite($this->fileHandle, "LEFT JOIN `$this->prefix" . "event` `v` ON `v`.`id` = `e`.`eventId` ");
+		fwrite($this->fileHandle, "WHERE `status` = -1 AND `state` LIKE \"Complete\";\n");
+		// SELECT * FROM `aws_entrant`
+		// LEFT JOIN (`aws_event`) ON `eventId` = `aws_event`.`id`
+		// WHERE `status` = -1 AND `state` LIKE "Complete"
+
 		fwrite($this->fileHandle, "SELECT '<COMPLETE>' AS ' ';\n");
 		fclose($this->fileHandle);
 	}
@@ -550,10 +558,6 @@ class Db extends ActiveRecord
 		{
 			pclose(popen('mysql ' . $cmd . '> /dev/null &', 'r'));
 		}
-		//unlink($fileName);
-		// SELECT * FROM `aws_entrant`
-		// LEFT JOIN (`aws_event`) ON `eventId` = `aws_event`.`id`
-		// WHERE `status` = -1 AND `state` LIKE "Complete"
 		$entrants = Entrant::find()
 			->joinWith('event')
 			->where(['status' => -1])
