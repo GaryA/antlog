@@ -7,14 +7,21 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="site-about">
 <h1><?= Html::encode($this->title) ?></h1>
 <p>
-The update file will download automatically.
+The download should start automatically. If it doesn't,
+<?php
+echo(Html::a('click here', '/db/export'));
+?>
+ to download manually.
 </p>
 <p>
 <?php
 if (Yii::$app->params['antlog_env'] == 'local')
 {
+	$addr = 'antlog@garya.org.uk';
+	$subject = 'Antlog%20Database%20Update';
+	$body = 'Don%27t%20forget%20to%20attach%20the%20update%20file%21%0A%0A';
 	echo("Save the file and email it to ");
-	Html::mailto('antlog@garya.org.uk', 'antlog@garya.org.uk?subject=Antlog%20Database%20Update');
+	echo(Html::mailto($addr, "$addr?subject=$subject&body=$body"));
 }
 else
 {
