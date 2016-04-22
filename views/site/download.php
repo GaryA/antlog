@@ -30,20 +30,10 @@ else
 ?>
 </p>
 </div>
+<?php
+$this->registerJsFile(
+	Yii::getAlias('@web') . '/js/download.js',
+	['depends' => 'yii\web\YiiAsset'],
+	__CLASS__);
+?>
 
-<script type="text/javascript" language="JavaScript"><!--
-// This should be a in a javascript file loaded using the Yii registerJsFile method...
-function Redirect()
-{
-	// Redirect to a new URL, since the redirects to an SQL file it just causes a file
-	// download, not a visible page redirect. The user appears to stay on the original page
-	window.location = "/db/export";
-}
-
-// Automatically call the redirect some time after this page loads (100 ms works OK)
-window.onload = function()
-{
-	setTimeout("Redirect()", 100);
-}
-
-//--></script>
