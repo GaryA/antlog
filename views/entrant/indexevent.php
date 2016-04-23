@@ -25,7 +25,7 @@ $searchModel = NULL;
 
     <p>
 	<?php
-	if ($event->state == 'Registration')
+	if (($event->state == 'Registration') || ($event->state == 'Closed' && Yii::$app->params['antlog_env'] == 'local'))
 	{
 		$searchModel = New EntrantSearch();
 		$entrantProvider = $searchModel->search(Yii::$app->request->queryParams);
@@ -43,8 +43,6 @@ $searchModel = NULL;
     </p>
 
     <?php
-//    ActiveForm::begin(['id' => 'entrants_form']);
-    //Pjax::begin();
     echo GroupGridView::widget([
         'dataProvider' => $entrantProvider,
     	'filterModel' => $searchModel,
@@ -70,7 +68,6 @@ $searchModel = NULL;
             	}
     		],
 			[
-				//'attribute' => 'robot.team.team_name',
 				'attribute' => 'teamName',
 				'label' => 'Team',
 				'filter' => User::teamDropdown(),
@@ -80,7 +77,7 @@ $searchModel = NULL;
             	'enableSorting' => false,
             	'format' => 'raw',
             	'value' => function($model, $index, $dataColumn) use ($event) {
-            		if ($event->state == 'Registration')
+					if (($event->state == 'Registration') || ($event->state == 'Closed' && Yii::$app->params['antlog_env'] == 'local'))
             		{
             			if ($model->status == -1)
             			{
@@ -127,8 +124,6 @@ $searchModel = NULL;
             ],
         ],
     ]);
-	//Pjax::end();
-//	ActiveForm::end();
 	?>
 <?php
 $this->registerJsFile(

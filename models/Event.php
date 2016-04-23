@@ -119,9 +119,6 @@ class Event extends \yii\db\ActiveRecord
 		if ($retVal[0] == 1)
 		{
 			/* can't fit team in remaining groups */
-			// Yii::$app->getSession()->setFlash('error', 'Team size is bigger than number of spaces available.');
-			// setFlash will not work here as the function is called from the CLI script, not from the web page.
-			// Need a way of progressbar.js setting a message (popup?) AFTER redirecting back to the original page...
 			$progress->stop('Team size is bigger than number of spaces available');
 		}
 		else
@@ -218,6 +215,22 @@ class Event extends \yii\db\ActiveRecord
 			0,
 			$entrants
 		];
+	}
+
+	/**
+	 * function to set event state to "Closed"
+	 */
+	public function stateClosed()
+	{
+		$events = static::find()
+			->where(['organiserId' => Yii::$app->user->identity->id])
+			->andWhere(['state' => 'Registration'])
+			->all();
+		foreach($events as $event)
+		{
+			$event->state = 'Closed';
+			$event->update();
+		}
 	}
 
 	/**

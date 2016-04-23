@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Db;
+use app\models\Event;
 use app\models\User;
 use app\models\UploadForm;
 use yii\web\UploadedFile;
@@ -80,7 +81,6 @@ END_OF_TEXT;
 			Yii::$app->consoleRunner->run("db/import $postId \"$filename\" $redirect");
 			return '{"status":"OK"}';
 		}
-		//return $this->render('/db/process', ['fileName' => $fileName]);
 	}
 
 	/**
@@ -90,18 +90,19 @@ END_OF_TEXT;
 	public function actionExport()
 	{
 		$db = new Db;
+		$event = new Event;
+		// Close events owned by current user
+		$event->stateClosed();
+		//Export tables to SQL
 		$db->exportUsers();
 		$db->exportRobots();
 		$db->exportEvents();
 		$db->exportEntrants();
 		$db->exportFights();
 		$db->exportEnd();
+		// Return SQL file as download
 		$db->fileDownload();
-
 		return;
-		// Setting a flash and redirecting doesn't work with an inline file download.
-	    // Yii::$app->getSession()->setFlash('success', 'User, Robot, Event, Entrant and Fights tables exported.');
-	    // return $this->redirect(Yii::$app->urlManager->createUrl('/site/index'));
 	}
 
 	/**

@@ -28,7 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
 	echo Html::hiddenInput('id', $model->id, ['id' => 'event_id']);
 	ActiveForm::end();
 
-	if (User::isUserAdmin() || Yii::$app->user->id == $model->organiserId)
+	if (User::isUserAdmin() || User::isCurrentUser($model->organiserId))
 	{
 		if ($model->isOKToDelete($model->id))
 		{
@@ -50,10 +50,17 @@ $this->params['breadcrumbs'][] = $this->title;
 			echo Html::a('Open', ['open', 'id' => $model->id],
 				['class' => 'btn btn-primary']);
 		}
+		if ($model->state == 'Closed'
+			&& Yii::$app->params['antlog_env'] == 'web'
+			&& User::isCurrentUser($model->organiserId))
+		{
+			echo Html::a('Re-open online registration', ['open', 'id' => $model->id],
+				['class' => 'btn btn-success']);
+		}
 	}
-	if (User::isUserAdmin())
+	if (User::isUserAdmin() && Yii::$app->params['antlog_env'] == 'local')
 	{
-		if ($model->state == 'Registration')
+		if ($model->state == 'Closed')
 		{
 			echo Html::a('Do Draw', false, ['data-target' => '../event/draw', 'class' => 'do_draw btn btn-primary']);
 		}

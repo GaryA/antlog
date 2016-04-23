@@ -8,9 +8,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <h1><?= Html::encode($this->title) ?></h1>
 <p>
 The download should start automatically. If it doesn't,
-<?php
-echo(Html::a('click here', '/db/export'));
-?>
+<?= (Html::a('click here', '/db/export')) ?>
  to download manually.
 </p>
 <p>
@@ -25,7 +23,10 @@ if (Yii::$app->params['antlog_env'] == 'local')
 }
 else
 {
-	echo("Save the file and import it into your local copy of Antlog.");
+	echo("Save the file and import it into your local copy of Antlog.<br><br>");
+	echo("Online registration for your events is now closed.<br>");
+	echo("Registration at the event is still possible.<br>");
+	echo("To re-open online registration, go to the event page(s).");
 }
 ?>
 </p>

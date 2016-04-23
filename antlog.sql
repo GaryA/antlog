@@ -337,7 +337,7 @@ CREATE TABLE IF NOT EXISTS `aws_event` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `eventDate` date NOT NULL,
-  `state` enum('Complete','Running','Ready','Setup','Registration','Future') NOT NULL DEFAULT 'Registration',
+  `state` enum('Complete','Running','Ready','Setup','Closed','Registration','Future') NOT NULL DEFAULT 'Registration',
   `classId` int(11) NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (classId) REFERENCES aws_robot_class(id)',
   `eventType` tinyint(4) NOT NULL DEFAULT '1' COMMENT 'CONSTRAINT FOREIGN KEY (eventType) REFERENCES aws_event_type(id)',
   `num_groups` tinyint(4) NOT NULL DEFAULT '0',
