@@ -44,10 +44,7 @@ class Db extends ActiveRecord
 		// Delete entrants that were not confirmed for completed events
 		fwrite($this->fileHandle, "DELETE `e` from `$this->prefix" . "entrant` `e` ");
 		fwrite($this->fileHandle, "LEFT JOIN `$this->prefix" . "event` `v` ON `v`.`id` = `e`.`eventId` ");
-		fwrite($this->fileHandle, "WHERE `status` = -1 AND `state` LIKE \"Complete\";\n");
-		// SELECT * FROM `aws_entrant`
-		// LEFT JOIN (`aws_event`) ON `eventId` = `aws_event`.`id`
-		// WHERE `status` = -1 AND `state` LIKE "Complete"
+		fwrite($this->fileHandle, "WHERE `e`.`status` = -1 AND `v`.`state` LIKE \"Complete\";\n");
 
 		fwrite($this->fileHandle, "SELECT '<COMPLETE>' AS ' ';\n");
 		fclose($this->fileHandle);
@@ -56,18 +53,19 @@ class Db extends ActiveRecord
 	public function exportUsers()
 	{
 		// For web:
-		// Assume the local installation contains empty tables so export everything, but use dummy email & password
+		// Export all users - recreate the table to ensure consistency
 		// Export dummy email addresses and password as "password" for all teams
 		// Export dummy email address and password as "admin" for administrator
 	    // For local:
-		// Export only items that have been created/modified since the last import? This would save unnecessary data
-		// Export all teams, do not export administrator (created/modified since last import?)
+		// Export only users that have been created/modified since the last import
+		// Export teams, do not export administrator
 		$this->fileHandle = fopen($this->filename, 'a');
 		$model = new User;
 		$query = $model->find();
 		if (Yii::$app->params['antlog_env'] == 'local')
 		{
 			$query = $query->where(['user_group' => User::ROLE_TEAM]);
+			$query = $query->andWhere(['or',['>', 'created_at', 0],['>', 'updated_at', 0]]);
 		}
 	    $records = $query->all();
 		$numRecords = $query->count();
@@ -95,7 +93,6 @@ class Db extends ActiveRecord
 		}
 		foreach ($records as $record)
 		{
-			$insertRecord = true;
 			if (Yii::$app->params['antlog_env'] == 'web')
 			{
 				// INSERT INTO table SET col1=val1, col2=val2;
@@ -115,16 +112,9 @@ class Db extends ActiveRecord
 			{
 				$createdAt = "`created_at`=$record->created_at, ";
 				$updatedAt = "`updated_at`=$record->updated_at, ";
-				if (($record->created_at > 0) || ($record->updated_at > 0))
-				{
-					// INSERT INTO table SET col1=val1, col2=val2 ON DUPLICATE KEY UPDATE col1=val1, col2=val2;
-					$password = "`password_hash`='$record->password_hash', "; /* export actual password hash */
-					$email = "`email`='" . $this->escapeString($record->email) . "', "; /* real email */
-				}
-				else
-				{
-					$insertRecord = false;
-				}
+				// INSERT INTO table SET col1=val1, col2=val2 ON DUPLICATE KEY UPDATE col1=val1, col2=val2;
+				$password = "`password_hash`='$record->password_hash', "; /* export actual password hash */
+				$email = "`email`='" . $this->escapeString($record->email) . "', "; /* real email */
 				$update = " ON DUPLICATE KEY UPDATE ";
 				$update .= "`username`='" . $this->escapeString($record->username) . "', ";
 				if ($record->email != 'email@example.com')
@@ -142,23 +132,20 @@ class Db extends ActiveRecord
 				}
 			}
 
-			if ($insertRecord == true)
-			{
-				$string = "INSERT INTO `$this->prefix" . "user` SET ";
-				$string .= "`id`=$record->id, ";
-				$string .= "`username`='" . $this->escapeString($record->username) . "', ";
-				$string .= $password;
-				$string .= "`auth_key`='$record->auth_key', "; /* used for "remember me" */
-				$string .= "`password_reset_token`=NULL, "; /* null password_reset_token */
-				$string .= $email;
-				$string .= "`status`=$record->status, ";
-				$string .= $createdAt;
-				$string .= $updatedAt;
-				$string .= "`user_group`=$record->user_group, ";
-				$string .= "`team_name`='" . $this->escapeString($record->team_name) . "'";
-				$string .= $update . ";\n";
-				fwrite($this->fileHandle, $string);
-			}
+			$string = "INSERT INTO `$this->prefix" . "user` SET ";
+			$string .= "`id`=$record->id, ";
+			$string .= "`username`='" . $this->escapeString($record->username) . "', ";
+			$string .= $password;
+			$string .= "`auth_key`='$record->auth_key', "; /* used for "remember me" */
+			$string .= "`password_reset_token`=NULL, "; /* null password_reset_token */
+			$string .= $email;
+			$string .= "`status`=$record->status, ";
+			$string .= $createdAt;
+			$string .= $updatedAt;
+			$string .= "`user_group`=$record->user_group, ";
+			$string .= "`team_name`='" . $this->escapeString($record->team_name) . "'";
+			$string .= $update . ";\n";
+			fwrite($this->fileHandle, $string);
 		}
 		fclose($this->fileHandle);
 	}
@@ -166,15 +153,15 @@ class Db extends ActiveRecord
 	public function exportRobots()
 	{
 		// For web:
-		// Export all robots
+		// Export all robots - recreate the table to ensure consistency
 		// For local:
-		// Export all robots (created/modified since last import?)
+		// Export only robots created/modified since last import
 		$this->fileHandle = fopen($this->filename, 'a');
 		$model = new Robot;
 		$query = $model->find();
 		if (Yii::$app->params['antlog_env'] == 'local')
 		{
-			//$query = $query->where(['...' => ...]);
+			$query = $query->where(['>', 'created_at', 0])->orWhere(['>', 'updated_at', 0]);
 		}
 	    $records = $query->all();
 		$numRecords = $query->count();
@@ -197,7 +184,6 @@ class Db extends ActiveRecord
 		}
 		foreach ($records as $record)
 		{
-			$insertRecord = true;
 			if (Yii::$app->params['antlog_env'] == 'web')
 			{
 				$createdAt = "`created_at`=0, ";
@@ -208,10 +194,6 @@ class Db extends ActiveRecord
 			{
 				$createdAt = "`created_at`=$record->created_at, ";
 				$updatedAt = "`updated_at`=$record->updated_at, ";
-				if (($record->created_at == 0) && ($record->updated_at == 0))
-				{
-					$insertRecord = false;
-				}
 				$update = " ON DUPLICATE KEY UPDATE ";
 				$update .= "`name`='" . $this->escapeString($record->name) . "', ";
 				$update .= "`classId`=$record->classId, ";
@@ -226,20 +208,17 @@ class Db extends ActiveRecord
 					$update .= ", `updated_at`=$record->updated_at";
 				}
 			}
-			if ($insertRecord == true)
-			{
-				$string = "INSERT INTO `$this->prefix" . "robot` SET ";
-				$string .= "`id`=$record->id, ";
-				$string .= "`name`='" . $this->escapeString($record->name) . "', ";
-				$string .= "`teamId`=$record->teamId, ";
-				$string .= "`classId`=$record->classId, ";
-				$string .= "`typeId`=$record->typeId, ";
-				$string .= $createdAt;
-				$string .= $updatedAt;
-				$string .= "`active`=$record->active";
-				$string .= $update . ";\n";
-				fwrite($this->fileHandle, $string);
-			}
+			$string = "INSERT INTO `$this->prefix" . "robot` SET ";
+			$string .= "`id`=$record->id, ";
+			$string .= "`name`='" . $this->escapeString($record->name) . "', ";
+			$string .= "`teamId`=$record->teamId, ";
+			$string .= "`classId`=$record->classId, ";
+			$string .= "`typeId`=$record->typeId, ";
+			$string .= $createdAt;
+			$string .= $updatedAt;
+			$string .= "`active`=$record->active";
+			$string .= $update . ";\n";
+			fwrite($this->fileHandle, $string);
 		}
 		fclose($this->fileHandle);
 	}
@@ -247,16 +226,15 @@ class Db extends ActiveRecord
 	public function exportEvents()
 	{
 		// For web:
-		// Export all events - to prevent clashes of event IDs for newly-created events?
-		// Is it necessary to export events? Or just set the initial auto-increment value?
+		// Export all events - recreate the table to ensure consistency
 		// For local:
-		// Export all events (created since last import?)
+		// Export only events created or modified since last import
 		$this->fileHandle = fopen($this->filename, 'a');
 		$model = new Event;
 		$query = $model->find();
 		if (Yii::$app->params['antlog_env'] == 'local')
 		{
-			//$query = $query->where(['...' => ...]);
+			$query = $query->where(['>', 'created_at', 0])->orWhere(['>', 'updated_at', 0]);
 		}
 	    $records = $query->all();
 		$numRecords = $query->count();
@@ -282,7 +260,6 @@ class Db extends ActiveRecord
 		}
 		foreach ($records as $record)
 		{
-			$insertRecord = true;
 			if (Yii::$app->params['antlog_env'] == 'web')
 			{
 				$createdAt = "`created_at`=0, ";
@@ -293,10 +270,6 @@ class Db extends ActiveRecord
 			{
 				$createdAt = "`created_at`=$record->created_at, ";
 				$updatedAt = "`updated_at`=$record->updated_at, ";
-				if (($record->created_at == 0) && ($record->updated_at == 0))
-				{
-					$insertRecord = false;
-				}
 				$update = " ON DUPLICATE KEY UPDATE ";
 				$update .= "`name`='" . $this->escapeString($record->name) . "', ";
 				$update .= "`eventDate`='$record->eventDate', ";
@@ -322,31 +295,28 @@ class Db extends ActiveRecord
 				$update .= ", `organiserId`=$record->organiserId";
 				$update .= ", `venue`='" . $this->escapeString($record->venue) . "'";
 			}
-			if ($insertRecord == true)
+			$string = "INSERT INTO `$this->prefix" . "event` SET ";
+			$string .= "`id`=$record->id, ";
+			$string .= "`name`='" . $this->escapeString($record->name) . "', ";
+			$string .= "`eventDate`='$record->eventDate', ";
+			$string .= "`state`='$record->state', ";
+			$string .= "`classId`=$record->classId, ";
+			$string .= "`eventType`=$record->eventType, ";
+			$string .= "`num_groups`=$record->num_groups, ";
+			$string .= $createdAt;
+			$string .= $updatedAt;
+			$string .= "`organiserId`=$record->organiserId, ";
+			$string .= "`venue`='" . $this->escapeString($record->venue) . "', ";
+			if ($record->offset == NULL)
 			{
-				$string = "INSERT INTO `$this->prefix" . "event` SET ";
-				$string .= "`id`=$record->id, ";
-				$string .= "`name`='" . $this->escapeString($record->name) . "', ";
-				$string .= "`eventDate`='$record->eventDate', ";
-				$string .= "`state`='$record->state', ";
-				$string .= "`classId`=$record->classId, ";
-				$string .= "`eventType`=$record->eventType, ";
-				$string .= "`num_groups`=$record->num_groups, ";
-				$string .= $createdAt;
-				$string .= $updatedAt;
-				$string .= "`organiserId`=$record->organiserId, ";
-				$string .= "`venue`='" . $this->escapeString($record->venue) . "', ";
-				if ($record->offset == NULL)
-				{
-					$string .= "`offset`=NULL";
-				}
-				else
-				{
-					$string .= "`offset`=$record->offset";
-				}
-				$string .= $update . ";\n";
-				fwrite($this->fileHandle, $string);
+				$string .= "`offset`=NULL";
 			}
+			else
+			{
+				$string .= "`offset`=$record->offset";
+			}
+			$string .= $update . ";\n";
+			fwrite($this->fileHandle, $string);
 		}
 		fclose($this->fileHandle);
 	}
@@ -356,13 +326,13 @@ class Db extends ActiveRecord
 		// For web:
 		// Export all entrants - to cater for online sign-ups
 		// For local:
-		// Export all entrants (created since last import?)
+		// Export only entrants created/modified since last import
 		$this->fileHandle = fopen($this->filename, 'a');
 		$model = new Entrant;
 		$query = $model->find();
 		if (Yii::$app->params['antlog_env'] == 'local')
 		{
-			//$query = $query->where(['...' => ...]);
+			$query = $query->where(['>', 'created_at', 0])->orWhere(['>', 'updated_at', 0]);
 		}
 	    $records = $query->all();
 		$numRecords = $query->count();
@@ -384,7 +354,6 @@ class Db extends ActiveRecord
 		}
 		foreach ($records as $record)
 		{
-			$insertRecord = true;
 			if (Yii::$app->params['antlog_env'] == 'web')
 			{
 				$createdAt = "`created_at`=0, ";
@@ -395,10 +364,6 @@ class Db extends ActiveRecord
 			{
 				$createdAt = "`created_at`=$record->created_at, ";
 				$updatedAt = "`updated_at`=$record->updated_at, ";
-				if (($record->created_at == 0) && ($record->updated_at == 0))
-				{
-					$insertRecord = false;
-				}
 				$update = " ON DUPLICATE KEY UPDATE ";
 				$update .= "`status`=$record->status, ";
 				$update .= "`finalFightId`=$record->finalFightId, ";
@@ -419,27 +384,24 @@ class Db extends ActiveRecord
 					$update .= ", `updated_at`=$record->updated_at";
 				}
 			}
-			if ($insertRecord == true)
+			$string = "INSERT INTO `$this->prefix" . "entrant` SET ";
+			$string .= "`id`=$record->id, ";
+			$string .= "`eventId`=$record->eventId, ";
+			$string .= "`robotId`=$record->robotId, ";
+			$string .= "`status`=$record->status, ";
+			$string .= "`finalFightId`=$record->finalFightId, ";
+			$string .= $createdAt;
+			$string .= $updatedAt;
+			if ($record->group_num == NULL)
 			{
-				$string = "INSERT INTO `$this->prefix" . "entrant` SET ";
-				$string .= "`id`=$record->id, ";
-				$string .= "`eventId`=$record->eventId, ";
-				$string .= "`robotId`=$record->robotId, ";
-				$string .= "`status`=$record->status, ";
-				$string .= "`finalFightId`=$record->finalFightId, ";
-				$string .= $createdAt;
-				$string .= $updatedAt;
-				if ($record->group_num == NULL)
-				{
-					$string .= "`group_num`=NULL";
-				}
-				else
-				{
-					$string .= "`group_num`=$record->group_num";
-				}
-				$string .= $update . ";\n";
-				fwrite($this->fileHandle, $string);
+				$string .= "`group_num`=NULL";
 			}
+			else
+			{
+				$string .= "`group_num`=$record->group_num";
+			}
+			$string .= $update . ";\n";
+			fwrite($this->fileHandle, $string);
 		}
 		fclose($this->fileHandle);
 	}
@@ -449,13 +411,13 @@ class Db extends ActiveRecord
 		// For web:
 		// Export all fights - to prevent changes to robots that are in previous results
 		// For local:
-		// Export all fights (created since last import?)
+		// Export only fights created/modified since last import
 		$this->fileHandle = fopen($this->filename, 'a');
 		$model = new Fights;
 		$query = $model->find();
 		if (Yii::$app->params['antlog_env'] == 'local')
 		{
-			//$query = $query->where(['...' => ...]);
+			$query = $query->where(['>', 'created_at', 0])->orWhere(['>', 'updated_at', 0]);
 		}
 	    $records = $query->all();
 		$numRecords = $query->count();
@@ -484,7 +446,6 @@ class Db extends ActiveRecord
 		}
 		foreach ($records as $record)
 		{
-			$insertRecord = true;
 			if (Yii::$app->params['antlog_env'] == 'web')
 			{
 				$createdAt = "`created_at`=0, ";
@@ -495,10 +456,6 @@ class Db extends ActiveRecord
 			{
 				$createdAt = "`created_at`=$record->created_at, ";
 				$updatedAt = "`updated_at`=$record->updated_at, ";
-				if (($record->created_at == 0) && ($record->updated_at == 0))
-				{
-					$insertRecord = false;
-				}
 				$update = " ON DUPLICATE KEY UPDATE ";
 				$update .= "`robot1Id`=$record->robot1Id, ";
 				$update .= "`robot2Id`=$record->robot2Id, ";
@@ -514,27 +471,24 @@ class Db extends ActiveRecord
 					$update .= ", `updated_at`=$record->updated_at";
 				}
 			}
-			if ($insertRecord == true)
-			{
-				$string = "INSERT INTO `$this->prefix" . "fights` SET ";
-				$string .= "`id`=$record->id, ";
-				$string .= "`eventId`=$record->eventId, ";
-				$string .= "`fightGroup`=$record->fightGroup, ";
-				$string .= "`fightRound`=$record->fightRound, ";
-				$string .= "`fightBracket`='$record->fightBracket', ";
-				$string .= "`fightNo`=$record->fightNo, ";
-				$string .= "`robot1Id`=$record->robot1Id, ";
-				$string .= "`robot2Id`=$record->robot2Id, ";
-				$string .= "`winnerId`=$record->winnerId, ";
-				$string .= "`loserId`=$record->loserId, ";
-				$string .= "`winnerNextFight`=$record->winnerNextFight, ";
-				$string .= "`loserNextFight`=$record->loserNextFight, ";
-				$string .= $createdAt;
-				$string .= $updatedAt;
-				$string .= "`sequence`=$record->sequence";
-				$string .= $update . ";\n";
-				fwrite($this->fileHandle, $string);
-			}
+			$string = "INSERT INTO `$this->prefix" . "fights` SET ";
+			$string .= "`id`=$record->id, ";
+			$string .= "`eventId`=$record->eventId, ";
+			$string .= "`fightGroup`=$record->fightGroup, ";
+			$string .= "`fightRound`=$record->fightRound, ";
+			$string .= "`fightBracket`='$record->fightBracket', ";
+			$string .= "`fightNo`=$record->fightNo, ";
+			$string .= "`robot1Id`=$record->robot1Id, ";
+			$string .= "`robot2Id`=$record->robot2Id, ";
+			$string .= "`winnerId`=$record->winnerId, ";
+			$string .= "`loserId`=$record->loserId, ";
+			$string .= "`winnerNextFight`=$record->winnerNextFight, ";
+			$string .= "`loserNextFight`=$record->loserNextFight, ";
+			$string .= $createdAt;
+			$string .= $updatedAt;
+			$string .= "`sequence`=$record->sequence";
+			$string .= $update . ";\n";
+			fwrite($this->fileHandle, $string);
 		}
 		fclose($this->fileHandle);
 	}
