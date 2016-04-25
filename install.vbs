@@ -41,7 +41,7 @@ if fso.folderExists(xamppPath) then
 					folder.Attributes = 0
 				end if
 				' check destination folder does not exist
-				if not(fso.FolderExists(analogDestFolder)) then
+				if not(fso.FolderExists(antlogDestFolder)) then
 					' move antlog sub-folder to htdocs
 					fso.MoveFolder antlogSourceFolder, antlogDestFolder
 					' ensure runtime folder is not read-only
