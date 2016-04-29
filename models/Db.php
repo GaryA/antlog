@@ -245,7 +245,7 @@ class Db extends ActiveRecord
 			fwrite($this->fileHandle, " `id` int(10) NOT NULL AUTO_INCREMENT,\n");
 			fwrite($this->fileHandle, " `name` varchar(100) NOT NULL,\n");
 			fwrite($this->fileHandle, " `eventDate` date NOT NULL,\n");
-			fwrite($this->fileHandle, " `state` enum('Complete','Running','Ready','Setup','Registration','Future') NOT NULL DEFAULT 'Registration',\n");
+			fwrite($this->fileHandle, " `state` enum('Complete','Running','Ready','Setup','Closed',Registration','Future') NOT NULL DEFAULT 'Registration',\n");
 			fwrite($this->fileHandle, " `classId` int(11) NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (classId) REFERENCES aws_robot_class(id)',\n");
 			fwrite($this->fileHandle, " `eventType` tinyint(4) NOT NULL DEFAULT '1' COMMENT 'CONSTRAINT FOREIGN KEY (eventType) REFERENCES aws_event_type(id)',\n");
 			fwrite($this->fileHandle, " `num_groups` tinyint(4) NOT NULL DEFAULT '0',\n");
