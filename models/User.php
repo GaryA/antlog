@@ -79,7 +79,10 @@ class User extends ActiveRecord implements IdentityInterface
     	}
     	else
     	{
-    		$models = static::find()->where(['user_group' => self::ROLE_TEAM])->all();
+    		$models = static::find()
+    			->where(['user_group' => self::ROLE_TEAM])
+    			->orderBy('team_name')
+    			->all();
     	}
     	$dropdown = NULL;
     	foreach ($models as $model)
