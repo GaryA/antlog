@@ -76,6 +76,7 @@ $searchModel = NULL;
             	'attribute' => 'status',
             	'enableSorting' => false,
             	'format' => 'raw',
+            	'filter' => [-1 => 'Signed Up', 2 => 'Entered'],
             	'value' => function($model, $index, $dataColumn) use ($event) {
 					if (($event->state == 'Registration') || ($event->state == 'Closed' && Yii::$app->params['antlog_env'] == 'local'))
             		{
