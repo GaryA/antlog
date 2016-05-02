@@ -499,7 +499,7 @@ class Fights extends ActiveRecord
      */
     public function getRobot1()
     {
-        return $this->hasOne(Entrant::className(), ['id' => 'robot1Id']);
+        return $this->hasOne(Entrant::className(), ['id' => 'robot1Id'])->from(['robot1' => Entrant::tableName()]);
     }
 
     /**
@@ -507,7 +507,7 @@ class Fights extends ActiveRecord
      */
     public function getRobot2()
     {
-        return $this->hasOne(Entrant::className(), ['id' => 'robot2Id']);
+        return $this->hasOne(Entrant::className(), ['id' => 'robot2Id'])->from(['robot2' => Entrant::tableName()]);
     }
 
     /**
@@ -524,5 +524,40 @@ class Fights extends ActiveRecord
     public function getLoser()
     {
         return $this->hasOne(Entrant::className(), ['id' => 'loserId']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public static function getNextFights($id)
+    {
+    	return self::Find()->innerJoin('{{%event}} e', 'e.id = eventId')
+    	->leftJoin('{{%entrant}} n1', 'n1.id = robot1Id')
+    	->leftJoin('{{%entrant}} n2', 'n2.id = robot2Id')
+    	->leftJoin('{{%robot}} r1', 'r1.id = n1.robotId')
+    	->leftJoin('{{%robot}} r2', 'r2.id = n2.robotId')
+    	->leftJoin('{{%user}} u1', 'u1.id = r1.teamId')
+    	->leftJoin('{{%user}} u2', 'u2.id = r2.teamId')
+    	->where(['winnerId' => -1])
+    	->andWhere(['like', 'e.state', 'Running'])
+    	->andWhere(['or', "r1.teamId = $id", "r2.teamId = $id"]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public static function getCompleteFights($event, $robot)
+    {
+    	return self::Find()->innerJoin('{{%event}} e', 'e.id = eventId')
+    	->leftJoin('{{%entrant}} n1', 'n1.id = robot1Id')
+    	->leftJoin('{{%entrant}} n2', 'n2.id = robot2Id')
+    	->leftJoin('{{%robot}} r1', 'r1.id = n1.robotId')
+    	->leftJoin('{{%robot}} r2', 'r2.id = n2.robotId')
+    	->leftJoin('{{%user}} u1', 'u1.id = r1.teamId')
+    	->leftJoin('{{%user}} u2', 'u2.id = r2.teamId')
+    	->where(['e.id' => $event])
+    	->andWhere(['>', 'winnerId', 0])
+    	->andWhere(['and', "robot1Id > 0", "robot2Id > 0"])
+    	->andWhere(['or', "n1.robotId = $robot", "n2.robotId = $robot"]);
     }
 }

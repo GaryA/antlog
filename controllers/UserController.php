@@ -6,6 +6,8 @@ use Yii;
 use app\models\UpdateForm;
 use app\models\User;
 use app\models\Robot;
+use app\models\Fights;
+use app\models\Event;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -81,13 +83,39 @@ class UserController extends Controller
      */
     public function actionView($id)
     {
-    	$dataProvider = new ActiveDataProvider([
+    	$robotsProvider = new ActiveDataProvider([
     		'query' => Robot::find()->where(['teamId' => $id])->orderBy(['classId' => SORT_DESC]),
     	]);
-
+    	$query = Fights::getNextFights($id);
+    	$nextFightsProvider = new ActiveDataProvider([
+    		'query' => $query,
+    		'sort'=> ['defaultOrder' => ['fightRound'=>SORT_ASC, 'fightBracket' => SORT_DESC, 'fightGroup' => SORT_ASC, 'fightNo' => SORT_ASC]]
+    	]);
+    	$userModel = User::findIdentity($id);
+// TODO:
+// Don't want to hard code event number,
+// want to iterate over all events and produce another array dimension (?)
+    	$eventsProvider = new ActiveDataProvider([
+    		'query' => Event::find(),
+    		]);
+    	$events = $eventsProvider->getModels();
+    	$robots = $robotsProvider->getModels();
+    	foreach ($robots as $robot)
+    	{
+    		foreach ($events as $event)
+    		{
+    			$query = Fights::getCompleteFights($event->id, $robot->id);
+    			$fightsProvider[$robot->name][$event->name] = new ActiveDataProvider([
+    				'query' => $query,
+    				'sort'=> ['defaultOrder' => ['fightRound'=>SORT_ASC, 'fightBracket' => SORT_DESC, 'fightGroup' => SORT_ASC, 'fightNo' => SORT_ASC]]
+    			]);
+    		}
+    	}
         return $this->render('view', [
             'model' => $this->findModel($id),
-        	'robots' => $dataProvider,
+        	'robots' => $robotsProvider,
+        	'nextFights' => $nextFightsProvider,
+        	'fights' => $fightsProvider,
         ]);
     }
 
