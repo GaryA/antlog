@@ -46,7 +46,7 @@ $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 				'attribute' =>'robot.name',
 				'label' => 'Robot',
 				'value' => function($model, $index, $dataColumn) {
-					$robotDropdown = Robot::dropdown();
+					$robotDropdown = Robot::dropdown()['robot'];
 					return $robotDropdown[$model->robotId];
 				},
 			],

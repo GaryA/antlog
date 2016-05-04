@@ -66,21 +66,23 @@ class Robot extends \yii\db\ActiveRecord
 			$query->andWhere(['<=', 'classId', $event->classId]);
 		}
 		$models = $query->orderBy('name')->all();
-		$dropdown = [];
+		$robotDropdown[] = '';
+		$classDropdown[] = ['data-class' => '0'];
 		foreach ($models as $model)
 		{
 			if ($model->typeId != 0)
 			{
-				$dropdown[$model->id] = "$model->name" .
+				$robotDropdown[$model->id] = "$model->name" .
 					' (' . $model->type->name . ') [' . $model->team->team_name . ']';
 			}
 			else
 			{
-				$dropdown[$model->id] = "$model->name" .
+				$robotDropdown[$model->id] = "$model->name" .
 					' [' . $model->team->team_name . ']';
 			}
+			$classDropdown[$model->id] = ['data-class' => "$model->classId"] ;
 		}
-		return $dropdown;
+		return ['robot' => $robotDropdown, 'class' => ['options' => $classDropdown]];
 	}
 
 	/**

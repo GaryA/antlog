@@ -50,6 +50,7 @@ class Entrant extends ActiveRecord
         return [
             [['eventId', 'robotId'], 'required'],
             [['eventId', 'robotId', 'status'], 'integer'],
+        	['robotId', 'compare', 'compareValue' => 0, 'operator' => '>', 'message' => 'You must select a robot'],
         	['robotId', 'validateRobot'],
         ];
     }
