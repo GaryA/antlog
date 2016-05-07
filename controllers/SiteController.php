@@ -178,6 +178,30 @@ class SiteController extends Controller
     }
 
     /**
+	 * Render the about view
+	 * @return mixed
+	 */
+    public function actionHelp()
+    {
+        if (User::isUserAdmin())
+        {
+    		return $this->render('help',
+    			[
+    				'user' => 'admin',
+    				'env' => Yii::$app->params['antlog_env'],
+    			]);
+        }
+        else
+        {
+        	return $this->render('help',
+        		[
+        			'user' => 'team',
+        			'env' => Yii::$app->params['antlog_env'],
+        		]);
+        }
+    }
+
+    /**
      * Render the download (export) view
      * @return mixed
      */
