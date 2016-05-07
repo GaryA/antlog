@@ -92,9 +92,7 @@ class UserController extends Controller
     		'sort'=> ['defaultOrder' => ['fightRound'=>SORT_ASC, 'fightBracket' => SORT_DESC, 'fightGroup' => SORT_ASC, 'fightNo' => SORT_ASC]]
     	]);
     	$userModel = User::findIdentity($id);
-// TODO:
-// Don't want to hard code event number,
-// want to iterate over all events and produce another array dimension (?)
+
     	$eventsProvider = new ActiveDataProvider([
     		'query' => Event::find(),
     		]);
