@@ -46,7 +46,7 @@ echo DetailView::widget([
         'username',
     ],
 ]);
-Pjax::begin();
+Pjax::begin(['id' => 'robots']);
 echo GroupGridView::widget([
 	'dataProvider' => $robots,
 	'mergeColumns' => ['classId'],
@@ -67,17 +67,15 @@ echo GroupGridView::widget([
 	],
 ]);
 Pjax::end();
-Pjax::begin();
+Pjax::begin(['id' => 'future']);
 if ($nextFights->count > 0)
 {
 	echo '<h2>Up-coming fights</h2>';
 	groupGridView($nextFights);
 }
 Pjax::end();
-//echo '<pre>';
-//echo print_r($fights);
-//echo '</pre>';
-Pjax::begin();
+
+Pjax::begin(['id' => 'past']);
 if (count($fights) > 0)
 {
 	echo '<h2>Previous fights</h2>';
