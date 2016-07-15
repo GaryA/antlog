@@ -3,135 +3,143 @@
 ' (c) Gary Aylward (Team BeligerAnt) 2015
 ' Released under BSD licence, see LICENSE.md
 
-const xamppPath = "C:\xampp"
-const xamppStart = "C:\xampp\xampp_start.exe"
-const xamppStop = "C:\xampp\xampp_stop.exe"
-const mysqlCmd = "%comspec% /c C:\xampp\mysql\bin\mysql.exe --user=root < C:\xampp\antlog\antlog.sql"
-const xamppConfFile = "C:\xampp\apache\conf\extra\httpd-xampp.conf"
-const xamppConfTempFile = "C:\xampp\apache\conf\extra\temp.conf"
-const indexFile = "C:\xampp\htdocs\index.php"
-const indexTempFile = "C:\xampp\htdocs\temp.php"
-const runtimeFolder = "C:\xampp\antlog\runtime"
-const yii2Folder = "C:\xampp\antlog\vendor\yiisoft\yii2"
-const assetsFolder = "C:\xampp\antlog\antlog\assets"
-const antlogSourceFolder = "C:\xampp\antlog\antlog"
-const antlogDestFolder = "C:\xampp\htdocs\antlog"
-const replaceText =	"Allow from ::1 127.0.0.0/8"
+const xamppStart = "xampp_start.exe"
+const xamppStop = "xampp_stop.exe"
+const cmd = "%comspec% /c "
+const mysqlCmd = "mysql\bin\mysql.exe --user=root < "
+const sqlFile = "antlog\antlog.sql"
+const indexFile = "htdocs\index.php"
+const indexTempFile = "htdocs\temp.php"
+const runtimeFolder = "antlog\runtime"
+const yii2Folder = "antlog\vendor\yiisoft\yii2"
+const assetsFolder = "antlog\antlog\assets"
+const antlogSourceFolder = "antlog\antlog"
+const antlogDestFolder = "htdocs\antlog"
+const htdocsFolder = "htdocs"
+
+' No need to edit httpd-xampp.conf if using Xampp 5.6.21 or (presumably) later
 
 const forReading = 1
 const forWriting = 2
 
-dim fso, msg, shell, folder, inFile, outFile, textString, regEx, retVal, replaced
+dim gFso, gMsg, gShell, gFolder
+dim gXamppPath
 
-set fso = CreateObject("Scripting.FileSystemObject")
-set shell = WScript.CreateObject("WScript.Shell")
-set regEx = New RegExp
-regEx.Pattern = "xampp"
-' check xampp folder exists
-if fso.folderExists(xamppPath) then
+set gFso = CreateObject("Scripting.FileSystemObject")
+set gShell = WScript.CreateObject("Shell.Application")
+set gFolder = gShell.BrowseForFolder(0, "Select the Xampp installation folder:", 0, 17)
+if not (gFolder is Nothing) then
+	gXamppPath = gFolder.Self.Path & "\"
 	' check xampp_start.exe and xampp_stop.exe exist
-	if fso.FileExists(xamppStart) and fso.FileExists(xamppStop) then
-		' check index.php and httpd-xampp.conf exist
-		if fso.FileExists(indexFile) and fso.FileExists(xamppConfFile) then
+	if gFso.FileExists(gXamppPath & xamppStart) and gFso.FileExists(gXamppPath & xamppStop) then
+		' check index.php exists
+		if gFso.FileExists(gXamppPath & indexFile) then
 			' check antlog folder exists
-			if fso.FolderExists(antlogSourceFolder) then
+			if gFso.FolderExists(gXamppPath & antlogSourceFolder) then
 				' ensure assets folder is not read-only
-				folder = fso.GetFolder(assetsFolder)
-				if folder.Attributes <> 0 then
-					folder.Attributes = 0
-				end if
+				makeFolderWritable gXamppPath & assetsFolder
 				' check destination folder does not exist
-				if not(fso.FolderExists(antlogDestFolder)) then
+				if not(gFso.FolderExists(gXamppPath & antlogDestFolder)) then
 					' move antlog sub-folder to htdocs
-					fso.MoveFolder antlogSourceFolder, antlogDestFolder
+					gFso.MoveFolder gXamppPath & antlogSourceFolder, gXamppPath & antlogDestFolder
 					' ensure runtime folder is not read-only
-					folder = fso.GetFolder(runtimeFolder)
-					if folder.Attributes <> 0 then
-						folder.Attributes = 0
-					end if
+					makeFolderWritable gXamppPath & runtimeFolder
 					' ensure yii2 folder is not read-only
-					folder = fso.GetFolder(yii2Folder)
-					if folder.Attributes <> 0 then
-						folder.Attributes = 0
-					end if
+					makeFolderWritable gXamppPath & yii2Folder
+					' ensure htdocs folder is not read-only
+					makeFolderWritable gXamppPath & htdocsFolder
 					' edit index.php to redirect to antlog instead of xampp
-					set inFile = fso.OpenTextFile(indexFile, forReading)
-					set outFile = fso.OpenTextFile(indexTempFile, forWriting, true)
-					textString = inFile.ReadAll
-					inFile.Close
-					if regEx.Find(textString) then
-						replaced = true
-						textString = regEx.Replace(textString, "antlog")
-						outFile.Write textString
-					else
-						replaced = false
-						msg = msgBox("index.php not modified" & vbCrLf & vbCrLf & _
-						"Possibly not a problem if re-installing Antlog", vbExclamation + vbOKOnly, "Antlog3 Installation")
-					end if
-					outFile.Close
-					if replaced = true then
-						' delete original file and rename temporary file
-						fso.DeleteFile(inFile)
-						fso.MoveFile outFile, inFile
-					else
-						fso.DeleteFile(outFile)
-					end if
-					' edit httpd-xampp.conf to restrict access to xampp control panel etc
-					set inFile = fso.OpenTextFile(xamppConfFile, forReading)
-					set outFile = fso.OpenTextFile(xamppConfTempFile, forWriting, true)
-					regEx.Pattern = "^[ \t]*Allow from[\s:\.0-9a-f\\/]*"
-					regEx.Multiline = true
-					textString = inFile.ReadAll
-					if regEx.Find(textString) then
-					replaced = true
-						textString = regEx.Replace(textString, vbTab & replaceText & vbCrLf & vbCrLf & vbTab)
-						outFile.Write textString
-					else
-						replaced = false
-						msg = msgBox("httpd-xampp.conf not modified" & vbCrLf & vbCrLf & _
-						"Possibly not a problem if re-installing Antlog", vbExclamation + vbOKOnly, "Antlog3 Installation")
-					end if
-					inFile.Close
-					outFile.Close
-					if replaced = true then
-						' delete original file and rename temporary file
-						fso.DeleteFile(inFile)
-						fso.MoveFile outFile, inFile
-					else
-						fso.DeleteFile(outFile)
-					end if
+					editIndexFile
 					' start the xampp server
-					shell.run xamppStart, 7
-					Wscript.Sleep 1000
-					' create antlog database in mysql
-					set retVal = shell.exec(mysqlCmd)
-					do while retVal.Status = 0
-						WScript.Sleep 100
-					loop
-					if retValExitCode = 0 then
-						msg = msgBox(retVal.StdOut.ReadAll & vbCrLf & vbCrLf & retVal.StdErr.ReadAll, vbInformation + vbOKOnly, "Antlog3 Installation")
+					gShell.run xamppStart, 7
+					gMsg = msgBox("Xampp should start now. Please wait." & vbCrLf & _
+						"Your firewall may ask you to allow it to run." _
+						& vbCrLf & vbCrLf & "Has Xampp started properly?", vbYesNo, "Antlog3 Installation")
+					if gMsg = vbYes then
+						' create antlog database in mysql
+						createDatabase gXamppPath
 					else
-						msg = msgBox("Error running mySQL" & vbCrLf & vbCrLf & _
-						"Ensure that the Xampp portable application is correctly installed.", vbExclamation + vbOKOnly, "Antlog3 Installation")
+						gMsg = msgBox("Since Xampp has not started properly there is" & vbCrLf _
+							& "a problem with the installation." & vbCrLf & vbCrLf _
+							& "Please download a fresh copy of Xampp.", _
+							vbExclamation + vbOKOnly, "Antlog3 Installation")
 					end if
-					shell.run xamppStop, 7
 				else
-					msg = msgBox(antlogDestFolder & " exists" & vbCrLf & vbCrLf & _
-					"Delete the folder if attempting to re-install Antlog", vbExclamation + vbOKOnly, "Antlog3 Installation")
+					gMsg = msgBox(gXamppPath & antlogDestFolder & " exists" & vbCrLf & vbCrLf & _
+					"Delete the folder if attempting to re-install Antlog", _
+					vbExclamation + vbOKOnly, "Antlog3 Installation")
 				end if
 			else
-				msg = msgBox("Could not find Antlog files" & vbCrLf & vbCrLf & _
-				"The Antlog files must be placed in C:\xampp\antlog", vbExclamation + vbOKOnly, "Antlog3 Installation")
+				gMsg = msgBox("Could not find Antlog files" & vbCrLf & vbCrLf & _
+				"The Antlog files must be placed in " & gXamppPath & "antlog", _
+				vbExclamation + vbOKOnly, "Antlog3 Installation")
 			end if
 		else
-			msg = msgBox("Could not find index.php or httpd-xampp.conf" & vbCrLf & vbCrLf & _
-			"Ensure that the Xampp portable application is correctly installed.", vbExclamation + vbOKOnly, "Antlog3 Installation")
+			gMsg = msgBox("Could not find index.php" & vbCrLf & vbCrLf & _
+			"Ensure that Xampp is correctly installed.", _
+			vbExclamation + vbOKOnly, "Antlog3 Installation")
 		end if
 	else
-		msg = msgBox("Could not find xampp_start.exe or xampp_stop.exe" & vbCrLf & vbCrLf & _
-		"Ensure that the Xampp portable application is correctly installed.", vbExclamation + vbOKOnly, "Antlog3 Installation")
+		gMsg = msgBox("Could not find xampp_start.exe or xampp_stop.exe" & vbCrLf & vbCrLf & _
+		"Ensure that Xampp is correctly installed.", _
+		vbExclamation + vbOKOnly, "Antlog3 Installation")
 	end if
-else
-	msg = msgBox("Xampp installation not found at C:\xampp" & vbCrLf & vbCrLf & _
-	"You have to install Xampp before the installation can continue.", vbExclamation + vbOKOnly, "Antlog3 Installation")
 end if
+
+sub makeFolderWritable(folderName)
+	' ensure that folder is not read-only
+	dim folder
+	if gFso.FolderExists(folderName) then
+		set folder = gFso.GetFolder(folderName)
+		if folder.Attributes <> 0 then
+			folder.Attributes = 0
+		end if
+	end if
+end sub
+
+sub editIndexFile
+	' edit index.php to change the default location to antlog
+	dim regEx, inFile, outFile, textString, replaced, msg
+	set regEx = New RegExp
+	regEx.Pattern = "/.+/"
+	set inFile = gFso.OpenTextFile(gXamppPath & indexFile, forReading)
+	set outFile = gFso.OpenTextFile(gXamppPath & indexTempFile, forWriting, true)
+	textString = inFile.ReadAll
+	inFile.Close
+	if regEx.Test(textString) then
+		replaced = true
+		textString = regEx.Replace(textString, "/antlog/")
+		outFile.Write textString
+	else
+		replaced = false
+		msg = msgBox("index.php not modified" & vbCrLf & vbCrLf & _
+		"Possibly not a problem if re-installing Antlog", _
+		vbExclamation + vbOKOnly, "Antlog3 Installation")
+	end if
+	outFile.Close
+	if replaced = true then
+		' delete original file and rename temporary file
+		gFso.DeleteFile(gXamppPath & indexFile)
+		gFso.MoveFile gXamppPath & indexTempFile, gXamppPath & indexFile
+	else
+		gFso.DeleteFile(gXamppPath & indexTempFile)
+	end if
+end sub
+
+sub createDatabase(path)
+	' create the antlog database by running mysql command
+	dim retVal, msg
+	set retVal = gShell.exec(cmd & path & mysqlCmd & path & sqlFile)
+	do while retVal.Status = 0
+		WScript.Sleep 100
+	loop
+	if retVal.ExitCode = 0 then
+		' display the output from mysql
+		msg = msgBox(retVal.StdOut.ReadAll & vbCrLf & vbCrLf & retVal.StdErr.ReadAll, _
+		vbInformation + vbOKOnly, "Antlog3 Installation")
+	else
+		msg = msgBox("Error running mySQL" & vbCrLf & vbCrLf & _
+		"Ensure that Xampp is correctly installed.", vbExclamation + vbOKOnly, "Antlog3 Installation")
+	end if
+	gShell.run xamppStop, 7
+end sub
