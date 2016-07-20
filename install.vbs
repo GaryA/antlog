@@ -22,10 +22,11 @@ const htdocsFolder = "htdocs"
 const forReading = 1
 const forWriting = 2
 
-dim gFso, gMsg, gShell, gFolder
+dim gFso, gMsg, gShell, gWshShell, gFolder
 dim gXamppPath
 
 set gFso = CreateObject("Scripting.FileSystemObject")
+set gWshShell = WScript.CreateObject("WScript.Shell")
 set gShell = WScript.CreateObject("Shell.Application")
 set gFolder = gShell.BrowseForFolder(0, "Select the Xampp installation folder:", 0, 17)
 if not (gFolder is Nothing) then
@@ -51,7 +52,7 @@ if not (gFolder is Nothing) then
 					' edit index.php to redirect to antlog instead of xampp
 					editIndexFile
 					' start the xampp server
-					gShell.run xamppStart, 7
+					gWshShell.run gXamppPath & xamppStart, 7
 					gMsg = msgBox("Xampp should start now. Please wait." & vbCrLf & _
 						"Your firewall may ask you to allow it to run." _
 						& vbCrLf & vbCrLf & "Has Xampp started properly?", vbYesNo, "Antlog3 Installation")
@@ -129,7 +130,7 @@ end sub
 sub createDatabase(path)
 	' create the antlog database by running mysql command
 	dim retVal, msg
-	set retVal = gShell.exec(cmd & path & mysqlCmd & path & sqlFile)
+	set retVal = gWshShell.exec(cmd & path & mysqlCmd & path & sqlFile)
 	do while retVal.Status = 0
 		WScript.Sleep 100
 	loop
@@ -141,5 +142,5 @@ sub createDatabase(path)
 		msg = msgBox("Error running mySQL" & vbCrLf & vbCrLf & _
 		"Ensure that Xampp is correctly installed.", vbExclamation + vbOKOnly, "Antlog3 Installation")
 	end if
-	gShell.run xamppStop, 7
+	gWshShell.run gXamppPath & xamppStop, 7
 end sub
