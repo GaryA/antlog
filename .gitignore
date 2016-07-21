@@ -31,3 +31,6 @@ tests/_output/*
 
 # databases used for functional testing
 databases/*
+
+# output zip file
+antlog.zip

@@ -7,7 +7,8 @@ const xamppStart = "xampp_start.exe"
 const xamppStop = "xampp_stop.exe"
 const cmd = "%comspec% /c "
 const mysqlCmd = "mysql\bin\mysql.exe --user=root < "
-const sqlFile = "antlog\antlog.sql"
+const demoSqlFile = "antlog\antlog_demo.sql"
+const emptySqlFile = "antlog\antlog.sql"
 const indexFile = "htdocs\index.php"
 const indexTempFile = "htdocs\temp.php"
 const runtimeFolder = "antlog\runtime"
@@ -57,8 +58,19 @@ if not (gFolder is Nothing) then
 						"Your firewall may ask you to allow it to run." _
 						& vbCrLf & vbCrLf & "Has Xampp started properly?", vbYesNo, "Antlog3 Installation")
 					if gMsg = vbYes then
+						' choose between empty and demo database
+						gMsg = msgBox("You can install a demo database or an empty database. The demo data" & vbCrLf & _
+						"will be overwritten when you download real data from the web site." & vbCrLf & _
+						"You can use the demo data to practice using Antlog." & vbCrLf & vbCrLf & _
+						"Do you want to install the demonstration database?", _
+						vbYesNo, "Antlog3 Installation")
+						if gMsg = vbYes then
+							chosenSqlFile = demoSqlFile
+						else
+							chosenSqlFile = emptySqlFile
+						end if
 						' create antlog database in mysql
-						createDatabase gXamppPath
+						createDatabase gXamppPath, chosenSqlFile
 					else
 						gMsg = msgBox("Since Xampp has not started properly there is" & vbCrLf _
 							& "a problem with the installation." & vbCrLf & vbCrLf _
@@ -127,7 +139,7 @@ sub editIndexFile
 	end if
 end sub
 
-sub createDatabase(path)
+sub createDatabase(path, sqlFile)
 	' create the antlog database by running mysql command
 	dim retVal, msg
 	set retVal = gWshShell.exec(cmd & path & mysqlCmd & path & sqlFile)
