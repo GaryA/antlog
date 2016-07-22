@@ -115,9 +115,13 @@ $searchModel = NULL;
             			{
             				$value = "Losers' Bracket";
             			}
-            			else
+            			else if ($model->status == 2)
             			{
             				$value = "Winners' Bracket";
+            			}
+            			else
+            			{
+            				$value = "Signed Up";
             			}
              		}
             		return $value;
