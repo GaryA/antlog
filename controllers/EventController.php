@@ -27,11 +27,11 @@ class EventController extends Controller
 			'access' =>
 			[
 				'class' => AccessControl::className(),
-				'only' => ['draw', 'setup', 'run', 'create', 'update', 'delete'],
+				'only' => ['open', 'run', 'draw', 'setup', 'create', 'update', 'delete'],
 				'rules' =>
 				[
 					[
-						'actions' => ['draw', 'setup', 'run'],
+						'actions' => ['run', 'draw', 'setup'],
 						'allow' => true,
 						'roles' => ['@'],
 						'matchCallback' => function($rule, $action)
@@ -56,7 +56,7 @@ class EventController extends Controller
 						},
 					],
 					[
-						'actions' => ['update'],
+						'actions' => ['update', 'open'],
 						'allow' => true,
 						'roles' => ['@'],
 						'matchCallback' => function($rule, $action)
@@ -128,7 +128,7 @@ class EventController extends Controller
 	{
 		$model = $this->findModel($id);
 		$model->stateRegistration($id);
-		return $this->actionView($id);
+		return $this->redirect(['view', 'id' => $model->id]);
 	}
 
 	/**
