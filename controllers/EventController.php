@@ -52,7 +52,7 @@ class EventController extends Controller
 						{
 							$id = Yii::$app->request->get('id');
 							$model = $this->findModel($id);
-							return (User::isUserAdmin() && $model->isOKToDelete($id));
+							return ((User::isUserAdmin() || $model->organiserId == Yii::$app->user->id) && $model->isOKToDelete($id));
 						},
 					],
 					[
