@@ -7,10 +7,12 @@ const xamppStart = "xampp_start.exe"
 const xamppStop = "xampp_stop.exe"
 const cmd = "%comspec% /c "
 const mysqlCmd = "mysql\bin\mysql.exe --user=root < "
+const mysqlExe = "mysql\\bin\\mysql.exe"
 const demoSqlFile = "antlog\antlog_demo.sql"
 const emptySqlFile = "antlog\antlog.sql"
 const indexFile = "htdocs\index.php"
 const indexTempFile = "htdocs\temp.php"
+const configFile = "antlog\config\db.php"
 const runtimeFolder = "antlog\runtime"
 const yii2Folder = "antlog\vendor\yiisoft\yii2"
 const assetsFolder = "antlog\antlog\assets"
@@ -136,6 +138,41 @@ sub editIndexFile
 		gFso.MoveFile gXamppPath & indexTempFile, gXamppPath & indexFile
 	else
 		gFso.DeleteFile(gXamppPath & indexTempFile)
+	end if
+end sub
+
+sub editConfigPath
+	' edit db.php in the config folder to change the default path to mysql.exe
+	dim regEx, inFile, outFile, textString, newPath, replaced, msg
+	set regEx = new RegExp
+	regEx.Pattern = "\"
+	regEx.Global = true
+	set inFile = gFso.OpenTextFile(gXamppPath & configFile, forReading)
+	set outFile = gFso.OpenTextFile(gXamppPath & configTempFile, forWriting, true)
+	textString = inFile.ReadAll
+	inFile.Close
+	if regEx.Test(gXamppPath) then
+		newPath = regEx.Replace(gXamppPath, "\\") & mysqlExe
+		regEx.Pattern = "c:\\xampp\\mysql\\bin\\mysql.exe"
+		regEx.Global = false
+		if regEx.Test(textString) then
+			replaced = true
+			textString = regEx.Replace(textString, newPath)
+			outFile.Write textString
+		else
+			replaced = false
+			msg = MsgBox("db.php not modified" & vbCrLf & vbCrLf & _
+			"Possibly not a problem if re-installing Antlog", _
+			vbExclamation + vbOKOnly, "Antlog3 Installation")
+		end if
+		outFile.Close
+		if replaced = true then
+			' delete original file and rename temporary file
+			gFso.DeleteFile(gXamppPath & configFile)
+			gFso.MoveFile gXamppPath & configTempFile, gXamppPath & indexFile
+		else
+			gFso.DeleteFile(gXamppPath & configTempFile)
+		end if
 	end if
 end sub
 

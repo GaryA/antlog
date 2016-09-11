@@ -495,31 +495,40 @@ class Db extends ActiveRecord
 
 	public function importFile($fileName)
 	{
-		// run mysql with $fileName as input
-		if ($this->password !== '')
+		if (file_exists($this->executable))
 		{
-			$cmd = "-h localhost -u $this->username -p $this->password $this->database < \"$fileName\"";
+			// run mysql with $fileName as input
+			if ($this->password !== '')
+			{
+				$cmd = "-h localhost -u $this->username -p $this->password $this->database < \"$fileName\"";
+			}
+			else
+			{
+				$cmd = "-h localhost -u $this->username $this->database < \"$fileName\"";
+			}
+			if (PHP_OS == 'WINNT' || PHP_OS == 'WIN32')
+			{
+				exec("start /b $this->executable $cmd");
+			}
+			else
+			{
+				pclose(popen('mysql ' . $cmd . '> /dev/null &', 'r'));
+			}
+			$entrants = Entrant::find()
+				->joinWith('event')
+				->where(['status' => -1])
+				->andWhere(['like', 'state', 'Complete'])
+				->all();
+			foreach ($entrants as $entrant)
+			{
+				$entrant->delete();
+			}
+			return true;
 		}
 		else
 		{
-			$cmd = "-h localhost -u $this->username $this->database < \"$fileName\"";
-		}
-		if (PHP_OS == 'WINNT' || PHP_OS == 'WIN32')
-		{
-			exec("start /b c:\\xampp\\mysql\\bin\\mysql.exe $cmd");
-		}
-		else
-		{
-			pclose(popen('mysql ' . $cmd . '> /dev/null &', 'r'));
-		}
-		$entrants = Entrant::find()
-			->joinWith('event')
-			->where(['status' => -1])
-			->andWhere(['like', 'state', 'Complete'])
-			->all();
-		foreach ($entrants as $entrant)
-		{
-			$entrant->delete();
+			// mysql.exe is not where it should be! Generate an error message
+			return false;
 		}
 	}
 

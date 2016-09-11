@@ -27,10 +27,14 @@ class DbController extends Controller
 		$progress->set(99);
 
 		$db = new Db;
-		$db->importFile($importfile);
+		$importOK = $db->importFile($importfile);
 
 		$progress->complete();
 		unlink($filename);
+		if($importOK == false)
+		{
+			Yii::$app->getSession()->setFlash('error', 'mysql.exe could not be found. Database has not been updated.');
+		}
 	}
 
 	/**

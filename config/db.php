@@ -6,5 +6,6 @@ return [
     'username' => 'root',
     'password' => '',
     'charset' => 'utf8',
-	'tablePrefix' => 'aws_'
+	'tablePrefix' => 'aws_',
+	'executable' => 'c:\\xampp\\mysql\\bin\\mysql.exe'
 ];
