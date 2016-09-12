@@ -13,6 +13,7 @@ const emptySqlFile = "antlog\antlog.sql"
 const indexFile = "htdocs\index.php"
 const indexTempFile = "htdocs\temp.php"
 const configFile = "antlog\config\db.php"
+const configTempFile = "antlog\config\db_temp.php"
 const runtimeFolder = "antlog\runtime"
 const yii2Folder = "antlog\vendor\yiisoft\yii2"
 const assetsFolder = "antlog\antlog\assets"
@@ -54,6 +55,8 @@ if not (gFolder is Nothing) then
 					makeFolderWritable gXamppPath & htdocsFolder
 					' edit index.php to redirect to antlog instead of xampp
 					editIndexFile
+					' edit config/db.php to set the path to mysql.exe
+					editConfigFile
 					' start the xampp server
 					gWshShell.run gXamppPath & xamppStart, 7
 					gMsg = msgBox("Xampp should start now. Please wait." & vbCrLf & _
