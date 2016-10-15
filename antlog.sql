@@ -487,6 +487,25 @@ CREATE TABLE IF NOT EXISTS `aws_user` (
 INSERT INTO `aws_user` (`id`, `username`, `password_hash`, `auth_key`, `password_reset_token`, `email`, `status`, `created_at`, `updated_at`, `user_group`, `team_name`) VALUES
 (1, 'admin', '$2y$13$PdkQ4FExnX4OBm51q0WOwuBK1HkXQiGoj9hdt3vHLuIQeoZBCtcsK', 'Ml836D_d49Ja3KiK6eSdrVe8R-nm2A_B', NULL, 'admin@admin.com', 10, 1429478521, 1429740286, 1, '');
 
+--
+-- Table structure for table `aws_lock`
+--
+
+DROP TABLE IF EXISTS `aws_lock`;
+CREATE TABLE IF NOT EXISTS `aws_lock` (
+  `id` int(11) NOT NULL,
+  `lockState` tinyint(1),
+  `lockUserId` int(10),
+  `lockTime` INT(11),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Lock table' ;
+
+--
+-- Dumping data for table `aws_lock`
+--
+
+INSERT INTO `aws_lock` (`id`, `lockState`, `lockUserId`, `lockTime`) VALUES (1, 0, NULL, NULL);
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

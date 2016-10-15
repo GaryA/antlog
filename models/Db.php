@@ -45,6 +45,9 @@ class Db extends ActiveRecord
 		fwrite($this->fileHandle, "DELETE `e` from `$this->prefix" . "entrant` `e` ");
 		fwrite($this->fileHandle, "LEFT JOIN `$this->prefix" . "event` `v` ON `v`.`id` = `e`.`eventId` ");
 		fwrite($this->fileHandle, "WHERE `e`.`status` = -1 AND `v`.`state` LIKE \"Complete\";\n");
+		// Unlock the online database
+		fwrite($this->fileHandle, "UPDATE `$this->database`.`$this->prefix" ."lock` SET `lockState` = '0', ");
+		fwrite($this->fileHandle, "`lockUserId` = 'NULL' WHERE `$this->prefix" . "lock`.`id` = 1;");
 
 		fwrite($this->fileHandle, "SELECT '<COMPLETE>' AS ' ';\n");
 		fclose($this->fileHandle);
@@ -577,22 +580,5 @@ class Db extends ActiveRecord
 	{
 		$retVal = str_replace(["'", '\\'], ["''", '\\\\'], $string);
 		return $retVal;
-	}
-	private function validateQuery($query)
-	{
-		// Users:
-		// Check that users are not administrators before processing insert/update
-		// Robots:
-		// check that team exists before processing insert/update
-		// Events:
-		// If event id exists, update state, num_groups, offset
-		// If event id does not exist, create event (copy from import data, don't create as new event)
-		// Entrants:
-		// If entrant id exists, ignore
-		// If entrant id does not exist, create entrant
-		// Fights:
-		// If fight id exists, ignore
-		// If fight id does not exist, create fight
-
 	}
 }

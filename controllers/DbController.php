@@ -5,6 +5,7 @@ namespace app\controllers;
 use Yii;
 use app\models\Db;
 use app\models\Event;
+use app\models\Lock;
 use app\models\User;
 use app\models\UploadForm;
 use yii\web\UploadedFile;
@@ -91,8 +92,7 @@ END_OF_TEXT;
 	{
 		$db = new Db;
 		$event = new Event;
-		// Close events owned by current user
-		$event->stateClosed();
+		$lock = new Lock;
 		//Export tables to SQL
 		$db->exportUsers();
 		$db->exportRobots();
@@ -100,6 +100,15 @@ END_OF_TEXT;
 		$db->exportEntrants();
 		$db->exportFights();
 		$db->exportEnd();
+		// Close events owned by current user
+		if ($event->stateClosed())
+		{
+			// Lock database to prevent online changes
+			if (Yii::$app->params['antlog_env'] == 'web')
+			{
+				$lock->lock(Yii::$app->user->identity->id);
+			}
+		}
 		// Return SQL file as download
 		$db->fileDownload();
 		return;

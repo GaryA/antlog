@@ -10,6 +10,7 @@ use app\models\SignupForm;
 use app\models\Robot;
 use app\models\Event;
 use app\models\User;
+use app\models\Lock;
 
 use yii\data\ActiveDataProvider;
 use yii\base\InvalidParamException;
@@ -33,8 +34,8 @@ class SiteController extends Controller
 				[
                     [
                         'actions' => ['signup'],
-                        'allow' => true,
-                        'roles' => ['?'],
+						'allow' => true, // this is an allow rule
+                    	'roles' => ['?'],
                     ],
 					[
                         'actions' => ['logout'],
@@ -127,10 +128,18 @@ class SiteController extends Controller
     			}
     		}
     	}
-        return $this->render('signup',
+    	if (Lock::islocked())
+    	{
+    		Yii::$app->getSession()->setFlash('error', 'The database is locked. Please try again later.');
+    		return $this->goHome();
+    	}
+    	else
+    	{
+        	return $this->render('signup',
         		[
             		'model' => $model,
         		]);
+    	}
     }
     /**
      * Handle the login action

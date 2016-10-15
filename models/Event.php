@@ -222,7 +222,8 @@ class Event extends \yii\db\ActiveRecord
 	 */
 	public function stateClosed()
 	{
-		$events = static::find()
+		$retval = false;
+		$events = $this->find()
 			->where(['organiserId' => Yii::$app->user->identity->id])
 			->andWhere(['state' => 'Registration'])
 			->all();
@@ -230,7 +231,9 @@ class Event extends \yii\db\ActiveRecord
 		{
 			$event->state = 'Closed';
 			$event->update();
+			$retval = true;
 		}
+		return $retval;
 	}
 
 	/**
@@ -238,7 +241,7 @@ class Event extends \yii\db\ActiveRecord
 	 */
 	public function stateSetup($id)
 	{
-		$event = static::findOne($id);
+		$event = $this->findOne($id);
 		$event->state = 'Setup';
 		return $event->update();
 	}
@@ -248,7 +251,7 @@ class Event extends \yii\db\ActiveRecord
 	 */
 	public function stateReady($id, $offset, $numGroups)
 	{
-		$event = static::findOne($id);
+		$event = $this->findOne($id);
 		$event->state = 'Ready';
 		$event->offset = $offset;
 		$event->num_groups = $numGroups;
@@ -260,7 +263,7 @@ class Event extends \yii\db\ActiveRecord
 	 */
 	public function stateRunning($id)
 	{
-		$event = static::findOne($id);
+		$event = $this->findOne($id);
 		$event->state = 'Running';
 		return $event->update();
 	}
@@ -270,7 +273,7 @@ class Event extends \yii\db\ActiveRecord
 	 */
 	public function stateRegistration($id)
 	{
-		$event = static::findOne($id);
+		$event = $this->findOne($id);
 		$event->state = 'Registration';
 		return $event->update();
 	}

@@ -51,8 +51,7 @@ $this->params['breadcrumbs'][] = $this->title;
 				['class' => 'btn btn-primary']);
 		}
 		if ($model->state == 'Closed'
-			&& Yii::$app->params['antlog_env'] == 'web'
-			&& User::isCurrentUser($model->organiserId))
+			&& Yii::$app->params['antlog_env'] == 'web')
 		{
 			echo Html::a('Re-open online registration', ['open', 'id' => $model->id],
 				['class' => 'btn btn-success']);

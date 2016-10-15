@@ -1163,6 +1163,25 @@ INSERT INTO `aws_user` (`id`, `username`, `password_hash`, `auth_key`, `password
 (28, 'zulu', '$2y$13$4aOiAkVwD4M0FmFrWgvsQee.T8u1NMaZ7Yg73cp52rLhC0kH9uzpO', 'VDLjpKZ7jfuTI2GPGp-DVyUaecWnJ5o3', '87XKyQDUD_thfl97zaiZzX1_XjvIqxHX_1444768935', 'zulu@test.com', 10, 1444585174, 1444768935, 2, 'Team Zulu'),
 (29, 'newuser', '$2y$13$tdaBmBJ8B9Ognn0HVgpcyOYDz5wEiP1EuZnMgXhHWi17lEA4avblu', 'SOS-AzubmcO09qx-fyUmZauFI_bkEoQB', NULL, 'email@example.com', 10, 1445172246, 1445172246, 2, 'New Team');
 
+--
+-- Table structure for table `aws_lock`
+--
+
+DROP TABLE IF EXISTS `aws_lock`;
+CREATE TABLE IF NOT EXISTS `aws_lock` (
+  `id` int(11) NOT NULL,
+  `lockState` tinyint(1),
+  `lockUserId` int(10),
+  `lockTime` INT(11),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Lock table' ;
+
+--
+-- Dumping data for table `aws_lock`
+--
+
+INSERT INTO `aws_lock` (`id`, `lockState`, `lockUserId`, `lockTime`) VALUES (1, 0, NULL, NULL);
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

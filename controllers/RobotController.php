@@ -5,6 +5,7 @@ namespace app\controllers;
 use Yii;
 use app\models\Robot;
 use app\models\User;
+use app\models\Lock;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -104,9 +105,17 @@ class RobotController extends Controller
     {
         $model = new Robot();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post()) && $model->save())
+        {
             return $this->redirect(['index']);
-        } else {
+        }
+        if (Lock::isLocked())
+        {
+        	Yii::$app->getSession()->setFlash('error', 'The database is locked. Please try again later.');
+        	return $this->goHome();
+        }
+        else
+        {
             return $this->render('create', [
                 'model' => $model,
             	'changeName' => true,

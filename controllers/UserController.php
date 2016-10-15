@@ -8,6 +8,7 @@ use app\models\User;
 use app\models\Robot;
 use app\models\Fights;
 use app\models\Event;
+use app\models\Lock;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -27,7 +28,7 @@ class UserController extends Controller
 			'access' =>
 			[
 				'class' => AccessControl::className(),
-				'only' => ['delete', 'update'],
+				'only' => ['create', 'delete', 'update'],
 				'rules' =>
 				[
 					[
@@ -47,6 +48,11 @@ class UserController extends Controller
 						{
 							return User::isCurrentUser(Yii::$app->request->get('id'));
 						}
+					],
+					[
+						'actions' => ['create'],
+						'allow' => true,
+						'roles' => ['?'],
 					],
 				],
 			],

@@ -12,8 +12,8 @@ const demoSqlFile = "antlog\antlog_demo.sql"
 const emptySqlFile = "antlog\antlog.sql"
 const indexFile = "htdocs\index.php"
 const indexTempFile = "htdocs\temp.php"
-const configFile = "antlog\config\db.php"
-const configTempFile = "antlog\config\db_temp.php"
+const configFile = "antlog\config\params.php"
+const configTempFile = "antlog\config\params_temp.php"
 const runtimeFolder = "antlog\runtime"
 const yii2Folder = "antlog\vendor\yiisoft\yii2"
 const assetsFolder = "antlog\antlog\assets"
@@ -145,7 +145,7 @@ sub editIndexFile
 end sub
 
 sub editConfigPath
-	' edit db.php in the config folder to change the default path to mysql.exe
+	' edit params.php in the config folder to change the default path to mysql.exe
 	dim regEx, inFile, outFile, textString, newPath, replaced, msg
 	set regEx = new RegExp
 	regEx.Pattern = "\"
@@ -164,7 +164,7 @@ sub editConfigPath
 			outFile.Write textString
 		else
 			replaced = false
-			msg = MsgBox("db.php not modified" & vbCrLf & vbCrLf & _
+			msg = MsgBox("params.php not modified" & vbCrLf & vbCrLf & _
 			"Possibly not a problem if re-installing Antlog", _
 			vbExclamation + vbOKOnly, "Antlog3 Installation")
 		end if

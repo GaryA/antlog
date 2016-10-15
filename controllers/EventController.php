@@ -8,6 +8,7 @@ use app\models\Fights;
 use app\models\User;
 use app\models\ProgressBar;
 use app\models\Entrant;
+use app\models\Lock;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -56,7 +57,7 @@ class EventController extends Controller
 						},
 					],
 					[
-						'actions' => ['update', 'open'],
+						'actions' => ['update'],
 						'allow' => true,
 						'roles' => ['@'],
 						'matchCallback' => function($rule, $action)
@@ -64,6 +65,19 @@ class EventController extends Controller
 							$id = Yii::$app->request->get('id');
 							$model = $this->findModel($id);
 							$validState = $model->state == 'Registration' || $model->state =='Future';
+							$validUser = User::isUserAdmin() || $model->organiserId == Yii::$app->user->id;
+							return ($validUser && $validState);
+						}
+					],
+					[
+						'actions' => ['open'],
+						'allow' => true,
+						'roles' => ['@'],
+						'matchCallback' => function($rule, $action)
+						{
+							$id = Yii::$app->request->get('id');
+							$model = $this->findModel($id);
+							$validState = $model->state == 'Closed' || $model->state =='Future';
 							$validUser = User::isUserAdmin() || $model->organiserId == Yii::$app->user->id;
 							return ($validUser && $validState);
 						}
@@ -127,6 +141,11 @@ class EventController extends Controller
 	public function actionOpen($id)
 	{
 		$model = $this->findModel($id);
+		$lock = New Lock;
+		if ($model->state == 'Closed')
+		{
+			$lock->unlock();
+		}
 		$model->stateRegistration($id);
 		return $this->redirect(['view', 'id' => $model->id]);
 	}

@@ -7,5 +7,4 @@ return [
     'password' => '',
     'charset' => 'utf8',
 	'tablePrefix' => 'aws_',
-	'executable' => 'c:\\xampp\\mysql\\bin\\mysql.exe'
 ];

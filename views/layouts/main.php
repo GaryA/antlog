@@ -6,6 +6,7 @@ use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
 use app\widgets\Alert;
 use app\models\User;
+use app\models\Lock;
 
 /* @var $this \yii\web\View */
 /* @var $content string */
@@ -36,6 +37,10 @@ AppAsset::register($this);
         	else
         	{
         		$ipMessage = '';
+        	}
+        	if (Lock::isLocked())
+        	{
+        		$ipMessage .= ' Database is locked';
         	}
             NavBar::begin([
                 'brandLabel' => '<img src = "' . Yii::getAlias('@web') .
