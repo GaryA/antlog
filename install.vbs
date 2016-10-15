@@ -144,7 +144,7 @@ sub editIndexFile
 	end if
 end sub
 
-sub editConfigPath
+sub editConfigFile
 	' edit params.php in the config folder to change the default path to mysql.exe
 	dim regEx, inFile, outFile, textString, newPath, replaced, msg
 	set regEx = new RegExp
