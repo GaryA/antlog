@@ -101,12 +101,12 @@ END_OF_TEXT;
 		$db->exportFights();
 		$db->exportEnd();
 		// Close events owned by current user
-		if ($event->stateClosed())
+		if ($closed = $event->stateClosed())
 		{
 			// Lock database to prevent online changes
 			if (Yii::$app->params['antlog_env'] == 'web')
 			{
-				$lock->lock(Yii::$app->user->identity->id);
+				$lockOK = $lock->lock(Yii::$app->user->identity->id);
 			}
 		}
 		// Return SQL file as download

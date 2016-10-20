@@ -36,7 +36,7 @@ set gFile = gFso.GetFile(Wscript.ScriptFullName)
 ' xampp installation folder is 2 levels up from the script
 gFolder = gFso.GetParentFolderName(gFso.GetParentFolderName(gFile))
 ' set gFolder = gShell.BrowseForFolder(0, "Select the Xampp installation folder:", 0, 17)
-if not (gFolder is Nothing) then
+if not (gFolder = "") then
 	gXamppPath = gFolder & "\"
 	'gXamppPath = gFolder.Self.Path & "\"
 	' check xampp_start.exe and xampp_stop.exe exist
