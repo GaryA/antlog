@@ -1172,7 +1172,7 @@ CREATE TABLE IF NOT EXISTS `aws_lock` (
   `id` int(11) NOT NULL,
   `lockState` tinyint(1),
   `lockUserId` int(10),
-  `lockTime` INT(11),
+  `updated_at` INT(11),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Lock table' ;
 
@@ -1180,7 +1180,7 @@ CREATE TABLE IF NOT EXISTS `aws_lock` (
 -- Dumping data for table `aws_lock`
 --
 
-INSERT INTO `aws_lock` (`id`, `lockState`, `lockUserId`, `lockTime`) VALUES (1, 0, NULL, NULL);
+INSERT INTO `aws_lock` (`id`, `lockState`, `lockUserId`, `updated_at`) VALUES (1, 0, NULL, NULL);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
