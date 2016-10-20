@@ -62,8 +62,7 @@ class Lock extends \yii\db\ActiveRecord
 		$record = $this->findOne(1);
 		$record->lockState = 1;
 		$record->lockUserId = $userId;
-		$record->update();
-		$record->save();
+		return $record->update(false);
     }
 
     public function unlock()
@@ -73,8 +72,7 @@ class Lock extends \yii\db\ActiveRecord
 		$record = $this->findOne(1);
 		$record->lockState = 0;
 		$record->lockUserId = NULL;
-		$record->update();
-		$record->save();
+		return $record->update(false);
 	}
 
     /**

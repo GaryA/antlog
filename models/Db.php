@@ -47,7 +47,7 @@ class Db extends ActiveRecord
 		fwrite($this->fileHandle, "WHERE `e`.`status` = -1 AND `v`.`state` LIKE \"Complete\";\n");
 		// Unlock the online database
 		fwrite($this->fileHandle, "UPDATE `$this->database`.`$this->prefix" ."lock` SET `lockState` = '0', ");
-		fwrite($this->fileHandle, "`lockUserId` = 'NULL' WHERE `$this->prefix" . "lock`.`id` = 1;");
+		fwrite($this->fileHandle, "`lockUserId` = NULL WHERE `$this->prefix" . "lock`.`id` = 1;");
 
 		fwrite($this->fileHandle, "SELECT '<COMPLETE>' AS ' ';\n");
 		fclose($this->fileHandle);
@@ -498,7 +498,7 @@ class Db extends ActiveRecord
 
 	public function importFile($fileName)
 	{
-		if (file_exists($this->executable))
+		if (file_exists(Yii::$app->params['execPath']))
 		{
 			// run mysql with $fileName as input
 			if ($this->password !== '')
@@ -511,7 +511,7 @@ class Db extends ActiveRecord
 			}
 			if (PHP_OS == 'WINNT' || PHP_OS == 'WIN32')
 			{
-				exec("start /b $this->executable $cmd");
+				exec('start /b "Title" "' . Yii::$app->params['execDrive'] . Yii::$app->params['execPath'] . '" ' . $cmd);
 			}
 			else
 			{

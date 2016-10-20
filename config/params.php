@@ -9,5 +9,6 @@ return
 	// 'web' for online "master" installation
 	// 'local' for event "slave" installation
 	'antlog_env' => 'local',
-	'executable' => 'c:\\xampp\\mysql\\bin\\mysql.exe'
+	'execPath' => '\xampp\mysql\bin\mysql.exe',
+	'execDrive' => 'c:'
 ];
