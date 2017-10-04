@@ -84,7 +84,7 @@ class User extends ActiveRecord implements IdentityInterface
     			->orderBy('team_name')
     			->all();
     	}
-    	$dropdown = NULL;
+    	$dropdown = [];
     	foreach ($models as $model)
     	{
     		$dropdown[$model->id] = $model->team_name;
