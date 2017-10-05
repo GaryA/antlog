@@ -29,7 +29,7 @@
         "yiisoft/yii2-swiftmailer": "*",
 		"yiisoft/yii2-jui": "~2.0.0",
 		"kartik-v/yii2-widgets": "*",
-		"2amigos/yii2-grid-view-library" : "*",
+		"2amigos/yii2-grid-view-library" : "~0.1",
 		"vova07/yii2-console-runner-extension": ">=0.1.2"
     },
     "require-dev": {
