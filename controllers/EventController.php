@@ -334,6 +334,12 @@ class EventController extends Controller
         	{
         		$model->state = 'Registration';
         	}
+        	// If an event is created locally, start with online registration closed
+        	// Local registration is open until the draw is done
+        	if (Yii::$app->params['antlog_env'] == 'local')
+        	{
+        		$model->state = 'Closed';
+        	}
         	if ($model->save())
 			{
 				return $this->redirect(['view', 'id' => $model->id]);
