@@ -262,4 +262,52 @@ class FightsController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+    
+    /**
+     * 
+     */
+    public function actionJson($eventId, $byes = 0, $complete = 0){
+    		$event = Event::findOne($eventId);
+    		$startId = Fights::find()
+    			->where(['eventId' => $eventId])
+    			->andWhere(['>', 'robot1Id', 0])
+    			->andWhere(['>', 'robot2Id', 0])
+    			->orderBy('id')
+    			->one()
+    			->id;
+    		$query = Fights::find()->where(['eventId' => $eventId]);
+			if ($complete == 0)
+    		{
+    			// don't show completed fights
+    			$query->andWhere(['winnerId' => -1]);
+    		}
+    		if ($complete == 1)
+    		{
+    			// skip initial rounds that are all byes
+    			$query->andWhere(['>=', 'id', $startId]);
+    		}
+    		if ($byes == 0)
+    		{
+    			// only show fights where both robots are known
+    			$query->andWhere(['>', 'robot1Id', 0])->andWhere(['>', 'robot2Id', 0]);
+    		}
+    		if ($byes == 1)
+    		{
+    			// only show fights where at least one robot is known
+    			$query->andWhere(['or', 'robot1Id > 0', 'robot2Id > 0']);
+    		}
+    		$json_object = array();
+    		
+    		foreach($query->all() as $fight){
+    		    $fightObj = array(
+    		        "robot1" => ($fight->robot1 ? $fight->robot1->robot->name : null),
+    		        "robot2" => ($fight->robot2 ? $fight->robot2->robot->name : null),
+    		        "team1" => ($fight->robot1 ? $fight->robot1->robot->team->team_name : null),
+    		        "team2" => ($fight->robot2 ? $fight->robot2->robot->team->team_name : null),
+    		        "round_label" => Fights::labelRound($fight),
+    		    );
+    		    $json_object[] = $fightObj;
+    		}
+    		echo json_encode($json_object);
+    }
 }
