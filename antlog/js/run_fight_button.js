@@ -29,7 +29,7 @@ $('#run-fight-modal').on('show.bs.modal', function (event) {
 		type: "post",
 		dataType: 'json',
 		url: 'create-files',
-		data: {robot1: robot1name, robot2: robot2name},
+		data: {fightid: id, robot1: robot1name, robot2: robot2name, team1: team1, team2: team2},
 	})
 });
 

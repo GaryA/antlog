@@ -206,6 +206,11 @@ class FightsController extends Controller
     {
     	if(Yii::$app->request->isAjax)
     	{
+    		$fightid = Yii::$app->request->post('fightid');
+    		$filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . 'fightid.txt';
+    		$file = fopen($filename, 'w');
+    		fwrite($file, $fightid);
+    		fclose($file);
     		$robot1 = Yii::$app->request->post('robot1');
     		$filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . 'robot1.txt';
     		$file = fopen($filename, 'w');
@@ -215,6 +220,16 @@ class FightsController extends Controller
     		$filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . 'robot2.txt';
     		$file = fopen($filename, 'w');
     		fwrite($file, $robot2);
+    		fclose($file);
+    		$team1 = Yii::$app->request->post('team1');
+    		$filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . 'team1.txt';
+    		$file = fopen($filename, 'w');
+    		fwrite($file, $team1);
+    		fclose($file);
+    		$team2 = Yii::$app->request->post('team2');
+    		$filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . 'team2.txt';
+    		$file = fopen($filename, 'w');
+    		fwrite($file, $team2);
     		fclose($file);
     	}
        	else
@@ -236,6 +251,18 @@ class FightsController extends Controller
     		fwrite($file, '');
     		fclose($file);
     		$filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . 'robot2.txt';
+    		$file = fopen($filename, 'w');
+    		fwrite($file, '');
+    		fclose($file);
+    		$filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . 'team1.txt';
+    	  	$file = fopen($filename, 'w');
+    		fwrite($file, '');
+    		fclose($file);
+    		$filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . 'team2.txt';
+    		$file = fopen($filename, 'w');
+    		fwrite($file, '');
+    		fclose($file);
+    		$filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . 'fightid.txt';
     		$file = fopen($filename, 'w');
     		fwrite($file, '');
     		fclose($file);
@@ -296,17 +323,40 @@ class FightsController extends Controller
     			// only show fights where at least one robot is known
     			$query->andWhere(['or', 'robot1Id > 0', 'robot2Id > 0']);
     		}
-    		$json_object = array();
+    		
+    		$filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . 'fightid.txt';
+    		$fightId = file_get_contents($filename);
+    		if($fightId){
+        		$active_fight = Fights::find()->where(['id' => $fightId])->one();
+        	}else{
+        	    $active_fight = null;
+    	    }
+    		
+    		$json_object = array(
+    		    "next" => array(),
+    		    "now" => array(),
+		    );
+		    
+		    if($active_fight){
+		        $json_object["now"] = array(
+		            "robot1" => ($active_fight->robot1 ? $active_fight->robot1->robot->name : null),
+		            "robot2" => ($active_fight->robot2 ? $active_fight->robot2->robot->name : null),
+		            "team1" => ($active_fight->robot1 ? $active_fight->robot1->robot->team->team_name : null),
+		            "team2" => ($active_fight->robot2 ? $active_fight->robot2->robot->team->team_name : null),
+		        );
+		        $query->andWhere(['<>', 'id', $active_fight->id]);
+	        }
     		
     		foreach($query->all() as $fight){
     		    $fightObj = array(
+                    "id" => $fight->id,
     		        "robot1" => ($fight->robot1 ? $fight->robot1->robot->name : null),
     		        "robot2" => ($fight->robot2 ? $fight->robot2->robot->name : null),
     		        "team1" => ($fight->robot1 ? $fight->robot1->robot->team->team_name : null),
     		        "team2" => ($fight->robot2 ? $fight->robot2->robot->team->team_name : null),
     		        "round_label" => Fights::labelRound($fight),
     		    );
-    		    $json_object[] = $fightObj;
+    		    $json_object["next"][] = $fightObj;
     		}
     		echo json_encode($json_object);
     }
