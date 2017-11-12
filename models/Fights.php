@@ -447,10 +447,11 @@ class Fights extends ActiveRecord
 	 */
 	public function insertDoubleElimination($eventId)
 	{
+		$createTime = time();
 		$command = Yii::$app->db->createCommand("INSERT INTO {{%fights}} (`eventId`,`fightGroup`,`fightRound`,`fightBracket`,
-			`fightNo`,`robot1Id`,`robot2Id`,`winnerId`,`loserId`,`winnerNextFight`,`loserNextFight`)
+			`fightNo`,`robot1Id`,`robot2Id`,`winnerId`,`loserId`,`winnerNextFight`,`loserNextFight`, `created_at`, `updated_at`)
 			SELECT $eventId,`fightGroup`,`fightRound`,`fightBracket`,`fightNo`,`robot1Id`,`robot2Id`,`winnerId`,
-			`loserId`,`winnerNextFight`,`loserNextFight`
+			`loserId`,`winnerNextFight`,`loserNextFight`, $createTime, $createTime
 			FROM {{%double_elim}}
 			WHERE `winnerId` = -1 ORDER BY `id`");
 		$command->execute();
