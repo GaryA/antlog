@@ -325,7 +325,7 @@ class FightsController extends Controller
     		}
     		
     		$filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . 'fightid.txt';
-    		$fightId = file_get_contents($filename);
+    		$fightId = @file_get_contents($filename); // Silence any errors.
     		if($fightId){
         		$active_fight = Fights::find()->where(['id' => $fightId])->one();
         	}else{
