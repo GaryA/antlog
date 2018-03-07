@@ -93,6 +93,8 @@ END_OF_TEXT;
 		$db = new Db;
 		$event = new Event;
 		$lock = new Lock;
+		// Close events owned by current user
+		$closed = $event->stateClosed();
 		//Export tables to SQL
 		$db->exportUsers();
 		$db->exportRobots();
@@ -100,8 +102,7 @@ END_OF_TEXT;
 		$db->exportEntrants();
 		$db->exportFights();
 		$db->exportEnd();
-		// Close events owned by current user
-		if ($closed = $event->stateClosed())
+		if ($closed)
 		{
 			// Lock database to prevent online changes
 			if (Yii::$app->params['antlog_env'] == 'web')
