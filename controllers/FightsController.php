@@ -339,10 +339,12 @@ class FightsController extends Controller
 		    
 		    if($active_fight){
 		        $json_object["now"] = array(
+                    "id" => $fight->id,
 		            "robot1" => ($active_fight->robot1 ? $active_fight->robot1->robot->name : null),
 		            "robot2" => ($active_fight->robot2 ? $active_fight->robot2->robot->name : null),
 		            "team1" => ($active_fight->robot1 ? $active_fight->robot1->robot->team->team_name : null),
 		            "team2" => ($active_fight->robot2 ? $active_fight->robot2->robot->team->team_name : null),
+    		        "round_label" => Fights::labelRound($fight),
 		        );
 		        $query->andWhere(['<>', 'id', $active_fight->id]);
 	        }
