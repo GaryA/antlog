@@ -346,7 +346,7 @@ class FightsController extends Controller
 		        );
 		        $query->andWhere(['<>', 'id', $active_fight->id]);
 	        }
-    		
+    		$query->orderBy( array('fightRound'=>SORT_ASC, 'fightBracket' => SORT_DESC, 'fightGroup' => SORT_ASC, 'fightNo' => SORT_ASC) );
     		foreach($query->all() as $fight){
     		    $fightObj = array(
                     "id" => $fight->id,
