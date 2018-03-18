@@ -182,6 +182,7 @@ class Event extends \yii\db\ActiveRecord
 		foreach ($teams as $team => $robots)
 		{
 			/* calculate array of groups with free slots */
+			unset($temp);
 			$temp = array();
 			for ($i = 0; $i < $numGroups; $i ++)
 			{
