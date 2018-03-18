@@ -117,6 +117,17 @@ class EventController extends Controller
     	}
     }
 
+    /**
+     * Force event to complete state
+     * @param integer $id the ID of the event
+     * @return mixed
+     */
+    public function actionComplete($id)
+    {
+    	$model = $this->findModel($id);
+    	$model->stateComplete($id);
+    	return $this->redirect(['view', 'id' => $model->id]);
+    }
 	/**
 	 * Display results of a completed event
 	 * @param integer $id the ID of the event

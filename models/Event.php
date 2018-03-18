@@ -279,6 +279,15 @@ class Event extends \yii\db\ActiveRecord
 	}
 
 	/**
+	 * function to set event state to "Complete"
+	 */
+	public function stateComplete($id)
+	{
+		$event = $this->findOne($id);
+		$event->state = 'Complete';
+		return $event->update();
+	}
+	/**
 	 * function to get teams (and their robots) for an event
 	 * returns an array where the keys are team IDs and each element is
 	 * an array of entrant IDs
