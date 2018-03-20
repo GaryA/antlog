@@ -61,33 +61,35 @@ class FightsController extends Controller
     	else
     	{
     		$event = Event::findOne($eventId);
-    		$startId = Fights::find()
-    			->where(['eventId' => $eventId])
-    			->andWhere(['>', 'robot1Id', 0])
-    			->andWhere(['>', 'robot2Id', 0])
-    			->orderBy('id')
-    			->one()
-    			->id;
     		$query = Fights::find()->where(['eventId' => $eventId]);
-			if ($complete == 0)
-    		{
-    			// don't show completed fights
-    			$query->andWhere(['winnerId' => -1]);
-    		}
-    		if ($complete == 1)
-    		{
-    			// skip initial rounds that are all byes
-    			$query->andWhere(['>=', 'id', $startId]);
-    		}
-    		if ($byes == 0)
-    		{
-    			// only show fights where both robots are known
-    			$query->andWhere(['>', 'robot1Id', 0])->andWhere(['>', 'robot2Id', 0]);
-    		}
-    		if ($byes == 1)
-    		{
-    			// only show fights where at least one robot is known
-    			$query->andWhere(['or', 'robot1Id > 0', 'robot2Id > 0']);
+    		if (Fights::find()->where(['eventId' => $eventId])->count() > 0) {
+    			$startId = Fights::find()
+    				->where(['eventId' => $eventId])
+    				->andWhere(['>', 'robot1Id', 0])
+    				->andWhere(['>', 'robot2Id', 0])
+    				->orderBy('id')
+    				->one()
+    				->id;
+				if ($complete == 0)
+    			{
+    				// don't show completed fights
+    				$query->andWhere(['winnerId' => -1]);
+    			}
+    			if ($complete == 1)
+    			{
+    				// skip initial rounds that are all byes
+    				$query->andWhere(['>=', 'id', $startId]);
+    			}
+    			if ($byes == 0)
+    			{
+    				// only show fights where both robots are known
+    				$query->andWhere(['>', 'robot1Id', 0])->andWhere(['>', 'robot2Id', 0]);
+    			}
+    			if ($byes == 1)
+    			{
+    				// only show fights where at least one robot is known
+    				$query->andWhere(['or', 'robot1Id > 0', 'robot2Id > 0']);
+    			}
     		}
     		$fightsProvider = new ActiveDataProvider([
     			'query' => $query,

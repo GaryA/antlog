@@ -182,6 +182,7 @@ class Event extends \yii\db\ActiveRecord
 		foreach ($teams as $team => $robots)
 		{
 			/* calculate array of groups with free slots */
+			unset($temp);
 			$temp = array();
 			for ($i = 0; $i < $numGroups; $i ++)
 			{
@@ -278,6 +279,15 @@ class Event extends \yii\db\ActiveRecord
 		return $event->update();
 	}
 
+	/**
+	 * function to set event state to "Complete"
+	 */
+	public function stateComplete($id)
+	{
+		$event = $this->findOne($id);
+		$event->state = 'Complete';
+		return $event->update();
+	}
 	/**
 	 * function to get teams (and their robots) for an event
 	 * returns an array where the keys are team IDs and each element is

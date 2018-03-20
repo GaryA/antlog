@@ -56,6 +56,15 @@ $this->params['breadcrumbs'][] = $this->title;
 			echo Html::a('Re-open online registration', ['open', 'id' => $model->id],
 				['class' => 'btn btn-success']);
 		}
+		if ($model->state != 'Complete')
+		{
+			echo Html::a('Force Complete', ['complete', 'id' => $model->id],
+				['class' => 'btn btn-danger',
+					'data' => [
+						'confirm' => 'Are you sure you want to force this event into the Complete state?',
+					]
+				]);
+		}
 	}
 	if (User::isUserAdmin() && Yii::$app->params['antlog_env'] == 'local')
 	{
