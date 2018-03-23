@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Fights;
+use app\models\CurrentFight;
 use app\models\Entrant;
 use app\models\Event;
 use app\models\FightsSearch;
@@ -13,6 +14,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use yii\data\ActiveDataProvider;
+use yii\web\Response;
 
 /**
  * FightsController implements the CRUD actions for Fights model.
@@ -70,12 +72,12 @@ class FightsController extends Controller
     				->orderBy('id')
     				->one()
     				->id;
-				if ($complete == 0)
+				if (($complete == 0) || (Yii::$app->request->isAjax))
     			{
     				// don't show completed fights
     				$query->andWhere(['winnerId' => -1]);
     			}
-    			if ($complete == 1)
+    			else if ($complete == 1)
     			{
     				// skip initial rounds that are all byes
     				$query->andWhere(['>=', 'id', $startId]);
@@ -85,7 +87,7 @@ class FightsController extends Controller
     				// only show fights where both robots are known
     				$query->andWhere(['>', 'robot1Id', 0])->andWhere(['>', 'robot2Id', 0]);
     			}
-    			if ($byes == 1)
+    			else if ($byes == 1)
     			{
     				// only show fights where at least one robot is known
     				$query->andWhere(['or', 'robot1Id > 0', 'robot2Id > 0']);
@@ -95,18 +97,54 @@ class FightsController extends Controller
     			'query' => $query,
     			'sort'=> ['defaultOrder' => ['fightRound'=>SORT_ASC, 'fightBracket' => SORT_DESC, 'fightGroup' => SORT_ASC, 'fightNo' => SORT_ASC]]
     		]);
-    		if (!User::isUserAdmin())
+    		if (Yii::$app->request->isAjax)
     		{
-    			// if user is not Admin, automatically reload the page every 30 seconds
-    			Yii::$app->view->registerMetaTag(['http-equiv' => 'refresh', 'content' => '30']);
+    			// Use curl to send AJAX request by setting XMLHttpRequest header:
+    			// curl.exe -i -H "X-Requested-With: XMLHttpRequest" http://antlog.local/fights/index?eventId=11
+    			$jsonObject = [
+    				"next" => [],
+    				"now" => [],
+    			];
+    			$query->orderBy( ['fightRound'=>SORT_ASC, 'fightBracket' => SORT_DESC, 'fightGroup' => SORT_ASC, 'fightNo' => SORT_ASC] );
+    			foreach($query->all() as $fight){
+					$fightObj = [
+						"id" => $fight->id,
+						"robot1" => ($fight->robot1 ? $fight->robot1->robot->name : null),
+						"robot2" => ($fight->robot2 ? $fight->robot2->robot->name : null),
+						"team1" => ($fight->robot1 ? $fight->robot1->robot->team->team_name : null),
+						"team2" => ($fight->robot2 ? $fight->robot2->robot->team->team_name : null),
+						"round_label" => Fights::labelRound($fight),
+					];
+					if ($fight->current)
+					{
+						$jsonObject["now"][] = $fightObj;
+					}
+					else
+					{
+						$jsonObject["next"][] = $fightObj;
+					}
+				}
+ 				$response = Yii::$app->response;
+                $response->format = Response::FORMAT_JSON;
+                $response->data = $jsonObject;
+                $response->statusCode = 200;
+                return $response;
     		}
-    		return $this->render('indexevent', [
-    			'fightsProvider' => $fightsProvider,
-    			'eventId' => $eventId,
-    			'state' => $event->state,
-    			'byes' => $byes,
-    			'complete' => $complete,
-    		]);
+    		else
+    		{
+   				if (!User::isUserAdmin())
+   				{
+   					// if user is not Admin, automatically reload the page every 30 seconds
+   					Yii::$app->view->registerMetaTag(['http-equiv' => 'refresh', 'content' => '30']);
+   				}
+   				return $this->render('indexevent', [
+   					'fightsProvider' => $fightsProvider,
+   					'eventId' => $eventId,
+   					'state' => $event->state,
+   					'byes' => $byes,
+   					'complete' => $complete,
+   				]);
+    		}
     	}
     }
 
@@ -208,16 +246,26 @@ class FightsController extends Controller
     {
     	if(Yii::$app->request->isAjax)
     	{
+    		$id = Yii::$app->request->post('id');
+    		$title = Yii::$app->request->post('title');
     		$robot1 = Yii::$app->request->post('robot1');
+    		$robot2 = Yii::$app->request->post('robot2');
+    		$team1 = Yii::$app->request->post('team1');
+    		$team2 = Yii::$app->request->post('team2');
     		$filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . 'robot1.txt';
     		$file = fopen($filename, 'w');
     		fwrite($file, $robot1);
     		fclose($file);
-    		$robot2 = Yii::$app->request->post('robot2');
     		$filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . 'robot2.txt';
     		$file = fopen($filename, 'w');
     		fwrite($file, $robot2);
     		fclose($file);
+    		// either use 'current_fight' table...
+    		$currentFight = new CurrentFight;
+    		$currentFight->set($id, $title, $robot1, $robot2, $team1, $team2);
+    		// or use 'current' field of fights table
+    		$this->findModel($id)->startFight($id);
+    		return '{"status":"OK"}';
     	}
        	else
     	{
@@ -233,6 +281,7 @@ class FightsController extends Controller
     {
     	if(Yii::$app->request->isAjax)
     	{
+    		$id = Yii::$app->request->post('id');
     		$filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . 'robot1.txt';
     	  	$file = fopen($filename, 'w');
     		fwrite($file, '');
@@ -241,6 +290,11 @@ class FightsController extends Controller
     		$file = fopen($filename, 'w');
     		fwrite($file, '');
     		fclose($file);
+    		// either use 'current_fight' table...
+    		$currentFight = new CurrentFight;
+    		$currentFight->clear();
+    		// or use 'current' field of fights table
+    		$this->findModel($id)->endFight($id);
     		return '{"status":"OK"}';
     	}
        	else

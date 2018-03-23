@@ -29,7 +29,15 @@ $('#run-fight-modal').on('show.bs.modal', function (event) {
 		type: "post",
 		dataType: 'json',
 		url: 'create-files',
-		data: {robot1: robot1name, robot2: robot2name},
+		data: {id: id, title: title, robot1: robot1name, robot2: robot2name, team1: team1, team2: team2},
+	})
+	.done(function(response){
+		
+	})
+	.fail(function (jqXHr, textStatus, errorThrown) {
+		console.debug(jqXHr.responseText);
+		console.log(textStatus);
+		console.log(errorThrown);
 	})
 });
 
@@ -54,11 +62,13 @@ $('#button2').click(function()
 
 $('#run-fight-modal').on('hide.bs.modal', function (event)
 {
+	var id = $(this).find('.modal-body #fight').val();
 	$.ajax(
 	{
 		type: "post",
 		dataType: 'json',
 		url: 'delete-files',
+		data: {id: id},
 	})
 	.done(function(response)
 	{

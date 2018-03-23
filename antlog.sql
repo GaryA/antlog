@@ -19,10 +19,34 @@ SET time_zone = "+00:00";
 --
 -- Database: `antlog`
 --
-CREATE DATABASE IF NOT EXISTS `antlog` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+CREATE DATABASE IF NOT EXISTS `antlog` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 USE `antlog`;
 
 -- --------------------------------------------------------
+
+--
+-- Table structure for table `aws_current_fight`
+--
+
+DROP TABLE IF EXISTS `aws_current_fight`;
+CREATE TABLE IF NOT EXISTS `aws_current_fight` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `fightId` int(11) NOT NULL DEFAULT '0' COMMENT 'CONSTRAINT FOREIGN KEY (fightId) REFERENCES aws_fights(id)',
+  `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `robot1` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `robot2` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `team1` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `team2` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `updated_at` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 COMMENT='Current fight table' ;
+
+--
+-- Dumping data for table `aws_current_fight`
+--
+
+INSERT INTO `aws_current_fight` (`id`, `fightId`, `title`, `robot1`, `robot2`, `team1`, `team2`, `updated_at`) VALUES
+(1, 0, NULL, NULL, NULL, NULL, NULL, 0);
 
 --
 -- Table structure for table `aws_double_elim`
@@ -45,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `aws_double_elim` (
   `sequence` int(11) NOT NULL DEFAULT '-1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `FightID` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Double elimination template' ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Double elimination template' ;
 
 --
 -- Dumping data for table `aws_double_elim`
@@ -326,7 +350,7 @@ CREATE TABLE IF NOT EXISTS `aws_entrant` (
   `updated_at` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `EntrantID` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Entrants table' ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Entrants table' ;
 
 --
 -- Table structure for table `aws_event`
@@ -335,7 +359,7 @@ CREATE TABLE IF NOT EXISTS `aws_entrant` (
 DROP TABLE IF EXISTS `aws_event`;
 CREATE TABLE IF NOT EXISTS `aws_event` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
+  `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `eventDate` date NOT NULL,
   `state` enum('Complete','Running','Ready','Setup','Closed','Registration','Future') NOT NULL DEFAULT 'Registration',
   `classId` int(11) NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (classId) REFERENCES aws_robot_class(id)',
@@ -345,10 +369,10 @@ CREATE TABLE IF NOT EXISTS `aws_event` (
   `created_at` int(11) NOT NULL DEFAULT '0',
   `updated_at` int(11) NOT NULL DEFAULT '0',
   `organiserId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (organiserId) REFERENCES aws_user(id)',
-  `venue` text NOT NULL,
+  `venue` text CHARACTER SET utf8 NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Events table' ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Events table' ;
 
 --
 -- Table structure for table `aws_event_type`
@@ -357,9 +381,9 @@ CREATE TABLE IF NOT EXISTS `aws_event` (
 DROP TABLE IF EXISTS `aws_event_type`;
 CREATE TABLE IF NOT EXISTS `aws_event_type` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(32) NOT NULL,
+  `name` varchar(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='List of event types' ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='List of event types' ;
 
 --
 -- Dumping data for table `aws_event_type`
@@ -389,11 +413,12 @@ CREATE TABLE IF NOT EXISTS `aws_fights` (
   `winnerNextFight` int(10) unsigned NOT NULL,
   `loserNextFight` int(10) unsigned NOT NULL,
   `sequence` int(11) NOT NULL DEFAULT '-1',
+  `current` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` int(11) NOT NULL DEFAULT '0',
   `updated_at` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `FightID` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Fights table' ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Fights table' ;
 
 --
 -- Table structure for table `aws_robot`
@@ -402,7 +427,7 @@ CREATE TABLE IF NOT EXISTS `aws_fights` (
 DROP TABLE IF EXISTS `aws_robot`;
 CREATE TABLE IF NOT EXISTS `aws_robot` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
+  `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `teamId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (teamId) REFERENCES aws_user(id)',
   `classId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (classId) REFERENCES aws_robot_class(id)',
   `typeId` smallint(6) NOT NULL DEFAULT '0' COMMENT 'CONSTRAINT FOREIGN KEY (typeId) REFERENCES aws_robot_type(id)',
@@ -412,7 +437,7 @@ CREATE TABLE IF NOT EXISTS `aws_robot` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `RobotID_2` (`id`),
   KEY `RobotID` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='Robots table' ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Robots table' ;
 
 --
 -- Table structure for table `aws_robot_class`
@@ -421,10 +446,10 @@ CREATE TABLE IF NOT EXISTS `aws_robot` (
 DROP TABLE IF EXISTS `aws_robot_class`;
 CREATE TABLE IF NOT EXISTS `aws_robot_class` (
   `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(20) NOT NULL,
+  `name` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='List of robot weight classes' ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='List of robot weight classes' ;
 
 --
 -- Dumping data for table `aws_robot_class`
@@ -444,9 +469,9 @@ INSERT INTO `aws_robot_class` (`id`, `name`) VALUES
 DROP TABLE IF EXISTS `aws_robot_type`;
 CREATE TABLE IF NOT EXISTS `aws_robot_type` (
   `id` smallint(6) NOT NULL,
-  `name` varchar(32) NOT NULL,
+  `name` varchar(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='List of robot types' ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='List of robot types' ;
 
 --
 -- Dumping data for table `aws_robot_type`
@@ -478,7 +503,7 @@ CREATE TABLE IF NOT EXISTS `aws_user` (
   `team_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COMMENT='User table' ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='User table' ;
 
 --
 -- Dumping data for table `aws_user`
@@ -498,7 +523,7 @@ CREATE TABLE IF NOT EXISTS `aws_lock` (
   `lockUserId` int(10),
   `updated_at` INT(11),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Lock table' ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Lock table' ;
 
 --
 -- Dumping data for table `aws_lock`
