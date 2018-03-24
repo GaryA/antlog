@@ -25,18 +25,21 @@ $searchModel = NULL;
 
     <p>
 	<?php
-	if (($event->state == 'Registration') || ($event->state == 'Closed' && Yii::$app->params['antlog_env'] == 'local'))
+	if (($event->state == 'Registration') || ($event->state == 'Closed'))
 	{
 		$searchModel = New EntrantSearch();
 		$entrantProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-		if (User::isUserAdmin())
+		if (($event->state == 'Registration') || (Yii::$app->params['antlog_env'] == 'local'))
 		{
-			echo Html::a('Add Entrant', ['create', 'eventId' => $event->id], ['class' => 'btn btn-success']);
-		}
-		else
-		{
-			echo Html::a('Sign Up', ['signup', 'eventId' => $event->id], ['class' => 'btn btn-success']);
+			if (User::isUserAdmin())
+			{
+				echo Html::a('Add Entrant', ['create', 'eventId' => $event->id], ['class' => 'btn btn-success']);
+			}
+			else
+			{
+				echo Html::a('Sign Up', ['signup', 'eventId' => $event->id], ['class' => 'btn btn-success']);
+			}
 		}
 	}
 	?>
