@@ -558,10 +558,12 @@ class Db extends ActiveRecord
 				if (connection_status()!=0)
 				{
 					@fclose($file);
+					unlink($this->filename);
 					exit;
 				}
 			}
 			@fclose($file);
+			unlink($this->filename);
 			return;
 		}
 		else
