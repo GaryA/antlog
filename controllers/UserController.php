@@ -104,6 +104,7 @@ class UserController extends Controller
     		]);
     	$events = $eventsProvider->getModels();
     	$robots = $robotsProvider->getModels();
+    	$fightsProvider = null;
     	foreach ($robots as $robot)
     	{
     		foreach ($events as $event)

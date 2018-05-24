@@ -70,6 +70,18 @@ $config = [
 					'maxFileSize' => 1024 * 4,
 					'maxLogFiles' => 20,
 				],
+				[
+					'class' => 'yii\log\FileTarget',
+					'levels' => ['info'],
+					'logFile' => '@app/runtime/logs/fights.log',
+					'maxFileSize' => 1024 * 4,
+					'maxLogFiles' => 20,
+					'logVars' => [],
+					'prefix' => function ($message) {
+						return "[$message[2]]";
+					},
+					'categories' => ['app\*'],
+				],
             ],
         ],
         'db' => require(__DIR__ . '/db.php'),

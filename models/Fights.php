@@ -189,6 +189,42 @@ class Fights extends ActiveRecord
     	$record->update();
 
     	$fightLoser = Entrant::findOne($loser);
+    	$fightWinner = Entrant::findOne($winner);
+    	$error = false;
+    	if ($record->fightBracket == 'W' && $change == false)
+    	{
+    		if ($fightWinner->status != 2)
+    		{
+    			Yii::info("ID: $fightWinner->id, Bracket = Winners but Status = $fightWinner->status", __METHOD__);
+    			$fightWinner->status = 2;
+    			$fightWinner->save(false, ['status']);
+    			$error = true;
+    		}
+    		if ($fightLoser->status != 2)
+    		{
+    			Yii::info("ID: $fightLoser->id, Bracket = Winners but Status = $fightLoser->status", __METHOD__);
+    			$fightLoser->status = 2;
+    			$fightLoser->save(false, ['status']);
+     			$error = true;
+    		}
+    	}
+		else if ($record->fightBracket == 'L' && $change == false)
+		{
+			if ($fightWinner->status != 1)
+			{
+    			Yii::info("ID: $fightWinner->id, Bracket = Losers but Status = $fightWinner->status", __METHOD__);
+				$fightWinner->status = 1;
+				$fightWinner->save(false, ['status']);
+				$error = true;
+			}
+			if ($fightLoser->status != 1)
+			{
+    			Yii::info("ID: $fightLoser->id, Bracket = Losers but Status = $fightLoser->status", __METHOD__);
+				$fightLoser->status = 1;
+				$fightLoser->save(false, ['status']);
+				$error = true;
+			}
+		}
 
     	$finished = true;
     	if ($record->winnerNextFight > 0)
@@ -254,6 +290,10 @@ class Fights extends ActiveRecord
     		}
     		else
     		{
+    			if ($error)
+    			{
+    				Yii::$app->session->setFlash('error', 'Something went wrong with the robot tracking. It should be fixed now. Please send the fights.log file with the database updates.');
+    			}
     			return ['index', 'eventId' => $record->eventId, 'byes' => 1, 'complete' => $showComplete];
     		}
     	}

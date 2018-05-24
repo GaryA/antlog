@@ -156,6 +156,7 @@ class FightsController extends Controller
 		$replacement = $request->get('replacement', 0);
 		$model = $this->findModel($id);
 		$result = $model->updateCurrent($id, $winner, $complete, $change, $replacement);
+		Yii::info("ID: $id, Winner: $winner, Change: $change, Replacement: $replacement", __METHOD__);
 		return $this->redirect($result);
 
     }
