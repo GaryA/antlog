@@ -159,7 +159,7 @@ class Fights extends ActiveRecord
 
     /**
      * function to set the current field of a record to false to indicate that the fight has ended
-     * @param unknown $id
+     * @param integer $id
      */
     public function endFight($id)
     {

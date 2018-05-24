@@ -261,8 +261,8 @@ class FightsController extends Controller
     		fwrite($file, $robot2);
     		fclose($file);
     		// either use 'current_fight' table...
-    		$currentFight = new CurrentFight;
-    		$currentFight->set($id, $title, $robot1, $robot2, $team1, $team2);
+    		//$currentFight = new CurrentFight;
+    		//$currentFight->set($id, $title, $robot1, $robot2, $team1, $team2);
     		// or use 'current' field of fights table
     		$this->findModel($id)->startFight($id);
     		return '{"status":"OK"}';
@@ -291,8 +291,8 @@ class FightsController extends Controller
     		fwrite($file, '');
     		fclose($file);
     		// either use 'current_fight' table...
-    		$currentFight = new CurrentFight;
-    		$currentFight->clear();
+    		//$currentFight = new CurrentFight;
+    		//$currentFight->clear();
     		// or use 'current' field of fights table
     		$this->findModel($id)->endFight($id);
     		return '{"status":"OK"}';
