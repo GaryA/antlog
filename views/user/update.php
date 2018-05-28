@@ -21,8 +21,18 @@ $this->params['breadcrumbs'][] = 'Update';
                 <?= $form->field($model, 'team_name') ?>
                 <div class="form-group">
                     <?= Html::submitButton('Update', ['class' => 'btn btn-primary', 'name' => 'update-button']) ?>
-                </div>
+                    </div>
             <?php ActiveForm::end(); ?>
-        </div>
+			<?= Html::a('Delete', ['/user/delete', 'id' => $model->id],
+			[
+				'class' => 'btn btn-danger',
+				'data' =>
+				[
+					'confirm' => 'Are you sure you want to delete this team/user?',
+					'method' => 'post',
+				],
+			])
+			?>
+            </div>
     </div>
 </div>

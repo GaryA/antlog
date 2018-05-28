@@ -21,8 +21,10 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php
 		if ((User::isCurrentUser($model->id)) || User::isUserAdmin())
 		{
-			echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
-
+			if ($model->status == User::STATUS_ACTIVE)
+			{
+				echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+			}
 			if ($model->isTeamEmpty($model->id))
 			{
 				echo Html::a('Delete', ['delete', 'id' => $model->id],
@@ -30,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
 					'class' => 'btn btn-danger',
 					'data' =>
 					[
-						'confirm' => 'Are you sure you want to delete this item?',
+						'confirm' => 'Are you sure you want to delete this team/user?',
 						'method' => 'post',
 					],
 				]);

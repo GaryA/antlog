@@ -16,7 +16,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        'columns' => [
+    	'rowOptions' => function ($model, $index, $widget, $grid)
+    	{
+    		return ($model->status == User::STATUS_ACTIVE) ? [] : ['class' => 'info'];
+    	},
+    	'columns' => [
             //['class' => 'yii\grid\SerialColumn'],
 
             //'id',

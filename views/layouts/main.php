@@ -65,6 +65,7 @@ AppAsset::register($this);
             }
             else
             {
+            	$menuItems[] = ['label' => 'Privacy', 'url' => ['/site/privacy']];
             	if (User::isUserAdmin() && Yii::$app->params['antlog_env'] == 'local')
             	{
             		$menuItems[] = ['label' => 'Import', 'url' => ['db/import']];
@@ -76,9 +77,14 @@ AppAsset::register($this);
             	}
                 $menuItems[] =
                 [
-                	'label' => 'Logout (' . Yii::$app->user->identity->username . ')',
-                    'url' => ['/site/logout'],
-                    'linkOptions' => ['data-method' => 'post']
+                	'label' => Yii::$app->user->identity->username,
+                	'items' => [
+                		['label' => 'Details',
+                		'url' => ['/user/details/' . Yii::$app->user->identity->id]],
+                		['label' => 'Logout',
+                    	'url' => ['/site/logout'],
+                    	'linkOptions' => ['data-method' => 'post']]
+                	]
                 ];
             }
             echo Nav::widget([

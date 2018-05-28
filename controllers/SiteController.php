@@ -80,10 +80,10 @@ class SiteController extends Controller
     {
         $teamData = new ActiveDataProvider(
 		[
-            'query' => User::find()->where(['user_group' => User::ROLE_TEAM]),
+            'query' => User::find()->where(['user_group' => User::ROLE_TEAM, 'status' => User::STATUS_ACTIVE]),
         ]);
 
-        $teamCount = User::find()->where(['user_group' => User::ROLE_TEAM])->count();
+        $teamCount = User::find()->where(['user_group' => User::ROLE_TEAM, 'status' => User::STATUS_ACTIVE])->count();
 
     	$eventData = new ActiveDataProvider(
 		[
@@ -95,10 +95,10 @@ class SiteController extends Controller
 
     	$robotData = new ActiveDataProvider(
 		[
-            'query' => Robot::find(),
+            'query' => Robot::find()->where(['active' => 1]),
         ]);
 
-    	$robotCount = Robot::find()->count();
+    	$robotCount = Robot::find()->where(['active' => 1])->count();
 
         return $this->render('index',
 		[
@@ -184,6 +184,15 @@ class SiteController extends Controller
     public function actionAbout()
     {
         return $this->render('about');
+    }
+
+    /**
+	 * Render the privacy view
+	 * @return mixed
+	 */
+    public function actionPrivacy()
+    {
+        return $this->render('privacy');
     }
 
     /**

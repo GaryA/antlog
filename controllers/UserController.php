@@ -37,16 +37,7 @@ class UserController extends Controller
 						'roles' => ['@'],
 						'matchCallback' => function($rule, $action)
 						{
-							return User::isUserAdmin();
-						}
-					],
-					[
-						'actions' => ['update'],
-						'allow' => true,
-						'roles' => ['@'],
-						'matchCallback' => function($rule, $action)
-						{
-							return User::isCurrentUser(Yii::$app->request->get('id'));
+							return User::isUserAdmin() || User::isCurrentUser(Yii::$app->request->get('id'));
 						}
 					],
 					[
@@ -134,34 +125,41 @@ class UserController extends Controller
     {
         $updateModel = new UpdateForm();
         $userModel = User::findIdentity($id);
-        $updateModel->setAttributes(
-        [
-        	'id' => $userModel->id,
-        	'username' => $userModel->username,
-        	'email' => $userModel->email,
-        	'team_name' => $userModel->team_name,
-        ], false);
-
-        if ($updateModel->load(Yii::$app->request->post()))
+        if ($userModel == null)
         {
-        	//$model->username = Yii::$app->request->post('User')['username'];
-        	if ($userModel =  $updateModel->update($id))
-			{
-				Yii::$app->getSession()->setFlash('success', 'Updated user model.');
-				return $this->redirect(['view', 'id' => $userModel->id]);
+        	return $this->redirect('index');
+        }
+        else
+        {
+        	$updateModel->setAttributes(
+        	[
+        		'id' => $userModel->id,
+        		'username' => $userModel->username,
+        		'email' => $userModel->email,
+        		'team_name' => $userModel->team_name,
+        	], false);
+
+        	if ($updateModel->load(Yii::$app->request->post()))
+        	{
+        		//$model->username = Yii::$app->request->post('User')['username'];
+        		if ($userModel =  $updateModel->update($id))
+				{
+					Yii::$app->getSession()->setFlash('success', 'Updated user model.');
+					return $this->redirect(['view', 'id' => $userModel->id]);
+        		}
+				else
+				{
+					Yii::$app->getSession()->setFlash('error', 'Failed to update user model.');
+					return $this->render('update', ['model' => $updateModel]);
+				}
         	}
 			else
 			{
-				Yii::$app->getSession()->setFlash('error', 'Failed to update user model.');
-				return $this->render('update', ['model' => $updateModel]);
-			}
-        }
-		else
-		{
-			return $this->render('update',
-			[
-                'model' => $updateModel,
-            ]);
+				return $this->render('update',
+				[
+        	        'model' => $updateModel,
+        	    ]);
+        	}
         }
     }
 
@@ -173,9 +171,54 @@ class UserController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
+    /**
+     * Deletes existing User team data, but maintains links with robots that are already in the results table.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param string $id
+     * @return mixed
+     */
+     	$model = $this->findModel($id);
+     	$robotProvider = new ActiveDataProvider(['query' => Robot::find()->where(['teamId' => $id])]);
+     	$robots = $robotProvider->getModels();
+     	foreach ($robots as $robot)
+     	{
+     		if ($robot->isOKToDelete($robot->id))
+     		{
+     			$robot->delete();
+     		}
+     		else if ($robot->isOKToRetire($robot->id))
+     		{
+     			$robot->active = false;
+     			$robot->update();
+     		}
+     	}
+    	if ($model->isTeamEmpty($id))
+    	{
+     		$model->delete();
+    	}
+    	else
+    	{
+    		$model->username = 'Deleted User ' . $id;
+    		$model->password_hash = '0';
+    		$model->password_reset_token = NULL;
+    		$model->email = 'deleted@garya.org.uk';
+    		$model->status = User::STATUS_DELETED;
+    		$model->team_name = 'Deleted Team (' . $id . ')';
+    		$model->update();
+    	}
         return $this->redirect(['index']);
+    }
+
+    /**
+     * Displays details of an active user
+     * @param string $id
+     * @return mixed
+     */
+    public function actionDetails($id)
+    {
+    	return $this->redirect(['/user/update/' . $id,
+    			'model' => $this->findModel($id),
+    		]);
     }
 
     /**
