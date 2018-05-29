@@ -8,6 +8,15 @@ $config = [
 	'version' => '3.0.3',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
+    'on beforeRequest' => function ($event) {
+    	if (Yii::$app->params['maintenance'] == 'true')
+    	{
+    		Yii::$app->catchAll = [
+    			// force route if in maintenance mode
+    			'site/maintenance',
+    		];
+    	}
+    },
     'components' => [
 		'urlManager' => [
     		'class' => 'yii\web\UrlManager',

@@ -196,6 +196,16 @@ class SiteController extends Controller
     }
 
     /**
+     * Render the maintenance view
+     * @return mixed
+     */
+    public function actionMaintenance()
+    {
+    	$this->layout = 'maintenance';
+    	return $this->render('maintenance');
+    }
+
+    /**
 	 * Render the about view
 	 * @return mixed
 	 */
