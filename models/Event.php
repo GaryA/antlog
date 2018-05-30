@@ -119,7 +119,7 @@ class Event extends \yii\db\ActiveRecord
 		if ($retVal[0] == 1)
 		{
 			/* can't fit team in remaining groups */
-			$progress->stop('Team size is bigger than number of spaces available');
+			$progress->stop('Team size is bigger than number of spaces available. Try re-doing the draw.');
 		}
 		else
 		{
