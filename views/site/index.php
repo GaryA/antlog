@@ -9,13 +9,13 @@ use app\models\RobotClass;
 use app\models\User;
 
 /* @var $this yii\web\View */
-$this->title = 'AntLog 3.0';
+$this->title = Yii::$app->name;
 
 ?>
 <div class="site-index">
 
 	<div class="jumbotron">
-		<h1>AntLog 3.0</h1>
+		<h1>AntLog 3.1</h1>
 
 		<p class="lead">Welcome to AntLog</p>
 

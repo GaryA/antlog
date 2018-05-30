@@ -146,6 +146,29 @@ class Fights extends ActiveRecord
     }
 
     /**
+     * function to set the current field of a record to true to indicate that the fight is in progress
+     * @param integer $id
+     *
+     */
+    public function startFight($id)
+    {
+    	$record = $this->findOne($id);
+    	$record->current = filter_var(TRUE, FILTER_VALIDATE_BOOLEAN);
+    	$record->update();
+    }
+
+    /**
+     * function to set the current field of a record to false to indicate that the fight has ended
+     * @param integer $id
+     */
+    public function endFight($id)
+    {
+    	$record = $this->findOne($id);
+    	$record->current = filter_var(FALSE, FILTER_VALIDATE_BOOLEAN);
+    	$record->update();
+    }
+
+    /**
      * function to update the current fight, then call further functions to
      * update subsequent fights and run byes
      * @param integer $id
