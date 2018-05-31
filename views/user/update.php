@@ -1,6 +1,7 @@
 <?php
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
+use app\models\User;
 
 /* @var $this yii\web\View */
 /* @var $form yii\bootstrap\ActiveForm */
@@ -23,15 +24,19 @@ $this->params['breadcrumbs'][] = 'Update';
                     <?= Html::submitButton('Update', ['class' => 'btn btn-primary', 'name' => 'update-button']) ?>
                     </div>
             <?php ActiveForm::end(); ?>
-			<?= Html::a('Delete', ['/user/delete', 'id' => $model->id],
-			[
-				'class' => 'btn btn-danger',
-				'data' =>
+			<?php
+			if (!User::isUserAdmin())
+			{
+				echo Html::a('Delete', ['/user/delete', 'id' => $model->id],
 				[
-					'confirm' => 'Are you sure you want to delete this team/user?',
-					'method' => 'post',
-				],
-			])
+					'class' => 'btn btn-danger',
+					'data' =>
+					[
+						'confirm' => 'Are you sure you want to delete this team/user?',
+						'method' => 'post',
+					],
+				]);
+			}
 			?>
             </div>
     </div>

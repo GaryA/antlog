@@ -16,7 +16,7 @@ after the event along with the event results.
 <h3>Viewing and Updating Your Personal Data</h3>
 <p>
 You can view the personal data that Antlog holds about you. First you have to log in, then click on your username in
-the menu bar at the top of the page. Click on Details in the drop-down menu which enables you to see and edit all of
+the menu bar at the top of the page. Click on Update in the drop-down menu which enables you to see and edit all of
 your user data.
 </p>
 <p>

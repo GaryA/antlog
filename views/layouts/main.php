@@ -80,6 +80,8 @@ AppAsset::register($this);
                 	'label' => Yii::$app->user->identity->username,
                 	'items' => [
                 		['label' => 'Details',
+                		'url' => ['user/view/' . Yii::$app->user->identity->id]],
+                		['label' => 'Update',
                 		'url' => ['/user/details/' . Yii::$app->user->identity->id]],
                 		['label' => 'Logout',
                     	'url' => ['/site/logout'],
