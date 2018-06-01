@@ -97,7 +97,24 @@ class FightsController extends Controller
     			'query' => $query,
     			'sort'=> ['defaultOrder' => ['fightRound'=>SORT_ASC, 'fightBracket' => SORT_DESC, 'fightGroup' => SORT_ASC, 'fightNo' => SORT_ASC]]
     		]);
-    		if (Yii::$app->request->isAjax)
+
+            // Content type detection
+            $headers = Yii::$app->request->headers;
+            $acceptJSON = false;
+            if($headers->has("Accept")){
+                $accept = $headers->get('Accept');
+                $content_types = explode(",", $accept);
+                $actual_content_types = array();
+                foreach($content_types as $ct)
+                    $actual_content_types[] = trim($ct);
+
+                $valid_content_types_for_json = array( "application/json", "javascript/text" );
+
+                foreach($valid_content_types_for_json as $valid_ct)
+                    if(in_array($valid_ct, $actual_content_types)) $acceptJSON=true;
+            }
+
+    		if ( (Yii::$app->request->isAjax) || ($acceptJSON) )
     		{
     			// Use curl to send AJAX request by setting XMLHttpRequest header:
     			// curl.exe -i -H "X-Requested-With: XMLHttpRequest" http://antlog.local/fights/index?eventId=11
