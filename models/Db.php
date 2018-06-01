@@ -503,7 +503,7 @@ class Db extends ActiveRecord
 			// run mysql with $fileName as input
 			if ($this->password !== '')
 			{
-				$cmd = "-h localhost -u $this->username -p $this->password $this->database < \"$fileName\"";
+				$cmd = "-h localhost -u $this->username -p$this->password $this->database < \"$fileName\"";
 			}
 			else
 			{
