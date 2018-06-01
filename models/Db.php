@@ -92,7 +92,7 @@ class Db extends ActiveRecord
 			fwrite($this->fileHandle, " `team_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,\n");
 			fwrite($this->fileHandle, " PRIMARY KEY (`id`),\n");
 			fwrite($this->fileHandle, " UNIQUE KEY `username` (`username`)\n");
-			fwrite($this->fileHandle, ") ENGINE=InnoDB  DEFAULT CHARSET=latin1;\n");
+			fwrite($this->fileHandle, ") ENGINE=InnoDB  DEFAULT CHARSET=utf8;\n");
 		}
 		foreach ($records as $record)
 		{
@@ -173,17 +173,17 @@ class Db extends ActiveRecord
 			fwrite($this->fileHandle, "DROP TABLE IF EXISTS `$this->prefix" . "robot`;\n");
 			fwrite($this->fileHandle, "CREATE TABLE IF NOT EXISTS `$this->prefix" . "robot` (\n");
 			fwrite($this->fileHandle, " `id` int(10) NOT NULL AUTO_INCREMENT,\n");
-			fwrite($this->fileHandle, " `name` varchar(100) NOT NULL,\n");
-			fwrite($this->fileHandle, " `teamId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (teamId) REFERENCES aws_user(id)',\n");
-			fwrite($this->fileHandle, " `classId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (classId) REFERENCES aws_robot_class(id)',\n");
-			fwrite($this->fileHandle, " `typeId` smallint(6) NOT NULL DEFAULT '0' COMMENT 'CONSTRAINT FOREIGN KEY (typeId) REFERENCES aws_robot_type(id)',\n");
+			fwrite($this->fileHandle, " `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,\n");
+			fwrite($this->fileHandle, " `teamId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (teamId) REFERENCES $this->prefix" . "user(id)',\n");
+			fwrite($this->fileHandle, " `classId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (classId) REFERENCES $this->prefix" . "robot_class(id)',\n");
+			fwrite($this->fileHandle, " `typeId` smallint(6) NOT NULL DEFAULT '0' COMMENT 'CONSTRAINT FOREIGN KEY (typeId) REFERENCES $this->prefix" . "robot_type(id)',\n");
 			fwrite($this->fileHandle, " `active` tinyint(1) NOT NULL,\n");
 			fwrite($this->fileHandle, " `created_at` int(11) NOT NULL DEFAULT '0',\n");
 			fwrite($this->fileHandle, " `updated_at` int(11) NOT NULL DEFAULT '0',\n");
 			fwrite($this->fileHandle, " PRIMARY KEY (`id`),\n");
 			fwrite($this->fileHandle, " UNIQUE KEY `RobotID_2` (`id`),\n");
 			fwrite($this->fileHandle, " KEY `RobotID` (`id`)\n");
-			fwrite($this->fileHandle, ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;\n");
+			fwrite($this->fileHandle, ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE utf8_unicode_ci;\n");
 		}
 		foreach ($records as $record)
 		{
@@ -246,20 +246,20 @@ class Db extends ActiveRecord
 			fwrite($this->fileHandle, "DROP TABLE IF EXISTS `$this->prefix" . "event`;\n");
 			fwrite($this->fileHandle, "CREATE TABLE IF NOT EXISTS `$this->prefix" . "event` (\n");
 			fwrite($this->fileHandle, " `id` int(10) NOT NULL AUTO_INCREMENT,\n");
-			fwrite($this->fileHandle, " `name` varchar(100) NOT NULL,\n");
+			fwrite($this->fileHandle, " `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,\n");
 			fwrite($this->fileHandle, " `eventDate` date NOT NULL,\n");
 			fwrite($this->fileHandle, " `state` enum('Complete','Running','Ready','Setup','Closed','Registration','Future') NOT NULL DEFAULT 'Registration',\n");
-			fwrite($this->fileHandle, " `classId` int(11) NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (classId) REFERENCES aws_robot_class(id)',\n");
-			fwrite($this->fileHandle, " `eventType` tinyint(4) NOT NULL DEFAULT '1' COMMENT 'CONSTRAINT FOREIGN KEY (eventType) REFERENCES aws_event_type(id)',\n");
+			fwrite($this->fileHandle, " `classId` int(11) NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (classId) REFERENCES $this->prefix" . "robot_class(id)',\n");
+			fwrite($this->fileHandle, " `eventType` tinyint(4) NOT NULL DEFAULT '1' COMMENT 'CONSTRAINT FOREIGN KEY (eventType) REFERENCES $this->prefix" . "event_type(id)',\n");
 			fwrite($this->fileHandle, " `num_groups` tinyint(4) NOT NULL DEFAULT '0',\n");
 			fwrite($this->fileHandle, " `offset` int(11) DEFAULT NULL,\n");
 			fwrite($this->fileHandle, " `created_at` int(11) NOT NULL DEFAULT '0',\n");
 			fwrite($this->fileHandle, " `updated_at` int(11) NOT NULL DEFAULT '0',\n");
-			fwrite($this->fileHandle, " `organiserId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (organiserId) REFERENCES aws_user(id)',\n");
+			fwrite($this->fileHandle, " `organiserId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (organiserId) REFERENCES $this->prefix" . "user(id)',\n");
 			fwrite($this->fileHandle, " `venue` text NOT NULL,\n");
 			fwrite($this->fileHandle, " PRIMARY KEY (`id`),\n");
 			fwrite($this->fileHandle, " UNIQUE KEY `id` (`id`)\n");
-			fwrite($this->fileHandle, ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;\n");
+			fwrite($this->fileHandle, ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE utf8_unicode_ci;\n");
 		}
 		foreach ($records as $record)
 		{
@@ -344,16 +344,16 @@ class Db extends ActiveRecord
 			fwrite($this->fileHandle, "DROP TABLE IF EXISTS `$this->prefix" . "entrant`;\n");
 			fwrite($this->fileHandle, "CREATE TABLE IF NOT EXISTS `$this->prefix" . "entrant` (\n");
 			fwrite($this->fileHandle, " `id` int(10) NOT NULL AUTO_INCREMENT,\n");
-			fwrite($this->fileHandle, " `eventId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (eventId) REFERENCES aws_event(id)',\n");
-			fwrite($this->fileHandle, " `robotId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (robotId) REFERENCES aws_robot(id)',\n");
+			fwrite($this->fileHandle, " `eventId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (eventId) REFERENCES $this->prefix" . "event(id)',\n");
+			fwrite($this->fileHandle, " `robotId` int(10) unsigned NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (robotId) REFERENCES $this->prefix" . "robot(id)',\n");
 			fwrite($this->fileHandle, " `status` int(11) DEFAULT '-1',\n");
-			fwrite($this->fileHandle, " `finalFightId` int(11) NOT NULL DEFAULT '0' COMMENT 'CONSTRAINT FOREIGN KEY (finalFightId) REFERENCES aws_fights(id)',\n");
+			fwrite($this->fileHandle, " `finalFightId` int(11) NOT NULL DEFAULT '0' COMMENT 'CONSTRAINT FOREIGN KEY (finalFightId) REFERENCES $this->prefix" . "fights(id)',\n");
 			fwrite($this->fileHandle, " `group_num` int(11) DEFAULT NULL,\n");
 			fwrite($this->fileHandle, " `created_at` int(11) NOT NULL DEFAULT '0',\n");
 			fwrite($this->fileHandle, " `updated_at` int(11) NOT NULL DEFAULT '0',\n");
 			fwrite($this->fileHandle, " PRIMARY KEY (`id`),\n");
 			fwrite($this->fileHandle, " UNIQUE KEY `EntrantID` (`id`)\n");
-			fwrite($this->fileHandle, ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;\n");
+			fwrite($this->fileHandle, ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;\n");
 		}
 		foreach ($records as $record)
 		{
@@ -429,23 +429,24 @@ class Db extends ActiveRecord
 			fwrite($this->fileHandle, "DROP TABLE IF EXISTS `$this->prefix" . "fights`;\n");
 			fwrite($this->fileHandle, "CREATE TABLE IF NOT EXISTS `$this->prefix" . "fights` (\n");
 			fwrite($this->fileHandle, " `id` int(10) NOT NULL AUTO_INCREMENT,\n");
-			fwrite($this->fileHandle, " `eventId` int(11) NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (eventId) REFERENCES aws_event(id)',\n");
+			fwrite($this->fileHandle, " `eventId` int(11) NOT NULL COMMENT 'CONSTRAINT FOREIGN KEY (eventId) REFERENCES $this->prefix" . "event(id)',\n");
 			fwrite($this->fileHandle, " `fightGroup` int(11) NOT NULL,\n");
 			fwrite($this->fileHandle, " `fightRound` int(11) NOT NULL,\n");
-			fwrite($this->fileHandle, " `fightBracket` set('W','L','F') NOT NULL,\n");
+			fwrite($this->fileHandle, " `fightBracket` set('W','L','F') CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,\n");
 			fwrite($this->fileHandle, " `fightNo` int(11) NOT NULL,\n");
-			fwrite($this->fileHandle, " `robot1Id` int(11) NOT NULL DEFAULT '-1' COMMENT 'CONSTRAINT FOREIGN KEY (robot1Id) REFERENCES aws_entrant(id)',\n");
-			fwrite($this->fileHandle, " `robot2Id` int(11) NOT NULL DEFAULT '-1' COMMENT 'CONSTRAINT FOREIGN KEY (robot2Id) REFERENCES aws_entrant(id)',\n");
-			fwrite($this->fileHandle, " `winnerId` int(11) NOT NULL DEFAULT '-1' COMMENT 'CONSTRAINT FOREIGN KEY (winnerId) REFERENCES aws_entrant(id)',\n");
-			fwrite($this->fileHandle, " `loserId` int(11) NOT NULL DEFAULT '-1' COMMENT 'CONSTRAINT FOREIGN KEY (loserId) REFERENCES aws_entrant(id)',\n");
-			fwrite($this->fileHandle, " `winnerNextFight` int(10) unsigned NOT NULL,");
-			fwrite($this->fileHandle, " `loserNextFight` int(10) unsigned NOT NULL,");
-			fwrite($this->fileHandle, " `sequence` int(11) NOT NULL DEFAULT '-1',");
+			fwrite($this->fileHandle, " `robot1Id` int(11) NOT NULL DEFAULT '-1' COMMENT 'CONSTRAINT FOREIGN KEY (robot1Id) REFERENCES $this->prefix" . "entrant(id)',\n");
+			fwrite($this->fileHandle, " `robot2Id` int(11) NOT NULL DEFAULT '-1' COMMENT 'CONSTRAINT FOREIGN KEY (robot2Id) REFERENCES $this->prefix" . "entrant(id)',\n");
+			fwrite($this->fileHandle, " `winnerId` int(11) NOT NULL DEFAULT '-1' COMMENT 'CONSTRAINT FOREIGN KEY (winnerId) REFERENCES $this->prefix" . "entrant(id)',\n");
+			fwrite($this->fileHandle, " `loserId` int(11) NOT NULL DEFAULT '-1' COMMENT 'CONSTRAINT FOREIGN KEY (loserId) REFERENCES $this->prefix" . "entrant(id)',\n");
+			fwrite($this->fileHandle, " `winnerNextFight` int(10) unsigned NOT NULL,\n");
+			fwrite($this->fileHandle, " `loserNextFight` int(10) unsigned NOT NULL,\n");
+			fwrite($this->fileHandle, " `sequence` int(11) NOT NULL DEFAULT '-1',\n");
+			fwrite($this->fileHandle, " `current` tinyint(1) NOT NULL DEFAULT '0',\n");
 			fwrite($this->fileHandle, " `created_at` int(11) NOT NULL DEFAULT '0',\n");
 			fwrite($this->fileHandle, " `updated_at` int(11) NOT NULL DEFAULT '0',\n");
 			fwrite($this->fileHandle, " PRIMARY KEY (`id`),\n");
 			fwrite($this->fileHandle, " UNIQUE KEY `FightID` (`id`)\n");
-			fwrite($this->fileHandle, ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;\n");
+			fwrite($this->fileHandle, ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;\n");
 		}
 		foreach ($records as $record)
 		{
