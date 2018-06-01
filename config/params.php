@@ -8,7 +8,7 @@ return
 	// Define environment
 	// 'web' for online "master" installation
 	// 'local' for event "slave" installation
-	'antlog_env' => 'local',
+	'antlog_env' => 'web',
 	'execPath' => '\xampp\mysql\bin\mysql.exe',
 	'execDrive' => 'c:',
 	'maintenance' => 'false'
