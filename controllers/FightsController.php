@@ -101,17 +101,23 @@ class FightsController extends Controller
             // Content type detection
             $headers = Yii::$app->request->headers;
             $acceptJSON = false;
-            if($headers->has("Accept")){
-                $accept = $headers->get('Accept');
-                $content_types = explode(",", $accept);
-                $actual_content_types = array();
-                foreach($content_types as $ct)
-                    $actual_content_types[] = trim($ct);
+            if($headers->has("Accept"))
+            {
+                $contentTypes = [];
+            	$rawContentTypes = explode(",", $headers->get('Accept'));
+                foreach($rawContentTypes as $ct)
+                {
+                	$contentTypes[] = trim($ct);
+                }
 
-                $valid_content_types_for_json = array( "application/json", "javascript/text" );
-
-                foreach($valid_content_types_for_json as $valid_ct)
-                    if(in_array($valid_ct, $actual_content_types)) $acceptJSON=true;
+                $jsonContentTypes = [ "application/json", "javascript/text" ];
+                foreach($jsonContentTypes as $jsonCT)
+                {
+                	if(in_array($jsonCT, $contentTypes))
+                	{
+                		$acceptJSON = true;
+                	}
+                }
             }
 
     		if ( (Yii::$app->request->isAjax) || ($acceptJSON) )
@@ -123,7 +129,8 @@ class FightsController extends Controller
     				"now" => [],
     			];
     			$query->orderBy( ['fightRound'=>SORT_ASC, 'fightBracket' => SORT_DESC, 'fightGroup' => SORT_ASC, 'fightNo' => SORT_ASC] );
-    			foreach($query->all() as $fight){
+    			foreach($query->all() as $fight)
+    			{
 					$fightObj = [
 						"id" => $fight->id,
 						"robot1" => ($fight->robot1 ? $fight->robot1->robot->name : null),
