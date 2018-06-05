@@ -272,11 +272,8 @@ class FightsController extends Controller
     	if(Yii::$app->request->isAjax)
     	{
     		$id = Yii::$app->request->post('id');
-    		$title = Yii::$app->request->post('title');
     		$robot1 = Yii::$app->request->post('robot1');
     		$robot2 = Yii::$app->request->post('robot2');
-    		$team1 = Yii::$app->request->post('team1');
-    		$team2 = Yii::$app->request->post('team2');
     		$filename = Yii::getAlias('@runtime') . DIRECTORY_SEPARATOR . 'robot1.txt';
     		$file = fopen($filename, 'w');
     		fwrite($file, $robot1);
@@ -285,10 +282,7 @@ class FightsController extends Controller
     		$file = fopen($filename, 'w');
     		fwrite($file, $robot2);
     		fclose($file);
-    		// either use 'current_fight' table...
-    		//$currentFight = new CurrentFight;
-    		//$currentFight->set($id, $title, $robot1, $robot2, $team1, $team2);
-    		// or use 'current' field of fights table
+    		// set 'current' field of fights table
     		$this->findModel($id)->startFight($id);
     		return '{"status":"OK"}';
     	}
@@ -315,10 +309,7 @@ class FightsController extends Controller
     		$file = fopen($filename, 'w');
     		fwrite($file, '');
     		fclose($file);
-    		// either use 'current_fight' table...
-    		//$currentFight = new CurrentFight;
-    		//$currentFight->clear();
-    		// or use 'current' field of fights table
+    		// clear 'current' field of fights table
     		$this->findModel($id)->endFight($id);
     		return '{"status":"OK"}';
     	}
